@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratePackJson", "Generat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPack", "PackCore\IconPack.csproj", "{A17F066E-8EBE-46CA-8F81-5356035D6FEE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{0A154F20-05CA-46B1-939E-5DBCAB4DB23B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC62DF2C-7276-4113-A9F6-B697D8300257} = {0A154F20-05CA-46B1-939E-5DBCAB4DB23B}
+		{5B84AD4A-A431-4524-924F-952CB3AB39CA} = {0A154F20-05CA-46B1-939E-5DBCAB4DB23B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
