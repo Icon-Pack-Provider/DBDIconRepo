@@ -9,6 +9,7 @@ namespace IconPack.Helper
 {
     public static class Info
     {
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
         public static Dictionary<string, IBaseItemInfo> Perks
         {
             get
