@@ -46,12 +46,6 @@
                                        Width="350"/>
             </ui:CommandBar.Content>
 
-
-            <ui:AppBarButton Label="Test" Icon="Pin" Visibility="{Binding ShowDevTestTool}"
-                             Click="TestClick"/>
-            <ui:AppBarSeparator Visibility="{Binding ShowDevTestTool}"/>
-            
-            
             <ui:AppBarButton Label="Sort" Icon="Sort" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="Bottom">
