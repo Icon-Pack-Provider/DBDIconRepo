@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,7 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resource\*.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<EmbeddedResource Include="Resource\*.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
     <PackageReference Include="Octokit" Version="0.51.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.4" />
   </ItemGroup>

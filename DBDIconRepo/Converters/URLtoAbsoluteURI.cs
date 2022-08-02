@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IconPack.Model;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
@@ -10,7 +11,7 @@ namespace DBDIconRepo.Converters
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string url)
-                return new BitmapImage(new Uri(url, UriKind.Absolute));
+                return new BitmapImage(new Uri(url, UriKind.Absolute));            
             return null;
         }
 

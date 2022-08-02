@@ -20,6 +20,18 @@ namespace DBDIconRepo.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
+        public Visibility ShowDevTestMenu
+        {
+            get
+            {
+#if DEBUG
+                return Visibility.Visible;
+#else
+                return Visibility.Collapsed;
+#endif
+            }
+        }
+
         OctokitService gitService => OctokitService.Instance;
         GitHubClient client => gitService.GitHubClientInstance;
         public void InitializeViewModel()

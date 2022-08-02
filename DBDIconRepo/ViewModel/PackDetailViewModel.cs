@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
-using DBDIconRepo.Model.Preview;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
@@ -64,168 +63,168 @@ namespace DBDIconRepo.ViewModel
                 ReadmeMDContent = translator.Transform(md);
             }
 
-            //Perk icons
-            if (SelectedPack.ContentInfo.HasPerks)
-            {
-                var perks = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Perks") ||
-                    file.StartsWith("/Perks") ||
-                    file.StartsWith("\\Perks"))
-                    .Select(i => new PerkPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Perk is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var perk in perks)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (PerksPreview is null)
-                                PerksPreview = new ObservableCollection<PerkPreviewItem>();
-                            PerksPreview.Add(perk);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                    SortingPerkList();
-                });
-            }
+            ////Perk icons
+            //if (SelectedPack.ContentInfo.HasPerks)
+            //{
+            //    var perks = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("Perks") ||
+            //        file.StartsWith("/Perks") ||
+            //        file.StartsWith("\\Perks"))
+            //        .Select(i => PackSelectionHelper.GetItemInfo(i))
+            //        .Where(preview => preview is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var perk in perks)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (PerksPreview is null)
+            //                    PerksPreview = new ObservableCollection<PreviewItem>();
+            //                PerksPreview.Add(new PreviewItem() { Info = perk });
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //        SortingPerkList();
+            //    });
+            //}
 
-            //Portrait icons
-            if (SelectedPack.ContentInfo.HasPortraits)
-            {
-                var portraits = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("CharPortraits") ||
-                    file.StartsWith("/CharPortraits") ||
-                    file.StartsWith("\\CharPortraits"))
-                    .Select(i => new PortraitPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var portrait in portraits)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (PortraitPreview is null)
-                                PortraitPreview = new ObservableCollection<PortraitPreviewItem>();
-                            PortraitPreview.Add(portrait);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                });
-                PortraitPreview = new ObservableCollection<PortraitPreviewItem>(portraits);
-            }
+            ////Portrait icons
+            //if (SelectedPack.ContentInfo.HasPortraits)
+            //{
+            //    var portraits = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("CharPortraits") ||
+            //        file.StartsWith("/CharPortraits") ||
+            //        file.StartsWith("\\CharPortraits"))
+            //        .Select(i => new PortraitPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var portrait in portraits)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (PortraitPreview is null)
+            //                    PortraitPreview = new ObservableCollection<PreviewItem>();
+            //                PortraitPreview.Add(portrait);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    });
+            //    PortraitPreview = new ObservableCollection<PreviewItem>(portraits);
+            //}
 
-            //Powers
-            if (SelectedPack.ContentInfo.HasPowers)
-            {
-                var powers = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Powers") ||
-                    file.StartsWith("/Powers") ||
-                    file.StartsWith("\\Powers"))
-                    .Select(i => new PowerPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var power in powers)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (PowerPreview is null)
-                                PowerPreview = new ObservableCollection<PowerPreviewItem>();
-                            PowerPreview.Add(power);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                }); 
-            }
+            ////Powers
+            //if (SelectedPack.ContentInfo.HasPowers)
+            //{
+            //    var powers = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("Powers") ||
+            //        file.StartsWith("/Powers") ||
+            //        file.StartsWith("\\Powers"))
+            //        .Select(i => new PowerPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var power in powers)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (PowerPreview is null)
+            //                    PowerPreview = new ObservableCollection<PreviewItem>();
+            //                PowerPreview.Add(power);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    }); 
+            //}
 
-            //Items
-            if (SelectedPack.ContentInfo.HasItems)
-            {
-                var items = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("items") ||
-                    file.StartsWith("/items") ||
-                    file.StartsWith("\\items"))
-                    .Select(i => new ItemPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var item in items)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (ItemsPreview is null)
-                                ItemsPreview = new ObservableCollection<ItemPreviewItem>();
-                            ItemsPreview.Add(item);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                });
-            }
+            ////Items
+            //if (SelectedPack.ContentInfo.HasItems)
+            //{
+            //    var items = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("items") ||
+            //        file.StartsWith("/items") ||
+            //        file.StartsWith("\\items"))
+            //        .Select(i => new ItemPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var item in items)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (ItemsPreview is null)
+            //                    ItemsPreview = new ObservableCollection<PreviewItem>();
+            //                ItemsPreview.Add(item);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    });
+            //}
 
-            //Status
-            if (SelectedPack.ContentInfo.HasStatus)
-            {
-                var status = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("StatusEffects") ||
-                    file.StartsWith("/StatusEffects") ||
-                    file.StartsWith("\\StatusEffects"))
-                    .Select(i => new StatusEffectPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var st in status)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (StatusEffectsPreview is null)
-                                StatusEffectsPreview = new ObservableCollection<StatusEffectPreviewItem>();
-                            StatusEffectsPreview.Add(st);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                });
-            }
+            ////Status
+            //if (SelectedPack.ContentInfo.HasStatus)
+            //{
+            //    var status = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("StatusEffects") ||
+            //        file.StartsWith("/StatusEffects") ||
+            //        file.StartsWith("\\StatusEffects"))
+            //        .Select(i => new StatusEffectPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var st in status)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (StatusEffectsPreview is null)
+            //                    StatusEffectsPreview = new ObservableCollection<PreviewItem>();
+            //                StatusEffectsPreview.Add(st);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    });
+            //}
 
-            //Offerings
-            if (SelectedPack.ContentInfo.HasOfferings)
-            {
-                var offerings = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Favors") ||
-                    file.StartsWith("/Favors") ||
-                    file.StartsWith("\\Favors"))
-                    .Select(i => new OfferingPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var offering in offerings)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (OfferingsPreview is null)
-                                OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
-                            OfferingsPreview.Add(offering);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                });
-            }
+            ////Offerings
+            //if (SelectedPack.ContentInfo.HasOfferings)
+            //{
+            //    var offerings = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("Favors") ||
+            //        file.StartsWith("/Favors") ||
+            //        file.StartsWith("\\Favors"))
+            //        .Select(i => new OfferingPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var offering in offerings)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (OfferingsPreview is null)
+            //                    OfferingsPreview = new ObservableCollection<PreviewItem>();
+            //                OfferingsPreview.Add(offering);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    });
+            //}
 
-            //Addons
-            if (SelectedPack.ContentInfo.HasAddons)
-            {
-                var addons = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("ItemAddons") ||
-                    file.StartsWith("/ItemAddons") ||
-                    file.StartsWith("\\ItemAddons"))
-                    .Select(i => new AddonPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
-                await Task.Run(async () =>
-                {
-                    foreach (var addon in addons)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            if (AddonsPreview is null)
-                                AddonsPreview = new ObservableCollection<AddonPreviewItem>();
-                            AddonsPreview.Add(addon);
-                        }, System.Windows.Threading.DispatcherPriority.Background);
-                    }
-                });
-            }
+            ////Addons
+            //if (SelectedPack.ContentInfo.HasAddons)
+            //{
+            //    var addons = SelectedPack.ContentInfo.Files
+            //        .Where(file => file.StartsWith("ItemAddons") ||
+            //        file.StartsWith("/ItemAddons") ||
+            //        file.StartsWith("\\ItemAddons"))
+            //        .Select(i => new AddonPreviewItem(i, SelectedPack.Repository))
+            //        .Where(preview => preview.Name is not null);
+            //    await Task.Run(async () =>
+            //    {
+            //        foreach (var addon in addons)
+            //        {
+            //            await Application.Current.Dispatcher.InvokeAsync(() =>
+            //            {
+            //                if (AddonsPreview is null)
+            //                    AddonsPreview = new ObservableCollection<PreviewItem>();
+            //                AddonsPreview.Add(addon);
+            //            }, System.Windows.Threading.DispatcherPriority.Background);
+            //        }
+            //    });
+            //}
 
             //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
         }
@@ -273,104 +272,104 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Perks display
-        ObservableCollection<PerkPreviewItem>? _perks;
-        public ObservableCollection<PerkPreviewItem>? PerksPreview
+        ObservableCollection<PreviewItem>? _perks;
+        public ObservableCollection<PreviewItem>? PerksPreview
         {
             get => _perks;
             set => SetProperty(ref _perks, value);
         }
 
         //Portraits display
-        ObservableCollection<PortraitPreviewItem>? _portrait;
-        public ObservableCollection<PortraitPreviewItem>? PortraitPreview
+        ObservableCollection<PreviewItem>? _portrait;
+        public ObservableCollection<PreviewItem>? PortraitPreview
         {
             get => _portrait;
             set => SetProperty(ref _portrait, value);
         }
 
         //Powers display
-        ObservableCollection<PowerPreviewItem>? _power;
-        public ObservableCollection<PowerPreviewItem>? PowerPreview
+        ObservableCollection<PreviewItem>? _power;
+        public ObservableCollection<PreviewItem>? PowerPreview
         {
             get => _power;
             set => SetProperty(ref _power, value);
         }
 
         //Items display
-        ObservableCollection<ItemPreviewItem>? _items;
-        public ObservableCollection<ItemPreviewItem>? ItemsPreview
+        ObservableCollection<PreviewItem>? _items;
+        public ObservableCollection<PreviewItem>? ItemsPreview
         {
             get => _items;
             set => SetProperty(ref _items, value);
         }
 
         //Addons
-        ObservableCollection<AddonPreviewItem>? _addons;
-        public ObservableCollection<AddonPreviewItem>? AddonsPreview
+        ObservableCollection<PreviewItem>? _addons;
+        public ObservableCollection<PreviewItem>? AddonsPreview
         {
             get => _addons;
             set => SetProperty(ref _addons, value);
         }
 
         //Emblems
-        ObservableCollection<EmblemPreviewItem>? _emblem;
-        public ObservableCollection<EmblemPreviewItem>? EmblemPreview
+        ObservableCollection<PreviewItem>? _emblem;
+        public ObservableCollection<PreviewItem>? EmblemPreview
         {
             get => _emblem;
             set => SetProperty(ref _emblem, value);
         }
 
         //Daily ritual
-        ObservableCollection<DailyRitualPreviewItem>? _dailyRitual;
-        public ObservableCollection<DailyRitualPreviewItem>? DailyRitualPreview
+        ObservableCollection<PreviewItem>? _dailyRitual;
+        public ObservableCollection<PreviewItem>? DailyRitualPreview
         {
             get => _dailyRitual;
             set => SetProperty(ref _dailyRitual, value);
         }
 
         //Offering
-        ObservableCollection<OfferingPreviewItem>? _offerings;
-        public ObservableCollection<OfferingPreviewItem>? OfferingsPreview
+        ObservableCollection<PreviewItem>? _offerings;
+        public ObservableCollection<PreviewItem>? OfferingsPreview
         {
             get => _offerings;
             set => SetProperty(ref _offerings, value);
         }
 
         //Status effects
-        ObservableCollection<StatusEffectPreviewItem>? _statusEffects;
-        public ObservableCollection<StatusEffectPreviewItem>? StatusEffectsPreview
+        ObservableCollection<PreviewItem>? _statusEffects;
+        public ObservableCollection<PreviewItem>? StatusEffectsPreview
         {
             get => _statusEffects;
             set => SetProperty(ref _statusEffects, value);
         }
 
-        public ObservableCollection<PerkPreviewItem>? SortedPerks
+        public ObservableCollection<PreviewItem>? SortedPerks
         {
             get
             {
                 if (PerksPreview is null)
                     return null;
-                switch (CurrentPerkSortingMethod)
-                {
-                    case PerkSortBy.Name:
-                        if (IsPerkSortByAscending)
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderBy(perk => perk.Perk.Name));
-                        else
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderByDescending(perk => perk.Perk.Name));
-                    case PerkSortBy.Owner:
-                        if (IsPerkSortByAscending)
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderBy(perk => perk.Perk.PerkOwner));
-                        else
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderByDescending(perk => perk.Perk.PerkOwner));
-                    case PerkSortBy.Random:
-                        return new ObservableCollection<PerkPreviewItem>(
-                            PerksPreview.Shuffle());
-                }
-                return new ObservableCollection<PerkPreviewItem>(PerksPreview);
+                //switch (CurrentPerkSortingMethod)
+                //{
+                //    case PerkSortBy.Name:
+                //        if (IsPerkSortByAscending)
+                //            return new ObservableCollection<PerkPreviewItem>(
+                //                PerksPreview.OrderBy(perk => perk.Perk.Name));
+                //        else
+                //            return new ObservableCollection<PerkPreviewItem>(
+                //                PerksPreview.OrderByDescending(perk => perk.Perk.Name));
+                //    case PerkSortBy.Owner:
+                //        if (IsPerkSortByAscending)
+                //            return new ObservableCollection<PerkPreviewItem>(
+                //                PerksPreview.OrderBy(perk => perk.Perk.PerkOwner));
+                //        else
+                //            return new ObservableCollection<PerkPreviewItem>(
+                //                PerksPreview.OrderByDescending(perk => perk.Perk.PerkOwner));
+                //    case PerkSortBy.Random:
+                //        return new ObservableCollection<PerkPreviewItem>(
+                //            PerksPreview.Shuffle());
+                //}
+                return new ObservableCollection<PreviewItem>(PerksPreview);
             }
         }
 

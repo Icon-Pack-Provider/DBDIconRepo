@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IconPack.Model
+namespace IconPack.Strings
 {
-    public interface IBaseItemInfo
+    public class Terms
     {
-        string? Name { get; set; }
+        public const string PackJson = "pack.json";
     }
 }

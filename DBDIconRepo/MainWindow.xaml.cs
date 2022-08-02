@@ -34,12 +34,12 @@ namespace DBDIconRepo
             {
                 if (window is PackDetail pd)
                 {
-                    if (pd.ViewModel.SelectedPack == message.Selected)
-                    {
-                        pd.Hide();
-                        pd.Show();
-                        return;
-                    }
+                    //if (pd.ViewModel.SelectedPack == message.Selected)
+                    //{
+                    //    pd.Hide();
+                    //    pd.Show();
+                    //    return;
+                    //}
                 }
             }
 
@@ -62,7 +62,18 @@ namespace DBDIconRepo
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
-        
+        private void TestClick(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Addons.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Portraits.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.DailyRituals.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Emblems.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.StatusEffects.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Offerings.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Items.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Powers.First()}");
+            System.Diagnostics.Debug.Write($"{IconPack.Helper.Info.Perks.First()}");
+        }
     }
 
     public class IconPreviewTemplateSelector : DataTemplateSelector

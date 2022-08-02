@@ -45,62 +45,62 @@ namespace DBDIconRepo.Dialog
 
         private void DetermineYScroll(object sender, ScrollChangedEventArgs e)
         {
-            if ((DataContext as PackDetailViewModel)?.CurrentDisplayMode != DetailFocusMode.Overview)
-            {
-                topDownloadButton.Visibility = Visibility.Visible;
-                return;
-            }
-            topDownloadButton.Visibility =
-                mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ? 
-                Visibility.Visible : Visibility.Collapsed;
-            System.Diagnostics.Debug.WriteLine($"Item height: {packDetailPanel.RenderSize.Height}" +
-                $"\r\nCurrent position? {mainContentScroll.ContentVerticalOffset} || {mainContentScroll.VerticalOffset}");
+            //    if ((DataContext as PackDetailViewModel)?.CurrentDisplayMode != DetailFocusMode.Overview)
+            //    {
+            //        topDownloadButton.Visibility = Visibility.Visible;
+            //        return;
+            //    }
+            //    topDownloadButton.Visibility =
+            //        mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ? 
+            //        Visibility.Visible : Visibility.Collapsed;
+            //    System.Diagnostics.Debug.WriteLine($"Item height: {packDetailPanel.RenderSize.Height}" +
+            //        $"\r\nCurrent position? {mainContentScroll.ContentVerticalOffset} || {mainContentScroll.VerticalOffset}");
         }
 
         private void SetDetailFocusModeViaTab(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0) 
-                if (e.AddedItems[0] is TabItem tab)
-                    if (tab.Tag is string str)
-                    {
-                        if (topDownloadButton != null)
-                            topDownloadButton.Visibility = str != "Overview" ? Visibility.Visible :
-                                (mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ?
-                                Visibility.Visible : Visibility.Collapsed);
-                        if ((DataContext as PackDetailViewModel)?.CurrentDisplayMode.ToString() == str)
-                            return;
-                        mainContentScroll.ScrollToVerticalOffset(0);
-                        switch (str)
-                        {
-                            case "Overview":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Overview;
-                                break;
-                            case "Readme":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Readme;
-                                break;
-                            case "Perks":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Perks;
-                                break;
-                            case "Portraits":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Portraits;
-                                break;
-                            case "Powers":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Powers;
-                                break;
-                            case "Items":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Items;
-                                break;
-                            case "Addons":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Addons;
-                                break;
-                            case "Status":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Status;
-                                break;
-                            case "Offerings":
-                                (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Offerings;
-                                break;
-                        }
-                    }
+            //if (e.AddedItems.Count > 0) 
+            //    if (e.AddedItems[0] is TabItem tab)
+            //        if (tab.Tag is string str)
+            //        {
+            //            if (topDownloadButton != null)
+            //                topDownloadButton.Visibility = str != "Overview" ? Visibility.Visible :
+            //                    (mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ?
+            //                    Visibility.Visible : Visibility.Collapsed);
+            //            if ((DataContext as PackDetailViewModel)?.CurrentDisplayMode.ToString() == str)
+            //                return;
+            //            mainContentScroll.ScrollToVerticalOffset(0);
+            //            switch (str)
+            //            {
+            //                case "Overview":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Overview;
+            //                    break;
+            //                case "Readme":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Readme;
+            //                    break;
+            //                case "Perks":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Perks;
+            //                    break;
+            //                case "Portraits":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Portraits;
+            //                    break;
+            //                case "Powers":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Powers;
+            //                    break;
+            //                case "Items":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Items;
+            //                    break;
+            //                case "Addons":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Addons;
+            //                    break;
+            //                case "Status":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Status;
+            //                    break;
+            //                case "Offerings":
+            //                    (DataContext as PackDetailViewModel).CurrentDisplayMode = DetailFocusMode.Offerings;
+            //                    break;
+            //            }
+            //        }
         }
     }
 
@@ -110,12 +110,11 @@ namespace DBDIconRepo.Dialog
         public DataTemplate? KillerItemAddons { get; set; }
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
-            if (item is Model.Preview.AddonPreviewItem info)
+            if (item is Addon addon)
             {
-                if (info.AddOns.Owner is null)
-                    return SurvivorItemAddons;
-                else
-                    return KillerItemAddons;
+                return addon.Owner is null ?
+                    SurvivorItemAddons :
+                    KillerItemAddons;
             }
             return base.SelectTemplate(item, container);
         }

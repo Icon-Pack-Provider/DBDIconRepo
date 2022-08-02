@@ -1,0 +1,633 @@
+Folder,File,Name,For,Owner
+,iconAddon_brokenFlashlightBulb,Broken Bulb,Flashlight
+,iconAddon_battery,Battery,Flashlight
+,iconAddon_focusLens,Focus Lens,Flashlight
+,iconAddon_heavyDutyBattery,Heavy Duty Battery,Flashlight
+,iconAddon_highEndSapphireLens,High-End Sapphire Lens,Flashlight
+,iconAddon_intenseHalogen,Intense Halogen,Flashlight
+,iconAddon_leatherGrip,Leather Grip,Flashlight
+,iconAddon_longLifeBattery,Long Life Battery,Flashlight
+,iconAddon_oddBulb,Odd Bulb,Flashlight
+,iconAddon_powerBulb,Power Bulb,Flashlight
+,iconAddon_rubberGrip,Rubber Grip,Flashlight
+,iconAddon_threadedFilament,Low Amp Filament,Flashlight
+,iconAddon_tirOptic,TIR Optic,Flashlight
+,iconAddon_wideLens,Wide Lens,Flashlight
+,iconAddon_bloodAmber,Blood Amber,Key
+,iconAddon_milkyGlass,Milky Glass,Key
+,iconAddon_prayerBeads,Prayer Beads,Key
+,iconAddon_prayerRope,Prayer Rope,Key
+,iconAddon_scratchedPearl,Scratched Pearl,Key
+,iconAddon_tokenErroded,Eroded Token,Key
+,iconAddon_tokenGold,Gold Token,Key
+,iconAddon_uniqueRing,Unique Wedding Ring,Key
+,iconAddon_weavedRing,Weaved Ring,Key
+,iconAddon_beadCrystal,Crystal Bead,Map
+,iconAddon_beadGlass,Glass Bead,Map
+,iconAddon_mapAddendum,Map Addendum,Map
+,iconAddon_retardantJelly,Retardant Jelly,Map
+,iconAddon_ropeBlack,Black Silk Cord,Map
+,iconAddon_ropeRed,Red Twine,Map
+,iconAddon_ropeYellow,Yellow Wire,Map
+,iconAddon_stampOdd,Odd Stamp,Map
+,iconAddon_stampUnusual,Unusual Stamp,Map
+,iconAddon_blightedSyringe,Refined Serum,Med-Kit
+,iconAddon_abdominalDressing,Abdominal Dressing,Med-Kit
+,iconAddon_bandages,Bandages,Med-Kit
+,iconAddon_butterflyTape,Butterfly Tape,Med-Kit
+,iconAddon_gauseRoll,Gauze Roll,Med-Kit
+,iconAddon_gelDressings,Gel Dressings,Med-Kit
+,iconAddon_gloves,Rubber Gloves,Med-Kit
+,iconAddon_needAndThread,Needle & Thread,Med-Kit
+,iconAddon_scissors,Medical Scissors,Med-Kit
+,iconAddon_selfAdherentWrap,Self Adherent Wrap,Med-Kit
+,iconAddon_sponge,Sponge,Med-Kit
+,iconAddon_spoolOfWire,Wire Spool,Med-Kit
+,iconAddon_springClamp,Spring Clamp,Med-Kit
+,iconAddon_stypticAgent,Styptic Agent,Med-Kit
+,iconAddon_surgicalSuture,Surgical Suture,Med-Kit
+,iconAddon_syringe,Anti-Haemorrhagic Syringe,Med-Kit
+,iconAddon_brandNewPart,Brand New Part,Toolbox
+,iconAddon_cleanRag,Clean Rag,Toolbox
+,iconAddon_cuttingWire,Cutting Wire,Toolbox
+,iconAddon_gripWrench,Grip Wrench,Toolbox
+,iconAddon_instructions,Instructions,Toolbox
+,iconAddon_metalSaw,Hacksaw,Toolbox
+,iconAddon_protectiveGloves,Protective Gloves,Toolbox
+,iconAddon_scraps,Scraps,Toolbox
+,iconAddon_socketSwivels,Socket Swivels,Toolbox
+Aurora,iconAddon_babyTeeth,Baby Teeth,Blood Bond,The Twins
+Aurora,iconAddon_bloodiedBlackHood,Bloody Black Hood,Blood Bond,The Twins
+Aurora,iconAddon_catFigurine,Cat Figurine,Blood Bond,The Twins
+Aurora,iconAddon_catsEye,Cat's Eye,Blood Bond,The Twins
+Aurora,iconAddon_ceremonialCandelabrum,Ceremonial Candelabrum,Blood Bond,The Twins
+Aurora,iconAddon_dropOfPerfume,Drop of Perfume,Blood Bond,The Twins
+Aurora,iconAddon_forestStew,Forest Stew,Blood Bond,The Twins
+Aurora,iconAddon_iridescentPendant,Iridescent Pendant,Blood Bond,The Twins
+Aurora,iconAddon_madeleinesGlove,Madeleine's Glove,Blood Bond,The Twins
+Aurora,iconAddon_madeleinesScarf,Madeleine's Scarf,Blood Bond,The Twins
+Aurora,iconAddon_rustedNeedle,Rusted Needle,Blood Bond,The Twins
+Aurora,iconAddon_sewerSludge,Sewer Sludge,Blood Bond,The Twins
+Aurora,iconAddon_silencingCloth,Silencing Cloth,Blood Bond,The Twins
+Aurora,iconAddon_souredMilk,Soured Milk,Blood Bond,The Twins
+Aurora,iconAddon_spinningTop,Spinning Top,Blood Bond,The Twins
+Aurora,iconAddon_staleBiscuit,Stale Biscuit,Blood Bond,The Twins
+Aurora,iconAddon_tinyFingernail,Tiny Fingernail,Blood Bond,The Twins
+Aurora,iconAddon_toySword,Toy Sword,Blood Bond,The Twins
+Aurora,iconAddon_victorsSoldier,Victor's Soldier,Blood Bond,The Twins
+Aurora,iconAddon_weightyRattle,Weighty Rattle,Blood Bond,The Twins
+Cannibal,iconAddon_awardwinningChili,Award-winning Chilli,Bubba's Chainsaw,The Cannibal
+Cannibal,iconAddon_chili,Chilli,Bubba's Chainsaw,The Cannibal
+Cannibal,iconAddon_iridescentFlesh,Iridescent Flesh,Bubba's Chainsaw,The Cannibal
+Cannibal,iconAddon_knifeScratches,Knife Scratches,Bubba's Chainsaw,The Cannibal
+Cannibal,iconAddon_theBeastsMark,The Beast's Marks,Bubba's Chainsaw,The Cannibal
+Cannibal,iconAddon_theGrease,The Grease,Bubba's Chainsaw,The Cannibal
+Comet,icons_Addon_BloodyBoa,Bloody Boa,Showstopper,The Trickster
+Comet,icons_Addon_CagedHeartShoes,Caged Heart Shoes,Showstopper,The Trickster
+Comet,icons_Addon_CutThruUsingle,Cut Thru U Single,Showstopper,The Trickster
+Comet,icons_Addon_DeathThroesCompilation,Death Throes Compilation,Showstopper,The Trickster
+Comet,icons_Addon_DiamondCufflinks,Diamond Cufflinks,Showstopper,The Trickster
+Comet,icons_Addon_EdgeOfRevivalAlbum,Edge of Revival Album,Showstopper,The Trickster
+Comet,icons_Addon_FizzSpinSoda,Fizz-Spin Soda,Showstopper,The Trickster
+Comet,icons_Addon_InfernoWires,Inferno Wires,Showstopper,The Trickster
+Comet,icons_Addon_IridescentPhotocard,Iridescent Photocard,Showstopper,The Trickster
+Comet,icons_Addon_JiWoonsAutograph,Ji-Woon's Autograph,Showstopper,The Trickster
+Comet,icons_Addon_KillingPartChords,Killing Part Chords,Showstopper,The Trickster
+Comet,icons_Addon_LuckyBlade,Lucky Blade,Showstopper,The Trickster
+Comet,icons_Addon_MementoBlades,Memento Blades,Showstopper,The Trickster
+Comet,icons_Addon_OnTargetSingle,On Target Single,Showstopper,The Trickster
+Comet,icons_Addon_RipperBrace,Ripper Brace,Showstopper,The Trickster
+Comet,icons_Addon_SmashNrunGloves,Smashnrun Gloves,Showstopper,The Trickster
+Comet,icons_Addon_TequilaMoonrock,Tequila Moonrock,Showstopper,The Trickster
+Comet,icons_Addon_TrickBlades,Trick Blades,Showstopper,The Trickster
+Comet,icons_Addon_TrickPouch,Trick Pouch,Showstopper,The Trickster
+Comet,icons_Addon_WaitingForYouWatch,Waiting For You Watch,Showstopper,The Trickster
+Comet,icons_Addon_YumisMurder,Melodious Murder,Showstopper,The Trickster
+DLC2,iconAddon_blondeHair,Blond Hair,Evil Within,The Shape
+DLC2,iconAddon_boyfriendsMemo,Boyfriend's Memo,Evil Within,The Shape
+DLC2,iconAddon_deadRabbit,Dead Rabbit,Evil Within,The Shape
+DLC2,iconAddon_glassFragment,Glass Fragment,Evil Within,The Shape
+DLC2,iconAddon_hairBow,Hair Bow,Evil Within,The Shape
+DLC2,iconAddon_hairBrush,Hair Brush,Evil Within,The Shape
+DLC2,iconAddon_jMyersMemorial,J. Myers Memorial,Evil Within,The Shape
+DLC2,iconAddon_jewelry,Jewellery,Evil Within,The Shape
+DLC2,iconAddon_jewelryBox,Jewellery Box,Evil Within,The Shape
+DLC2,iconAddon_judithsJournal,Judith's Journal,Evil Within,The Shape
+DLC2,iconAddon_judithsTombstone,Judith's Tombstone,Evil Within,The Shape
+DLC2,iconAddon_lockOfHair,Lock of Hair,Evil Within,The Shape
+DLC2,iconAddon_memorialFlower,Memorial Flower,Evil Within,The Shape
+DLC2,iconAddon_mirrorShard,Mirror Shard,Evil Within,The Shape
+DLC2,iconAddon_reflectiveFragment,Reflective Fragment,Evil Within,The Shape
+DLC2,iconAddon_scratchedMirror,Scratched Mirror,Evil Within,The Shape
+DLC2,iconAddon_tackyEarrings,Tacky Earrings,Evil Within,The Shape
+DLC2,iconAddon_tombstonePiece,Tombstone Piece,Evil Within,The Shape
+DLC2,iconAddon_tuftOfHair,Fragrant Tuft of Hair,Evil Within,The Shape
+DLC2,iconAddon_vanityMirror,Vanity Mirror,Evil Within,The Shape
+DLC3,iconAddon_bloodiedMud,Bloodied Mud,Blackened Catalyst,The Hag
+DLC3,iconAddon_bloodiedWater,Bloodied Water,Blackened Catalyst,The Hag
+DLC3,iconAddon_bogWater,Bog Water,Blackened Catalyst,The Hag
+DLC3,iconAddon_crackedTurtleEgg,Cracked Turtle Egg,Blackened Catalyst,The Hag
+DLC3,iconAddon_cypressNecklet,Cypress Necklet,Blackened Catalyst,The Hag
+DLC3,iconAddon_deadFlyMud,Dead Fly Mud,Blackened Catalyst,The Hag
+DLC3,iconAddon_disfiguredEar,Disfigured Ear,Blackened Catalyst,The Hag
+DLC3,iconAddon_dragonflyWings,Dragonfly Wings,Blackened Catalyst,The Hag
+DLC3,iconAddon_driedCicada,Dried Cicada,Blackened Catalyst,The Hag
+DLC3,iconAddon_granmasHeart,Granma's Heart,Blackened Catalyst,The Hag
+DLC3,iconAddon_halfEggshell,Half Eggshell,Blackened Catalyst,The Hag
+DLC3,iconAddon_mintRag,Mint Rag,Blackened Catalyst,The Hag
+DLC3,iconAddon_powderedEggshell,Powdered Eggshell,Blackened Catalyst,The Hag
+DLC3,iconAddon_pussyWillowCatkins,Pussy Willow Catkins,Blackened Catalyst,The Hag
+DLC3,iconAddon_ropeNecklet,Rope Necklet,Blackened Catalyst,The Hag
+DLC3,iconAddon_rustyShackles,Rusty Shackles,Blackened Catalyst,The Hag
+DLC3,iconAddon_scarredHand,Scarred Hand,Blackened Catalyst,The Hag
+DLC3,iconAddon_swampOrchidNecklet,Swamp Orchid Necklet,Blackened Catalyst,The Hag
+DLC3,iconAddon_waterloggedShoe,Waterlogged Shoe,Blackened Catalyst,The Hag
+DLC3,iconAddon_willowWreath,Willow Wreath,Blackened Catalyst,The Hag
+DLC4,iconAddon_calmCartersNotes,"Calm" - Carter's Notes,Carter's Spark,The Doctor
+DLC4,iconAddon_calmClassI,"Calm" - Class I,Carter's Spark,The Doctor
+DLC4,iconAddon_calmClassII,"Calm" - Class II,Carter's Spark,The Doctor
+DLC4,iconAddon_diciplineCartersNotes,"Discipline" - Carter's Notes,Carter's Spark,The Doctor
+DLC4,iconAddon_diciplineClassII,"Discipline" - Class II,Carter's Spark,The Doctor
+DLC4,iconAddon_diciplineClassIII,"Discipline" - Class III,Carter's Spark,The Doctor
+DLC4,iconAddon_highStimulusElectrode,High Stimulus Electrode,Carter's Spark,The Doctor
+DLC4,iconAddon_interviewTape,Interview Tape,Carter's Spark,The Doctor
+DLC4,iconAddon_iridescentKing,Iridescent King,Carter's Spark,The Doctor
+DLC4,iconAddon_iridescentQueen,Iridescent Queen,Carter's Spark,The Doctor
+DLC4,iconAddon_mapleKnight,Maple Knight,Carter's Spark,The Doctor
+DLC4,iconAddon_moldyElectrode,Mouldy Electrode,Carter's Spark,The Doctor
+DLC4,iconAddon_obedienceCartersNotes,"Obedience" - Class III,Carter's Spark,The Doctor
+DLC4,iconAddon_orderCartersNotes,"Order" - Carter's Notes,Carter's Spark,The Doctor
+DLC4,iconAddon_orderClassI,"Order" - Class I,Carter's Spark,The Doctor
+DLC4,iconAddon_orderClassII,"Order" - Class II,Carter's Spark,The Doctor
+DLC4,iconAddon_polishedElectrode,Polished Electrode,Carter's Spark,The Doctor
+DLC4,iconAddon_restraintCartersNotes,"Restraint" - Carter's Notes,Carter's Spark,The Doctor
+DLC4,iconAddon_restraintClassII,"Restraint" - Class II,Carter's Spark,The Doctor
+DLC4,iconAddon_restraintClassIII,"Restraint" - Class III,Carter's Spark,The Doctor
+DLC4,iconAddon_scrappedTape,Scrapped Tape,Carter's Spark,The Doctor
+DLC5,iconAddon_amanitaToxin,Amanita Toxin,Hunting Hatchets,The Huntress
+DLC5,iconAddon_bandagedHaft,Bandaged Haft,Hunting Hatchets,The Huntress
+DLC5,iconAddon_begrimedHead,Begrimed Head,Hunting Hatchets,The Huntress
+DLC5,iconAddon_coarseStone,Coarse Stone,Hunting Hatchets,The Huntress
+DLC5,iconAddon_deerskinGloves,Deerskin Gloves,Hunting Hatchets,The Huntress
+DLC5,iconAddon_flowerBabushka,Flower Babushka,Hunting Hatchets,The Huntress
+DLC5,iconAddon_glowingConcoction,Glowing Concoction,Hunting Hatchets,The Huntress
+DLC5,iconAddon_infantryBelt,Infantry Belt,Hunting Hatchets,The Huntress
+DLC5,iconAddon_iridescentHead,Iridescent Head,Hunting Hatchets,The Huntress
+DLC5,iconAddon_leatherLoop,Leather Loop,Hunting Hatchets,The Huntress
+DLC5,iconAddon_mannaGrassBraid,Manna Grass Braid,Hunting Hatchets,The Huntress
+DLC5,iconAddon_oakHaft,Oak Haft,Hunting Hatchets,The Huntress
+DLC5,iconAddon_roseRoot,Rose Root,Hunting Hatchets,The Huntress
+DLC5,iconAddon_rustyHead,Rusty Head,Hunting Hatchets,The Huntress
+DLC5,iconAddon_shinyPin,Shiny Pin,Hunting Hatchets,The Huntress
+DLC5,iconAddon_soldiersPuttee,Soldier's Puttee,Hunting Hatchets,The Huntress
+DLC5,iconAddon_venomousConcoction,Venomous Concoction,Hunting Hatchets,The Huntress
+DLC5,iconAddon_weightedHead,Weighted Head,Hunting Hatchets,The Huntress
+DLC5,iconAddon_woodenFox,Wooden Fox,Hunting Hatchets,The Huntress
+DLC5,iconAddon_yellowedCloth,Yellowed Cloth,Hunting Hatchets,The Huntress
+DLC6,iconAddon_awardwinningChili,Award-winning Chilli,Bubba's Chainsaw,The Cannibal
+DLC6,iconAddon_chili,Chilli,Bubba's Chainsaw,The Cannibal
+DLC6,iconAddon_knifeScratches,Knife Scratches,Bubba's Chainsaw,The Cannibal
+DLC6,iconAddon_theBeastsMark,The Beast's Marks,Bubba's Chainsaw,The Cannibal
+DLC6,iconAddon_theGrease,The Grease,Bubba's Chainsaw,The Cannibal
+Eclipse,iconAddon_TVirusSample,T-Virus Sample,T-Virus,The Nemesis
+Eclipse,iconAddon_adminWristband,Admin Wristband,T-Virus,The Nemesis
+Eclipse,iconAddon_adrenalineInjector,Adrenaline Injector,T-Virus,The Nemesis
+Eclipse,iconAddon_briansIntestines,Brian's Intestines,T-Virus,The Nemesis
+Eclipse,iconAddon_brokenRecoveryCoin,Broken Recovery Coin,T-Virus,The Nemesis
+Eclipse,iconAddon_damagedSyringe,Damaged Syringe,T-Virus,The Nemesis
+Eclipse,iconAddon_depletedInkRibbon,Depleted Ink Ribbon,T-Virus,The Nemesis
+Eclipse,iconAddon_iridescentUmbrellaBadge,Iridescent Umbrella Badge,T-Virus,The Nemesis
+Eclipse,iconAddon_jillSandwich,Jill's Sandwich,T-Virus,The Nemesis
+Eclipse,iconAddon_lickerTongue,Licker Tongue,T-Virus,The Nemesis
+Eclipse,iconAddon_marvinsBlood,Marvin's Blood,T-Virus,The Nemesis
+Eclipse,iconAddon_mikhailsEye,Mikhail's Eye,T-Virus,The Nemesis
+Eclipse,iconAddon_neaParasite,NE-a Parasite,T-Virus,The Nemesis
+Eclipse,iconAddon_plant43Vines,Plant 43 Vines,T-Virus,The Nemesis
+Eclipse,iconAddon_serotoninInjector,Serotonin Injector,T-Virus,The Nemesis
+Eclipse,iconAddon_shatteredStarsBadge,Shattered S.T.A.R.S. Badge,T-Virus,The Nemesis
+Eclipse,iconAddon_starsFieldCombatManual,S.T.A.R.S. Field Combat Manual,T-Virus,The Nemesis
+Eclipse,iconAddon_tyrantGore,Tyrant Gore,T-Virus,The Nemesis
+Eclipse,iconAddon_visitorWristband,Visitor Wristband,T-Virus,The Nemesis
+Eclipse,iconAddon_zombieHeart,Zombie Heart,T-Virus,The Nemesis
+England,iconAddon_blackBox,Black Box,Dream Demon,The Nightmare
+England,iconAddon_blueDress,Blue Dress,Dream Demon,The Nightmare
+England,iconAddon_catBlock,Cat Block,Dream Demon,The Nightmare
+England,iconAddon_classPhoto,Class Photo,Dream Demon,The Nightmare
+England,iconAddon_gardenRake,Garden Rake,Dream Demon,The Nightmare
+England,iconAddon_greenDress,Green Dress,Dream Demon,The Nightmare
+England,iconAddon_jumpRope,Jump Rope,Dream Demon,The Nightmare
+England,iconAddon_kidsDrawing,Kid's Drawing,Dream Demon,The Nightmare
+England,iconAddon_nancysMasterpiece,Nancy's Masterpiece,Dream Demon,The Nightmare
+England,iconAddon_nancysSketch,Nancy's Sketch,Dream Demon,The Nightmare
+England,iconAddon_outdoorRope,Outdoor Rope,Dream Demon,The Nightmare
+England,iconAddon_paintThinner,Paint Thinner,Dream Demon,The Nightmare
+England,iconAddon_pillBottle,Pill Bottle,Dream Demon,The Nightmare
+England,iconAddon_prototypeClaw,Prototype Claw,Dream Demon,The Nightmare
+England,iconAddon_redPaintBrush,Red Paint Brush,Dream Demon,The Nightmare
+England,iconAddon_sheepBlock,Sheep Block,Dream Demon,The Nightmare
+England,iconAddon_swingChains,Swing Chains,Dream Demon,The Nightmare
+England,iconAddon_unicornBlock,Unicorn Block,Dream Demon,The Nightmare
+England,iconAddon_woolShirt,Wool Shirt,Dream Demon,The Nightmare
+England,iconAddon_zBlock,"Z" Block,Dream Demon,The Nightmare
+Finland,iconAddon_amandasLetter,Amanda's Letter,Jigsaw's Baptism,The Pig
+Finland,iconAddon_amandasSecret,Amanda's Secret,Jigsaw's Baptism,The Pig
+Finland,iconAddon_bagOfGears,Bag of Gears,Jigsaw's Baptism,The Pig
+Finland,iconAddon_combatStraps,Combat Straps,Jigsaw's Baptism,The Pig
+Finland,iconAddon_crateOfGears,Crate of Gears,Jigsaw's Baptism,The Pig
+Finland,iconAddon_faceMask,Face Mask,Jigsaw's Baptism,The Pig
+Finland,iconAddon_interlockingRazor,Interlocking Razor,Jigsaw's Baptism,The Pig
+Finland,iconAddon_jigsawsAnnotatedPlan,Jigsaw's Annotated Plan,Jigsaw's Baptism,The Pig
+Finland,iconAddon_jigsawsSketch,Jigsaw's Sketch,Jigsaw's Baptism,The Pig
+Finland,iconAddon_johnsMedicalFile,John's Medical File,Jigsaw's Baptism,The Pig
+Finland,iconAddon_lastWill,Last Will,Jigsaw's Baptism,The Pig
+Finland,iconAddon_razerWire,Razor Wires,Jigsaw's Baptism,The Pig
+Finland,iconAddon_rulesSetN2,Rules Set No.2,Jigsaw's Baptism,The Pig
+Finland,iconAddon_rustyAttachments,Rusty Attachments,Jigsaw's Baptism,The Pig
+Finland,iconAddon_shatteredSyringe,Shattered Syringe,Jigsaw's Baptism,The Pig
+Finland,iconAddon_slowReleaseToxin,Slow-Release Toxin,Jigsaw's Baptism,The Pig
+Finland,iconAddon_tamperedTimer,Tampered Timer,Jigsaw's Baptism,The Pig
+Finland,iconAddon_utilityBlades,Utility Blades,Jigsaw's Baptism,The Pig
+Finland,iconAddon_videoTape,Video Tape,Jigsaw's Baptism,The Pig
+Finland,iconAddon_workshopGrease,Workshop Grease,Jigsaw's Baptism,The Pig
+Gemini,iconAddon_bentNail,Bent Nail,Summons of Pain,The Cenobite
+Gemini,iconAddon_burningCandle,Burning Candle,Summons of Pain,The Cenobite
+Gemini,iconAddon_chatterersTooth,Chatterer's Tooth,Summons of Pain,The Cenobite
+Gemini,iconAddon_engineersFang,Engineer's Fang,Summons of Pain,The Cenobite
+Gemini,iconAddon_flickeringTelevision,Flickering Television,Summons of Pain,The Cenobite
+Gemini,iconAddon_franksHeart,Frank's Heart,Summons of Pain,The Cenobite
+Gemini,iconAddon_greasyBlackLens,Greasy Black Lens,Summons of Pain,The Cenobite
+Gemini,iconAddon_impalingWire,Impaling Wire,Summons of Pain,The Cenobite
+Gemini,iconAddon_iridescentLamentConfiguration,Iridescent Lament Configuration,Summons of Pain,The Cenobite
+Gemini,iconAddon_larrysBlood,Larry's Blood,Summons of Pain,The Cenobite
+Gemini,iconAddon_larrysRemains,Larry's Remains,Summons of Pain,The Cenobite
+Gemini,iconAddon_leatherStrip,Leather Strip,Summons of Pain,The Cenobite
+Gemini,iconAddon_liquifiedGore,Liquified Gore,Summons of Pain,The Cenobite
+Gemini,iconAddon_livelyCrickets,Lively Crickets,Summons of Pain,The Cenobite
+Gemini,iconAddon_originalPain,Original Pain,Summons of Pain,The Cenobite
+Gemini,iconAddon_skeweredRat,Skewered Rat,Summons of Pain,The Cenobite
+Gemini,iconAddon_sliceofFrank,Slice of Frank,Summons of Pain,The Cenobite
+Gemini,iconAddon_spoiledMeal,Spoiled Meal,Summons of Pain,The Cenobite
+Gemini,iconAddon_torturePillar,Torture Pillar,Summons of Pain,The Cenobite
+Gemini,iconAddon_wrigglingMaggots,Wriggling Maggots,Summons of Pain,The Cenobite
+Guam,iconAddon_bottleOfChloroform,Bottle of Chloroform,The Afterpiece Tonic,The Clown
+Guam,iconAddon_cheapGinBottle,Cheap Gin Bottle,The Afterpiece Tonic,The Clown
+Guam,iconAddon_cigarBox,Cigar Box,The Afterpiece Tonic,The Clown
+Guam,iconAddon_ether10,Ether 5 Vol%,The Afterpiece Tonic,The Clown", true) },
+Guam,iconAddon_ether15,Ether 15 Vol%,The Afterpiece Tonic,The Clown
+Guam,iconAddon_ether5,Ether 10 Vol%,The Afterpiece Tonic,The Clown", true) },
+Guam,iconAddon_fingerlessParadeGloves,Fingerless Parade Gloves,The Afterpiece Tonic,The Clown
+Guam,iconAddon_flaskOfBleach,Flask of Bleach,The Afterpiece Tonic,The Clown
+Guam,iconAddon_garishMakeupKit,Garish Make-Up Kit,The Afterpiece Tonic,The Clown
+Guam,iconAddon_keroseneCan,Kerosene Can,The Afterpiece Tonic,The Clown
+Guam,iconAddon_partyBottle,Party Bottle,The Afterpiece Tonic,The Clown
+Guam,iconAddon_redheadsPinkyFinger,Redhead's Pinkie Finger,The Afterpiece Tonic,The Clown
+Guam,iconAddon_robinFeather,Robin Feather,The Afterpiece Tonic,The Clown
+Guam,iconAddon_smellyInnerSoles,Smelly Inner Soles,The Afterpiece Tonic,The Clown
+Guam,iconAddon_solventJug,Solvent Jug,The Afterpiece Tonic,The Clown
+Guam,iconAddon_spiritOfHartshorn,Spirit of Hartshorn,The Afterpiece Tonic,The Clown
+Guam,iconAddon_starlingFeather,Starling Feather,The Afterpiece Tonic,The Clown
+Guam,iconAddon_stickySodaBottle,Sticky Soda Bottle,The Afterpiece Tonic,The Clown
+Guam,iconAddon_sulfuricAcidVial,Sulphuric Acid Vial,The Afterpiece Tonic,The Clown
+Guam,iconAddon_tattoosMiddleFinger,Tattoo's Middle Finger,The Afterpiece Tonic,The Clown
+Guam,iconAddon_thickCorkStopper,Thick Cork Stopper,The Afterpiece Tonic,The Clown
+Guam,iconAddon_vhsPorn,VHS Porn,The Afterpiece Tonic,The Clown
+Haiti,iconAddon_ShiawaseAmulet,Shiawase Amulet,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_driedCherryBlossom,Dried Cherry Blossom,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_giftedBambooComb,Gifted Bamboo Comb,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_juniperBonzai,Juniper Bonzai,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_kaiunTalisman,Kaiun Talisman,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_katanaTsuba,Katana Tsuba,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_motherDaughterRing,Mother-Daughter Ring,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_muddySportCap,Muddy Sports Day Cap,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_origamiCrane,Origami Crane,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_rinsBrokenWatch,Rin's Broken Watch,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_rustyFlute,Rusty Flute,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_wakizashiSaya,Wakizashi Saya,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_whiteHairRibbon,White Hair Ribbon,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_yakuyokeAmulet,Yakuyoke Amulet,Yamaoka's Haunting,The Spirit
+Haiti,iconAddon_zori,Zōri,Yamaoka's Haunting,The Spirit
+Hubble,iconAddon_furin,Furin,Yamaoka's Haunting,The Spirit
+Hubble,iconAddon_kintsugiTeacup,Kintsugi Teacup,Yamaoka's Haunting,The Spirit
+Hubble,iconAddon_mothersGlasses,Mother's Glasses,Yamaoka's Haunting,The Spirit
+Hubble,iconAddon_senkoHanabi,Senko Hanabi,Yamaoka's Haunting,The Spirit
+Hubble,iconAddon_uchiwa,Uchiwa,Yamaoka's Haunting,The Spirit
+Ion,iconAddon_AutomaticDrawing,Automatic Drawing,Birds of Torment,The Artist
+Ion,iconAddon_CharcoalStick,Charcoal Stick,Birds of Torment,The Artist
+Ion,iconAddon_ChocloCorn,Choclo Corn,Birds of Torment,The Artist
+Ion,iconAddon_DarkestInk,Darkest Ink,Birds of Torment,The Artist
+Ion,iconAddon_FesteringCarrion,Festering Carrion,Birds of Torment,The Artist
+Ion,iconAddon_GardenofRot,Garden of Rot,Birds of Torment,The Artist
+Ion,iconAddon_InkEgg,Ink Egg,Birds of Torment,The Artist
+Ion,iconAddon_IridescentFeather,Iridescent Feather,Birds of Torment,The Artist
+Ion,iconAddon_JacobsBabyShoes,Matias' Baby Shoes,Birds of Torment,The Artist
+Ion,iconAddon_OGriefOLover,O Grief, O Lover,Birds of Torment,The Artist
+Ion,iconAddon_OilPaints,Oil Paints,Birds of Torment,The Artist
+Ion,iconAddon_SeveredHands,Severed Hands,Birds of Torment,The Artist
+Ion,iconAddon_SeveredTongue,Severed Tongue,Birds of Torment,The Artist
+Ion,iconAddon_SilverBell,Silver Bell,Birds of Torment,The Artist
+Ion,iconAddon_StillLifeCrow,Still Life Crow,Birds of Torment,The Artist
+Ion,iconAddon_ThickTar,Thick Tar,Birds of Torment,The Artist
+Ion,iconAddon_ThornyNest,Thorny Nest,Birds of Torment,The Artist
+Ion,iconAddon_UntitledAgony,Untitled Agony,Birds of Torment,The Artist
+Ion,iconAddon_VelvetFabric,Velvet Fabric,Birds of Torment,The Artist
+Ion,iconAddon_VibrantObituary,Vibrant Obituary,Birds of Torment,The Artist
+Kenya,iconAddon_coldDirt,BFFs,Feral Frenzy,The Legion
+Kenya,iconAddon_defacedSmileyButton,Defaced Smiley Pin,Feral Frenzy,The Legion
+Kenya,iconAddon_etchedRuler,Etched Ruler,Feral Frenzy,The Legion
+Kenya,iconAddon_filthyBlade,Filthy Blade,Feral Frenzy,The Legion
+Kenya,iconAddon_franksMixtape,Frank's Mix Tape,Feral Frenzy,The Legion
+Kenya,iconAddon_friendshipBracelet,Friendship Bracelet,Feral Frenzy,The Legion
+Kenya,iconAddon_fumingMixtape,Fuming Mix Tape,Feral Frenzy,The Legion
+Kenya,iconAddon_iridescentButton,Iridescent Button,Feral Frenzy,The Legion
+Kenya,iconAddon_joeysMixtape,Joey's Mix Tape,Feral Frenzy,The Legion
+Kenya,iconAddon_juliesMixtape,Julie's Mix Tape,Feral Frenzy,The Legion
+Kenya,iconAddon_mischiefList,Mischief List,Feral Frenzy,The Legion
+Kenya,iconAddon_muralSketch,Mural Sketch,Feral Frenzy,The Legion
+Kenya,iconAddon_nastyBlade,Stylish Sunglasses,Feral Frenzy,The Legion
+Kenya,iconAddon_neverSleepPills,Never-Sleep Pills,Feral Frenzy,The Legion
+Kenya,iconAddon_scratchedRuler,Scratched Ruler,Feral Frenzy,The Legion
+Kenya,iconAddon_smileyFaceButton,Smiley Face Pin,Feral Frenzy,The Legion
+Kenya,iconAddon_stabWoundsStudy,Stab Wounds Study,Feral Frenzy,The Legion
+Kenya,iconAddon_stolenSketchbook,Stolen Sketch Book,Feral Frenzy,The Legion
+Kenya,iconAddon_suziesMixtape,Suzie's Mix Tape,Feral Frenzy,The Legion
+Kenya,iconAddon_theLegionButton,The Legion Pin,Feral Frenzy,The Legion
+Kepler,iconAddon_BloodyFingernail,Bloody Fingernails,Deluge of Fear,The Onryō
+Kepler,iconAddon_CabinSign,Cabin Sign,Deluge of Fear,The Onryō
+Kepler,iconAddon_ClumpOfHair,Clump of Hair,Deluge of Fear,The Onryō
+Kepler,iconAddon_DisortedPhoto,Distorted Photo,Deluge of Fear,The Onryō
+Kepler,iconAddon_IridescentVHStape,Iridescent Videotape,Deluge of Fear,The Onryō
+Kepler,iconAddon_MothersComb,Mother's Comb,Deluge of Fear,The Onryō
+Kepler,iconAddon_MothersMirror,Mother's Mirror,Deluge of Fear,The Onryō
+Kepler,iconAddon_OldNewspaper,Old Newspaper,Deluge of Fear,The Onryō
+Kepler,iconAddon_ReikosWatch,Reiko's Watch,Deluge of Fear,The Onryō
+Kepler,iconAddon_RemoteControl,Remote Control,Deluge of Fear,The Onryō
+Kepler,iconAddon_RicketyPinwheel,Rickety Pinwheel,Deluge of Fear,The Onryō
+Kepler,iconAddon_RingDrawing,Ring Drawing,Deluge of Fear,The Onryō
+Kepler,iconAddon_SeaSoakedCloth,Sea-Soaked Cloth,Deluge of Fear,The Onryō
+Kepler,iconAddon_TapeEditingDeck,Tape Editing Deck,Deluge of Fear,The Onryō
+Kepler,iconAddon_Telephone,Telephone,Deluge of Fear,The Onryō
+Kepler,iconAddon_VCR,VCR,Deluge of Fear,The Onryō
+Kepler,iconAddon_VhsCopy,Videotape Copy,Deluge of Fear,The Onryō
+Kepler,iconAddon_WellStone,Well Stone,Deluge of Fear,The Onryō
+Kepler,iconAddon_WellWater,Well Water,Deluge of Fear,The Onryō
+Kepler,iconAddon_YoichisFishingNet,Yoichi's Fishing Net,Deluge of Fear,The Onryō
+Mali,iconAddon_IridescentSeal,Iridescent Seal,Vile Purge,The Plague
+Mali,iconAddon_ashenApple,Ashen Apple,Vile Purge,The Plague
+Mali,iconAddon_blackIncense,Black Incense,Vile Purge,The Plague
+Mali,iconAddon_devoteesAmulet,Devotee's Amulet,Vile Purge,The Plague
+Mali,iconAddon_emeticPotion,Emetic Potion,Vile Purge,The Plague
+Mali,iconAddon_exorcismAmulet,Exorcism Amulet,Vile Purge,The Plague
+Mali,iconAddon_healingSalve,Healing Salve,Vile Purge,The Plague
+Mali,iconAddon_hematiteSeal,Hematite Seal,Vile Purge,The Plague
+Mali,iconAddon_incensedOintment,Incensed Ointment,Vile Purge,The Plague
+Mali,iconAddon_infectedEmetic,Infected Emetic,Vile Purge,The Plague
+Mali,iconAddon_limestoneSeal,Limestone Seal,Vile Purge,The Plague
+Mali,iconAddon_olibanumIncense,Olibanum Incense,Vile Purge,The Plague
+Mali,iconAddon_potentTincture,Potent Tincture,Vile Purge,The Plague
+Mali,iconAddon_prayerApple,Blessed Apple,Vile Purge,The Plague
+Mali,iconAddon_prayerTabletFragment,Prayer Tablet Fragment,Vile Purge,The Plague
+Mali,iconAddon_prophylacticAmulet,Prophylactic Amulet,Vile Purge,The Plague
+Mali,iconAddon_rubbingOil,Rubbing Oil,Vile Purge,The Plague
+Mali,iconAddon_severedToe,Severed Toe,Vile Purge,The Plague
+Mali,iconAddon_vileEmetic,Vile Emetic,Vile Purge,The Plague
+Mali,iconAddon_worshipTablet,Worship Tablet,Vile Purge,The Plague
+Meteor,iconAddon_AirFreshner,Air Freshener,Reign of Darkness,The Dredge
+Meteor,iconAddon_BoatKey,Boat Key,Reign of Darkness,The Dredge
+Meteor,iconAddon_BrokenDoll,Broken Doll,Reign of Darkness,The Dredge
+Meteor,iconAddon_BurntLetters,Burnt Letters,Reign of Darkness,The Dredge
+Meteor,iconAddon_CaffeineTablets,Caffeine Tablets,Reign of Darkness,The Dredge
+Meteor,iconAddon_DestroyedPillow,Destroyed Pillow,Reign of Darkness,The Dredge
+Meteor,iconAddon_FallenShingle,Fallen Shingle,Reign of Darkness,The Dredge
+Meteor,iconAddon_FieldRecorder,Field Recorder,Reign of Darkness,The Dredge
+Meteor,iconAddon_FollowersCowl,Follower's Cowl,Reign of Darkness,The Dredge
+Meteor,iconAddon_HaddiesCalendar,Haddie's Calendar,Reign of Darkness,The Dredge
+Meteor,iconAddon_IridescentWoodenPlank,Iridescent Wooden Plank,Reign of Darkness,The Dredge
+Meteor,iconAddon_LavalierMicrophone,Lavalier Microphone,Reign of Darkness,The Dredge
+Meteor,iconAddon_MalthinkersSkull,Malthinker's Skull,Reign of Darkness,The Dredge
+Meteor,iconAddon_MortarAndPestle,Mortar and Pestle,Reign of Darkness,The Dredge
+Meteor,iconAddon_OttomarianWriting,Ottomarian Writing,Reign of Darkness,The Dredge
+Meteor,iconAddon_SacrificialKnife,Sacrificial Knife,Reign of Darkness,The Dredge
+Meteor,iconAddon_TilingBlade,Tilling Blade,Reign of Darkness,The Dredge
+Meteor,iconAddon_WarHelmet,War Helmet,Reign of Darkness,The Dredge
+Meteor,iconAddon_WoodenPlank,Wooden Plank,Reign of Darkness,The Dredge
+Meteor,iconAddon_WorryStones,Worry Stone,Reign of Darkness,The Dredge
+Oman,iconAddon_caughtOnTape,"Ghost Face Caught on Tape",Night Shroud,The Ghost Face
+Oman,iconAddon_cheapCologne,Cheap Cologne,Night Shroud,The Ghost Face
+Oman,iconAddon_chewedPen,Chewed Pen,Night Shroud,The Ghost Face
+Oman,iconAddon_driversLicense,Driver's License,Night Shroud,The Ghost Face
+Oman,iconAddon_dropLegKnifeSheath,Drop-Leg Knife Sheath,Night Shroud,The Ghost Face
+Oman,iconAddon_headlinesCutouts,Headlines Cut-Outs,Night Shroud,The Ghost Face
+Oman,iconAddon_knifeBeltClip,Knife Belt Clip,Night Shroud,The Ghost Face
+Oman,iconAddon_lastingPerfume,Lasting Perfume,Night Shroud,The Ghost Face
+Oman,iconAddon_leatherKnifeSheath,Leather Knife Sheath,Night Shroud,The Ghost Face
+Oman,iconAddon_markedMap,Marked Map,Night Shroud,The Ghost Face
+Oman,iconAddon_nightvisionMoncular,Night Vision Monocular,Night Shroud,The Ghost Face
+Oman,iconAddon_olsensAddressBook,Olsen's Address Book,Night Shroud,The Ghost Face
+Oman,iconAddon_olsensJournal,Olsen's Journal,Night Shroud,The Ghost Face
+Oman,iconAddon_olsensWallet,Olsen's Wallet,Night Shroud,The Ghost Face
+Oman,iconAddon_outdoorSecurityCamera,Outdoor Security Camera,Night Shroud,The Ghost Face
+Oman,iconAddon_philly,"Philly",Night Shroud,The Ghost Face
+Oman,iconAddon_reusuableCinchStraps,Cinch Straps,Night Shroud,The Ghost Face
+Oman,iconAddon_telephotoLens,Telephoto Lens,Night Shroud,The Ghost Face
+Oman,iconAddon_victimsDetailedRoutine,Victim's Detailed Routine,Night Shroud,The Ghost Face
+Oman,iconAddon_walleyesMatchbook,Walleye's Matchbook,Night Shroud,The Ghost Face
+Qatar,iconAddon_barbsGlasses,Barb's Glasses,Of the Abyss,The Demogorgon
+Qatar,iconAddon_blackHeart,Black Heart,Of the Abyss,The Demogorgon
+Qatar,iconAddon_brassCaseLighter,Brass Case Lighter,Of the Abyss,The Demogorgon
+Qatar,iconAddon_deerLung,Deer Lung,Of the Abyss,The Demogorgon
+Qatar,iconAddon_elevensSoda,Eleven's Soda,Of the Abyss,The Demogorgon
+Qatar,iconAddon_leproseLichen,Leprose Lichen,Of the Abyss,The Demogorgon
+Qatar,iconAddon_lifeguardWhistle,Lifeguard Whistle,Of the Abyss,The Demogorgon
+Qatar,iconAddon_mewsGuts,Mew's Guts,Of the Abyss,The Demogorgon
+Qatar,iconAddon_ratLiver,Rat Liver,Of the Abyss,The Demogorgon
+Qatar,iconAddon_ratTail,Rat Tail,Of the Abyss,The Demogorgon
+Qatar,iconAddon_redMoss,Red Moss,Of the Abyss,The Demogorgon
+Qatar,iconAddon_rottenGreenTripe,Rotten Green Tripe,Of the Abyss,The Demogorgon
+Qatar,iconAddon_rottenPumpkin,Rotten Pumpkin,Of the Abyss,The Demogorgon
+Qatar,iconAddon_stickyLining,Sticky Lining,Of the Abyss,The Demogorgon
+Qatar,iconAddon_thornyVines,Thorny Vines,Of the Abyss,The Demogorgon
+Qatar,iconAddon_unknownEgg,Unknown Egg,Of the Abyss,The Demogorgon
+Qatar,iconAddon_upsidedownResin,Upside Down Resin,Of the Abyss,The Demogorgon
+Qatar,iconAddon_vermillionWebcap,Vermillion Webcap,Of the Abyss,The Demogorgon
+Qatar,iconAddon_violetWaxcap,Violet Waxcap,Of the Abyss,The Demogorgon
+Qatar,iconAddon_viscousWebbing,Viscous Webbing,Of the Abyss,The Demogorgon
+Sweden,iconAddon_IridescentFamilyCrest,Iridescent Family Crest,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_akitosCrutch,Akito's Crutch,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_blackenedToenail,Blackened Toenail,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_bloodySash,Bloody Sash,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_childsWoodenSword,Child's Wooden Sword,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_chippedSaihai,Chipped Saihai,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_crackedSakazuki,Cracked Sakazuki,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_inkLion,Ink Lion,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_kanaianzenTalisman,Kanai-Anzen Talisman,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_lionFang,Lion Fang,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_paperLantern,Paper Lantern,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_polishedMaedate,Polished Maedate,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_renirosBloodyGlove,Reniro's Bloody Glove,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_rottingRope,Rotting Rope,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_scalpedTopknot,Scalped Topknot,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_shatteredWakizashi,Shattered Wakizashi,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_splinteredHull,Splintered Hull,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_tearSoakedTenugui,Tear Soaked Tenugui,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_woodenOniMask,Wooden Oni Mask,Yamaoka's Wrath,The Oni
+Sweden,iconAddon_yamaokaSashimono,Yamaoka Sashimono,Yamaoka's Wrath,The Oni
+Ukraine,iconAddon_barbedWire,Barbed Wire,The Redeemer,The Deathslinger
+Ukraine,iconAddon_bayshoresCigar,Bayshore's Cigar,The Redeemer,The Deathslinger
+Ukraine,iconAddon_bayshoresGoldTooth,Bayshore's Gold Tooth,The Redeemer,The Deathslinger
+Ukraine,iconAddon_chewingTobacco,Chewing Tobacco,The Redeemer,The Deathslinger
+Ukraine,iconAddon_clearCreekWhiskey,Gold Creek Whiskey,The Redeemer,The Deathslinger
+Ukraine,iconAddon_hellshireIron,Hellshire Iron,The Redeemer,The Deathslinger
+Ukraine,iconAddon_honeyLocustThorns,Honey Locust Thorns,The Redeemer,The Deathslinger
+Ukraine,iconAddon_iridescentCoin,Iridescent Coin,The Redeemer,The Deathslinger
+Ukraine,iconAddon_jawSmasher,Jaw Smasher,The Redeemer,The Deathslinger
+Ukraine,iconAddon_marshalsBadge,Marshal's Badge,The Redeemer,The Deathslinger
+Ukraine,iconAddon_modifiedAmmoBelt,Modified Ammo Belt,The Redeemer,The Deathslinger
+Ukraine,iconAddon_poisonOakLeaves,Poison Oak Leaves,The Redeemer,The Deathslinger
+Ukraine,iconAddon_prisonChain,Prison Chain,The Redeemer,The Deathslinger
+Ukraine,iconAddon_ricketyChain,Rickety Chain,The Redeemer,The Deathslinger
+Ukraine,iconAddon_rustedSpike,Rusted Spike,The Redeemer,The Deathslinger
+Ukraine,iconAddon_snakeOil,Snake Oil,The Redeemer,The Deathslinger
+Ukraine,iconAddon_spitPolishRag,Spit Polish Rag,The Redeemer,The Deathslinger
+Ukraine,iconAddon_tinOilCan,Tin Oil Can,The Redeemer,The Deathslinger
+Ukraine,iconAddon_wantedPoster,Wanted Poster,The Redeemer,The Deathslinger
+Ukraine,iconAddon_wardensKeys,Warden's Keys,The Redeemer,The Deathslinger
+Wales,iconAddon_blackStrap,Black Strap,Rites of Judgement,The Executioner
+Wales,iconAddon_burningManPainting,Burning Man Painting,Rites of Judgement,The Executioner
+Wales,iconAddon_cinderellaMusicBox,Cinderella Music Box,Rites of Judgement,The Executioner
+Wales,iconAddon_copperRing,Copper Ring,Rites of Judgement,The Executioner
+Wales,iconAddon_crimsonCeremonyBook,Crimson Ceremony Book,Rites of Judgement,The Executioner
+Wales,iconAddon_deadButterfly,Dead Butterfly,Rites of Judgement,The Executioner
+Wales,iconAddon_forgottenVideoTape,Forgotten Videotape,Rites of Judgement,The Executioner
+Wales,iconAddon_iridescentSeal,Iridescent Seal of Metatron,Rites of Judgement,The Executioner
+Wales,iconAddon_leadRing,Lead Ring,Rites of Judgement,The Executioner
+Wales,iconAddon_leopardPrintFabric,Leopard-Print Fabric,Rites of Judgement,The Executioner
+Wales,iconAddon_lostMemoriesBook,Lost Memories Book,Rites of Judgement,The Executioner
+Wales,iconAddon_mannequinFoot,Mannequin Foot,Rites of Judgement,The Executioner
+Wales,iconAddon_mistyDay,Misty Day, Remains of Judgement,Rites of Judgement,The Executioner
+Wales,iconAddon_obsidianGoblet,Obsidian Goblet,Rites of Judgement,The Executioner
+Wales,iconAddon_rustColoredEgg,Rust-Coloured Egg,Rites of Judgement,The Executioner
+Wales,iconAddon_scarletEgg,Scarlet Egg,Rites of Judgement,The Executioner
+Wales,iconAddon_spearhead,Spearhead,Rites of Judgement,The Executioner
+Wales,iconAddon_tabletOfTheOppressor,Tablet of the Oppressor,Rites of Judgement,The Executioner
+Wales,iconAddon_valtielSectPhotograph,Valtiel Sect Photograph,Rites of Judgement,The Executioner
+Wales,iconAddon_waxDoll,Wax Doll,Rites of Judgement,The Executioner
+Xipre,iconAddon_apexMuffler,Apex Muffler,Chainsaw,The Hillbilly
+Xipre,iconAddon_bigBuckle,Big Buckle,Chainsaw,The Hillbilly
+Xipre,iconAddon_blackGrease,Black Grease,Chainsaw,The Hillbilly
+Xipre,iconAddon_dadsBoots,Dad's Boots,Chainsaw,The Hillbilly
+Xipre,iconAddon_deathEngravings,Death Engravings,Chainsaw,The Hillbilly
+Xipre,iconAddon_doomEngravings,Doom Engravings,Chainsaw,The Hillbilly
+Xipre,iconAddon_heavyClutch,Heavy Clutch,Chainsaw,The Hillbilly
+Xipre,iconAddon_iridescentBrick,Iridescent Brick,Chainsaw,The Hillbilly
+Xipre,iconAddon_junkyardAirFilter,Junkyard Air Filter,Chainsaw,The Hillbilly
+Xipre,iconAddon_leafyMash,Leafy Mash,Chainsaw,The Hillbilly
+Xipre,iconAddon_lowKickbackChains,Low Kickback Chains,Chainsaw,The Hillbilly
+Xipre,iconAddon_lowProChains,LoPro Chains,Chainsaw,The Hillbilly
+Xipre,iconAddon_mothersHelpers,Mother's Helpers,Chainsaw,The Hillbilly
+Xipre,iconAddon_offBrandMotorOil,Off-Brand Motor Oil,Chainsaw,The Hillbilly
+Xipre,iconAddon_pighouseGloves,Pighouse Gloves,Chainsaw,The Hillbilly
+Xipre,iconAddon_puncturedMuffler,Punctured Muffler,Chainsaw,The Hillbilly
+Xipre,iconAddon_speedLimiter,Speed Limiter,Chainsaw,The Hillbilly
+Xipre,iconAddon_spikedBoots,Spiked Boots,Chainsaw,The Hillbilly
+Xipre,iconAddon_steelToeBoots,Steel Toe Boots,Chainsaw,The Hillbilly
+Xipre,iconAddon_tunedCarburetor,Tuned Carburettor,Chainsaw,The Hillbilly
+Yemen,iconAddon_adrenalineVial,Adrenaline Vial,Blighted Corruption,The Blight
+Yemen,iconAddon_alchemistsRing,Alchemist's Ring,Blighted Corruption,The Blight
+Yemen,iconAddon_blightedCrow,Blighted Crow,Blighted Corruption,The Blight
+Yemen,iconAddon_blightedRat,Blighted Rat,Blighted Corruption,The Blight
+Yemen,iconAddon_cankerThorn,Canker Thorn,Blighted Corruption,The Blight
+Yemen,iconAddon_chippedMonocle,Chipped Monocle,Blighted Corruption,The Blight
+Yemen,iconAddon_compoundSeven,Compound Seven,Blighted Corruption,The Blight
+Yemen,iconAddon_compoundThirtyThree,Compound Thirty-Three,Blighted Corruption,The Blight
+Yemen,iconAddon_compoundTwentyOne,Compound Twenty-One,Blighted Corruption,The Blight
+Yemen,iconAddon_foxglove,Foxglove,Blighted Corruption,The Blight
+Yemen,iconAddon_iridescentBlightTag,Iridescent Blight Tag,Blighted Corruption,The Blight
+Yemen,iconAddon_placeboTablet,Placebo Tablet,Blighted Corruption,The Blight
+Yemen,iconAddon_plagueBile,Plague Bile,Blighted Corruption,The Blight
+Yemen,iconAddon_pustulaDust,Pustula Dust,Blighted Corruption,The Blight
+Yemen,iconAddon_roseTonic,Rose Tonic,Blighted Corruption,The Blight
+Yemen,iconAddon_shreddedNotes,Shredded Notes,Blighted Corruption,The Blight
+Yemen,iconAddon_soulChemical,Soul Chemical,Blighted Corruption,The Blight
+Yemen,iconAddon_summoningStone,Summoning Stone,Blighted Corruption,The Blight
+Yemen,iconAddon_umbraSalts,Umbra Salts,Blighted Corruption,The Blight
+Yemen,iconAddon_vigosJournal,Vigo's Journal,Blighted Corruption,The Blight
+,iconAddon_anxiousGasp,Anxious Gasp,Spencer's Last Breath,The Nurse
+,iconAddon_ataxicRespiration,Ataxic Respiration,Spencer's Last Breath,The Nurse
+,iconAddon_badManKeepsake,Bad Man Keepsake,Spencer's Last Breath,The Nurse
+,iconAddon_badMansLastBreath,"Badman's" Last Breath,Spencer's Last Breath,The Nurse
+,iconAddon_bearOil,Bear Oil,Bear Trap,The Trapper
+,iconAddon_bloodKraFabai,"All Seeing" - Blood,Wailing Bell,The Wraith
+,iconAddon_bloodShadowDance,"Shadow Dance" - Blood,Wailing Bell,The Wraith
+,iconAddon_bloodSwiftHunt,"Swift Hunt" - Blood,Wailing Bell,The Wraith
+,iconAddon_bloodWindstorm,"Windstorm" - Blood,Wailing Bell,The Wraith
+,iconAddon_bloodyCoil,Bloody Coil,Bear Trap,The Trapper
+,iconAddon_boneClapper,Bone Clapper,Wailing Bell,The Wraith
+,iconAddon_campbellsLastBreath,Campbell's Last Breath,Spencer's Last Breath,The Nurse
+,iconAddon_carburetorTuningGuide,Carburetor Tuning Guide,Bubba's Chainsaw,The Cannibal
+,iconAddon_catatonicTreasure,Catatonic Boy's Treasure,Spencer's Last Breath,The Nurse
+,iconAddon_chainsBloody,Begrimed Chains,Bubba's Chainsaw,The Cannibal
+,iconAddon_chainsGrisly,Grisly Chains,Bubba's Chainsaw,The Cannibal
+,iconAddon_chainsRusted,Rusted Chains,Bubba's Chainsaw,The Cannibal
+,iconAddon_chainsawFile,Chainsaw File,Bubba's Chainsaw,The Cannibal
+,iconAddon_coffeeGrinds,Coffee Grounds,Bear Trap,The Trapper
+,iconAddon_coilsKit4,4-Coil Spring Kit,Bear Trap,The Trapper
+,iconAddon_coxcombedClapper,Coxcombed Clapper,Wailing Bell,The Wraith
+,iconAddon_darkCincture,Dark Cincture,Spencer's Last Breath,The Nurse
+,iconAddon_deathEngravings,Death Engravings,Chainsaw,The Hillbilly
+,iconAddon_depthGaugeRake,Depth Gauge Rake,Bubba's Chainsaw,The Hillbilly
+,iconAddon_diamondStone,Iridescent Stone,Bear Trap,The Trapper
+,iconAddon_doomEngravings,Doom Engravings,Chainsaw,The Hillbilly
+,iconAddon_dullBracelet,Dull Bracelet,Spencer's Last Breath,The Nurse
+,iconAddon_fasteningTools,Fastening Tools,Bear Trap,The Trapper
+,iconAddon_fragileWheeze,Fragile Wheeze,Spencer's Last Breath,The Nurse
+,iconAddon_heavyPanting,Heavy Panting,Spencer's Last Breath,The Nurse
+,iconAddon_homemadeMuffler,Homemade Muffler,Bubba's Chainsaw,The Cannibal
+,iconAddon_honingStone,Honing Stone,Bear Trap,The Trapper
+,iconAddon_jennersLastBreath,Jenner's Last Breath,Spencer's Last Breath,The Nurse
+,iconAddon_kavanaghsLastBreath,Kavanagh's Last Breath,Spencer's Last Breath,The Nurse
+,iconAddon_lengthenedJaws,Lengthened Jaws,Bear Trap,The Trapper
+,iconAddon_lightChassis,Light Chassis,Bubba's Chainsaw,The Cannibal
+,iconAddon_longGuideBar,Long Guide Bar,Bubba's Chainsaw,The Cannibal
+,iconAddon_makeshiftWrap,Makeshift Wrap,Bear Trap,The Trapper
+,iconAddon_matchBox,Matchbox,Spencer's Last Breath,The Nurse
+,iconAddon_metalSpoon,Metal Spoon,Spencer's Last Breath,The Nurse
+,iconAddon_mudBaikraKaeug,"Blind Warrior" - Mud,Wailing Bell,The Wraith
+,iconAddon_mudBlink,"Blink" - Mud,Wailing Bell,The Wraith
+,iconAddon_mudSwiftHunt,"Swift Hunt" - Mud,Wailing Bell,The Wraith
+,iconAddon_mudWindstorm,"Windstorm" - Mud,Wailing Bell,The Wraith
+,iconAddon_oilyCoil,Oily Coil,Bear Trap,The Trapper
+,iconAddon_paddedJaws,Padded Jaws,Bear Trap,The Trapper
+,iconAddon_plaidFlannel,Plaid Flannel,Spencer's Last Breath,The Nurse
+,iconAddon_pocketWatch,Pocket Watch,Spencer's Last Breath,The Nurse
+,iconAddon_primerBulb,Primer Bulb,Bubba's Chainsaw,The Cannibal
+,iconAddon_rustedJaws,Rusted Jaws,Bear Trap,The Trapper
+,iconAddon_secondaryCoil,Secondary Coil,Bear Trap,The Trapper
+,iconAddon_serratedJaws,Serrated Jaws,Bear Trap,The Trapper
+,iconAddon_shopLubricant,Shop Lubricant,Bubba's Chainsaw,The Cannibal
+,iconAddon_sootShadowDance,"Shadow Dance" - Blood,Wailing Bell,The Wraith
+,iconAddon_sootTheBeast,"The Beast" - Soot,Wailing Bell,The Wraith
+,iconAddon_sootTheGhost,"The Ghost" - Soot,Wailing Bell,The Wraith
+,iconAddon_sootTheHound,"The Hound" - Soot,Wailing Bell,The Wraith
+,iconAddon_sootTheSerpent,"The Serpent" - Soot,Wailing Bell,The Wraith
+,iconAddon_sparkPlug,Spark Plug,Bubba's Chainsaw,The Cannibal
+,iconAddon_spasmodicBreath,Spasmodic Breath,Spencer's Last Breath,The Nurse
+,iconAddon_speedLimiter,Speed Limiter,Chainsaw,The Hillbilly
+,iconAddon_spikedBoots,Spiked Boots,Chainsaw,The Hillbilly
+,iconAddon_spiritAllSeeing,"All Seeing" - Spirit,Wailing Bell,The Wraith
+,iconAddon_tarBottle,Tar Bottle,Bear Trap,The Trapper
+,iconAddon_tensionSpring,Tension Spring,Bear Trap,The Trapper
+,iconAddon_theThompsonsMix,The Thompson's Mix,Chainsaw,The Hillbilly", true) },
+,iconAddon_thompsonsMoonshine,Thompson's Moonshine,Chainsaw,The Hillbilly", true) },
+,iconAddon_tornBookmark,Torn Bookmark,Spencer's Last Breath,The Nurse
+,iconAddon_trapperBag,Trapper Bag,Bear Trap,The Trapper
+,iconAddon_trapperGloves,Trapper Gloves,Bear Trap,The Trapper
+,iconAddon_trapperSack,Trapper Sack,Bear Trap,The Trapper
+,iconAddon_vegetableOil,Vegetable Oil,Bubba's Chainsaw,The Cannibal
+,iconAddon_waxBrick,Wax Brick,Bear Trap,The Trapper
+,iconAddon_whiteBlindWarrior,"Blind Warrior" - White,Wailing Bell,The Wraith
+,iconAddon_whiteBlink,"Blink" - White,Wailing Bell,The Wraith
+,iconAddon_whiteKuntinTakkho,"Swift Hunt" - White,Wailing Bell,The Wraith
+,iconAddon_whiteNitComb,White Nit Comb,Spencer's Last Breath,The Nurse
+,iconAddon_whiteShadowDance,"Shadow Dance" - White,Wailing Bell,The Wraith
+,iconAddon_whiteWindstorm,"Windstorm" - White,Wailing Bell,The Wraith
+,iconAddon_woodenHorse,Wooden Horse,Spencer's Last Breath,The Nurse

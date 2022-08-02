@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IconPack.Model;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,28 +13,23 @@ namespace DBDIconRepo.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is IconPack.Model.IBaseItemInfo)
+            switch (value)
             {
-                if (value is IconPack.Model.AddOnsInfo info)
-                {
-                    if (info.Owner is not null) //Killer addons
-                        return $"{info.Owner} | {info.For} | {info.Name}";
-                    return $"{info.For} | {info.Name}";
-                }
-                else if (value is IconPack.Model.KillerPowerInfo power)
-                {
-                    return $"{power.PowerOwner} | {power.Name}";
-                }
-                else if (value is IconPack.Model.PerkInfo perk)
-                {
-                    if (perk.PerkOwner is null)
-                        return perk.Name;
-                    return $"{perk.PerkOwner} | {perk.Name}";
-                }
-                else if (value is Model.GenericItemInfo generic)
-                    return generic.Name;
+                default:
+                    return string.Empty;
+                case Addon addon:
+                    if (addon.Owner is not null)
+                        return $"{addon.Owner} | {addon.For} | {addon.Name}";
+                    return $"{addon.For} | {addon.Name}";
+                case Power power:
+                    return $"{power.Owner} | {power.Name}";
+                case Perk perk:
+                    if (string.IsNullOrEmpty(perk.Owner))
+                        return $"{perk.Name}";
+                    return $"{perk.Owner} | {perk.Name}";
+                case IBasic basic:
+                    return $"{basic.Name}";
             }
-            return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

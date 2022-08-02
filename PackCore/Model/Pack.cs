@@ -1,34 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using IconPack.Helper;
 using Octokit;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace IconPack.Model
 {
-    public class Pack : ObservableObject
+    public partial class Pack : ObservableObject
     {
+        [ObservableProperty]
         string? _name;
-        public string? Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
 
-        string? _desc;
-        public string? Description
-        {
-            get => _desc;
-            set => SetProperty(ref _desc, value);
-        }
+        [ObservableProperty]
+        string? _description;
 
+        [ObservableProperty]
         string? _author;
-        public string? Author
-        {
-            get => _author;
-            set => SetProperty(ref _author, value);
-        }
 
+        [ObservableProperty]
         string? _url;
         public string? URL
         {
@@ -37,29 +25,21 @@ namespace IconPack.Model
         }
 
         DateTime _lastUpdate;
-        [JsonConverter(typeof(CustomDateTimeFormat))]
+        [JsonConverter(typeof(Helper.DateTimeConversion))]
         public DateTime LastUpdate
         {
             get => _lastUpdate;
             set => SetProperty(ref _lastUpdate, value);
         }
 
-        PackRepositoryInfo? _repInfo;
-        public PackRepositoryInfo? Repository
-        {
-            get => _repInfo;
-            set => SetProperty(ref _repInfo, value);
-        }
+        [ObservableProperty]
+        PackRepositoryInfo? _repository;
 
-        PackContentInfo? _content;
-        public PackContentInfo? ContentInfo
-        {
-            get => _content;
-            set => SetProperty(ref _content, value);
-        }
+        [ObservableProperty]
+        PackContentInfo? _contentInfo;
     }
 
-    public class PackRepositoryInfo : ObservableObject
+    public partial class PackRepositoryInfo : ObservableObject
     {
         public PackRepositoryInfo() { }
         public PackRepositoryInfo(Repository repo)
@@ -71,12 +51,8 @@ namespace IconPack.Model
             CloneUrl = repo.CloneUrl;
         }
 
-        string? _repoName;
-        public string? Name
-        {
-            get => _repoName;
-            set => SetProperty(ref _repoName, value);
-        }
+        [ObservableProperty]
+        string? _name;
 
         long _id;
         public long ID
@@ -85,106 +61,64 @@ namespace IconPack.Model
             set => SetProperty(ref _id, value);
         }
 
-        string? _ownerLogin;
-        public string? Owner
-        {
-            get => _ownerLogin;
-            set => SetProperty(ref _ownerLogin, value);
-        }
+        [ObservableProperty]
+        string? _owner;
 
+        [ObservableProperty]
         string? _defaultBranch;
-        public string? DefaultBranch
-        {
-            get => _defaultBranch;
-            set => SetProperty(ref _defaultBranch, value);
-        }
 
+        [ObservableProperty]
         string? _cloneUrl;
-        public string? CloneUrl
-        {
-            get => _cloneUrl;
-            set => SetProperty(ref _cloneUrl, value);
-        }
     }
 
-    public class PackContentInfo : ObservableObject
+    public partial class PackContentInfo : ObservableObject
     {
         public PackContentInfo() { }
 
         public static async Task<PackContentInfo> GetContentInfo(GitHubClient client, Repository repo)
         {
-            PackContentInfo info = new PackContentInfo();
             var commits = await client.Repository.Commit.GetAll(repo.Owner.Login, repo.Name);
-            var head = commits.First();
+            var head = commits[0];
             var treeContent = await client.Git.Tree.GetRecursive(repo.Id, head.Sha);
             var treeOnly = treeContent.Tree.Where(i => i.Type.Value == TreeType.Tree);
 
-            info.HasAddons = treeOnly.Any(content => content.Path == "ItemAddons");
-            info.HasItems = treeOnly.Any(content => content.Path =="items");
-            info.HasOfferings = treeOnly.Any(content => content.Path =="Favors");
-            info.HasPerks = treeOnly.Any(content => content.Path =="Perks");
-            info.HasPortraits = treeOnly.Any(content => content.Path =="CharPortraits");
-            info.HasPowers = treeOnly.Any(content => content.Path =="Powers");
-            info.HasStatus = treeOnly.Any(content => content.Path =="StatusEffects");
+            PackContentInfo info = new()
+            {
+                HasAddons = treeOnly.Any(content => content.Path == "ItemAddons"),
+                HasItems = treeOnly.Any(content => content.Path == "items"),
+                HasOfferings = treeOnly.Any(content => content.Path == "Favors"),
+                HasPerks = treeOnly.Any(content => content.Path == "Perks"),
+                HasPortraits = treeOnly.Any(content => content.Path == "CharPortraits"),
+                HasPowers = treeOnly.Any(content => content.Path == "Powers"),
+                HasStatus = treeOnly.Any(content => content.Path == "StatusEffects"),
 
-            info.Files = new ObservableCollection<string>(treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png")).Select(i => i.Path));
+                Files = new ObservableCollection<string>(treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png")).Select(i => i.Path))
+            };
             return info;
         }
 
-        bool _perks;
-        public bool HasPerks
-        {
-            get => _perks;
-            set => SetProperty(ref _perks, value);
-        }
+        [ObservableProperty]
+        bool _hasPerks;
 
-        bool _portraits;
-        public bool HasPortraits
-        {
-            get => _portraits;
-            set => SetProperty(ref _portraits, value);
-        }
+        [ObservableProperty]
+        bool _hasPortraits;
 
-        bool _powers;
-        public bool HasPowers
-        {
-            get => _powers;
-            set => SetProperty(ref _powers, value);
-        }
+        [ObservableProperty]
+        bool _hasPowers;
 
-        bool _item;
-        public bool HasItems
-        {
-            get => _item;
-            set => SetProperty(ref _item, value);
-        }
+        [ObservableProperty]
+        bool _hasItems;
 
-        bool _status;
-        public bool HasStatus
-        {
-            get => _status;
-            set => SetProperty(ref _status, value);
-        }
+        [ObservableProperty]
+        bool _hasStatus;
 
-        bool _offerings;
-        public bool HasOfferings
-        {
-            get => _offerings;
-            set => SetProperty(ref _offerings, value);
-        }
+        [ObservableProperty]
+        bool _hasOfferings;
 
-        bool _addons;
-        public bool HasAddons
-        {
-            get => _addons;
-            set => SetProperty(ref _addons, value);
-        }
+        [ObservableProperty]
+        bool _hasAddons;
 
+        [ObservableProperty]
         ObservableCollection<string>? _files;
-        public ObservableCollection<string>? Files
-        {
-            get => _files;
-            set => SetProperty(ref _files, value);
-        }
     }
 }
