@@ -18,7 +18,7 @@ using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 namespace DBDIconRepo.Model
 {
     //Use for commands and parameter for bindings
-    public class PackDisplay : ObservableObject
+    public partial class PackDisplay : ObservableObject
     {
         public PackDisplay(Pack _info)
         {
@@ -27,40 +27,22 @@ namespace DBDIconRepo.Model
             InitializeCommand();
         }
 
-        Pack? _base;
-        public Pack? Info
-        {
-            get => _base;
-            set => SetProperty(ref _base, value);
-        }
+        [ObservableProperty]
+        Pack? info;
 
         //Include images
-        ObservableCollection<IDisplayItem>? _previewSauces;
         //Limit to just 4 items!
-        public ObservableCollection<IDisplayItem>? PreviewSources
-        {
-            get => _previewSauces;
-            set => SetProperty(ref _previewSauces, value);
-        }
+        [ObservableProperty]
+        ObservableCollection<IDisplayItem>? previewSources;
 
-        //
-        public ICommand? SearchForThisAuthor { get; private set; }
-        public ICommand? InstallThisPack { get; private set; }
-        public ICommand? OpenPackDetailWindow { get; private set; }
-
-        private void InitializeCommand()
-        {
-            SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction); 
-            InstallThisPack = new RelayCommand<RoutedEventArgs>(InstallThisPackAction);
-            OpenPackDetailWindow = new RelayCommand<RoutedEventArgs>(OpenPackDetailWindowAction);
-        }
-
-        private void OpenPackDetailWindowAction(RoutedEventArgs? obj)
+        [RelayCommand]
+        private void OpenPackDetailWindow()
         {
             Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
         }
 
-        private async void InstallThisPackAction(RoutedEventArgs? obj)
+        [RelayCommand]
+        private async Task InstallThisPack()
         {
             //Show selection
             PackInstall install = new(Info);
@@ -104,24 +86,17 @@ namespace DBDIconRepo.Model
             }            
         }
 
-        private void SearchForThisAuthorAction(RoutedEventArgs? obj)
+        [RelayCommand]
+        private void SearchForThisAuthor(RoutedEventArgs? obj)
         {
             Messenger.Default.Send(new RequestSearchQueryMessage(Info.Author), MessageToken.REQUESTSEARCHQUERYTOKEN);
         }
 
-        PackState _state = PackState.None;
-        public PackState CurrentPackState
-        {
-            get => _state;
-            set => SetProperty(ref _state, value);
-        }
+        [ObservableProperty]
+        PackState currentPackState = PackState.None;
 
-        double _totalProgress;
-        public double TotalDownloadProgress
-        {
-            get => _totalProgress;
-            set => SetProperty(ref _totalProgress, value);
-        }
+        [ObservableProperty]
+        double totalDownloadProgress;
 
         private void HandleDownloadProgress(PackDisplay recipient, DownloadRepoProgressReportMessage message)
         {
@@ -157,26 +132,15 @@ namespace DBDIconRepo.Model
             }
         }
 
-        int _installProgress = -1;
-        public int CurrentInstallProgress
-        {
-            get => _installProgress;
-            set => SetProperty(ref _installProgress, value);
-        }
+        [ObservableProperty]
+        int currentInstallProgress = -1;
 
-        int _totalInstall = -1;
-        public int TotalInstallProgress
-        {
-            get => _totalInstall;
-            set => SetProperty(ref _totalInstall, value);
-        }
+        [ObservableProperty]
+        int totalInstallProgress = -1;
 
-        string? _latestInstall;
-        public string? LatestInstalledFile
-        {
-            get => _latestInstall;
-            set => SetProperty(ref _latestInstall, value);
-        }
+        [ObservableProperty]
+        string? latestInstalledFile;
+
         private void HandleInstallProgress(PackDisplay recipient, InstallationProgressReportMessage message)
         {
             CurrentPackState = PackState.Installing;

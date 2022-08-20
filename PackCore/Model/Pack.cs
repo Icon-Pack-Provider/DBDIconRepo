@@ -102,7 +102,7 @@ namespace IconPack.Model
 
 
         string? _cloneUrl;
-        public string? CloneURL
+        public string? CloneUrl
         {
             get => _cloneUrl;
             set => Set(ref _cloneUrl, value);
@@ -129,7 +129,6 @@ namespace IconPack.Model
                 HasPortraits = treeOnly.Any(content => content.Path == "CharPortraits"),
                 HasPowers = treeOnly.Any(content => content.Path == "Powers"),
                 HasStatus = treeOnly.Any(content => content.Path == "StatusEffects"),
-
                 Files = new ObservableCollection<string>(treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png")).Select(i => i.Path))
             };
             return info;
@@ -139,7 +138,7 @@ namespace IconPack.Model
         public bool HasPerks
         {
             get => _hasPerks;
-            set => Set(ref _hasAddons, value);
+            set => Set(ref _hasPerks, value);
         }
 
         bool _hasPortraits;
