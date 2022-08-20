@@ -1,13 +1,23 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using IconPack.Helper;
 
 namespace IconPack.Model
 {
-    public partial class DailyRitual : ObservableObject, IBasic
+    public partial class DailyRitual : Observable, IBasic
     {
-        [ObservableProperty]
-        string name;
-
-        [ObservableProperty]
         string file;
+        public string File
+        {
+            get => file;
+            set => Set(ref file, value);
+        }
+
+        //Power name
+        string name;
+        public string Name
+        {
+            get => name;
+            set => Set(ref name, value);
+        }
+
     }
 }

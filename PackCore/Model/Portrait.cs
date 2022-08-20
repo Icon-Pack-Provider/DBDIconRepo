@@ -1,13 +1,21 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using IconPack.Helper;
 
 namespace IconPack.Model
 {
-    public partial class Portrait : ObservableObject, IBasic
+    public partial class Portrait : Observable, IBasic
     {
-        [ObservableProperty]
-        string name;
-
-        [ObservableProperty]
         string file;
+        public string File
+        {
+            get => file;
+            set => Set(ref file, value);
+        }
+
+        string name;
+        public string Name
+        {
+            get => name;
+            set => Set(ref name, value);
+        }
     }
 }

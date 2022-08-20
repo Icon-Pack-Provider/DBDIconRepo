@@ -26,9 +26,6 @@ namespace DBDIconRepo.ViewModel
         private GitHubClient client => gitService.GitHubClientInstance;
         public void InitializeViewModel()
         {
-            //Initialize commands
-            InitializeCommands();
-
             //Monitor settings
             Messenger.Default.Register<HomeViewModel, SettingChangedMessage, string>(this,
                 MessageToken.SETTINGVALUECHANGETOKEN, HandleSettingValueChanged);

@@ -1,24 +1,33 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using IconPack.Helper;
 using IconPack.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IconPack.Model
 {
-    public partial class Item : ObservableObject, IBasic, IFolder
+    public partial class Item : Observable, IBasic, IFolder
     {
 #nullable enable
-        [ObservableProperty]
         string? folder;
+        public string? Folder
+        {
+            get => folder;
+            set => Set(ref folder, value);
+        }
 #nullable disable
 
-        [ObservableProperty]
-        string name;
-
-        [ObservableProperty]
         string file;
+        public string File
+        {
+            get => file;
+            set => Set(ref file, value);
+        }
+
+        //Power name
+        string name;
+        public string Name
+        {
+            get => name;
+            set => Set(ref name, value);
+        }
+
     }
 }

@@ -37,7 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PackCore\IconPack.csproj" />
+    <Reference Include="IconPack">
+      <HintPath>..\PackCore\bin\x64\Debug\net6.0\IconPack.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

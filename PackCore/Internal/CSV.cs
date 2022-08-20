@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.FileProviders;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Globalization;
 using IconPack.Model;
 
