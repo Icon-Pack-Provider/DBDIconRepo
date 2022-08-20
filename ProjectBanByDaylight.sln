@@ -16,7 +16,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPack", "PackCore\IconPa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{0A154F20-05CA-46B1-939E-5DBCAB4DB23B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{30B6F785-5DDC-44DC-AD53-5918B6E9F3E9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{52C219D9-BA66-4D79-88EE-7F912DFAAFDA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
