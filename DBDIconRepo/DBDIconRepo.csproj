@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="MdXaml" Version="1.15.0" />
