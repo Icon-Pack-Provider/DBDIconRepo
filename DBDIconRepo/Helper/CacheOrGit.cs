@@ -1,6 +1,6 @@
 ﻿using DBDIconRepo.Model;
 using IconPack.Model;
-using IconPack.Resource;
+using IconPack.Strings;
 using Octokit;
 using System;
 using System.Collections.Generic;

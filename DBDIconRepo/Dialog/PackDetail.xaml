@@ -8,12 +8,11 @@
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
         xmlns:m="clr-namespace:DBDIconRepo.Model"
-        xmlns:pv="clr-namespace:DBDIconRepo.Model.Preview"
         xmlns:im="clr-namespace:IconPack.Model;assembly=IconPack"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         Title="{Binding SelectedPack.Name}"
         mc:Ignorable="d" Height="480" Width="640">
-    <Window.Resources>
+    <!--<Window.Resources>
         <convert:InvertBool x:Key="invertBool"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
         <convert:URLtoAbsoluteURI x:Key="urlToImageSource"/>
@@ -27,27 +26,27 @@
 
         <convert:PerkSortByToBool x:Key="perkSortByToBool"/>
         
-        <!--Addon preview-->
-        <DataTemplate x:Key="survivorAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
+        --><!--Addon preview--><!--
+        <DataTemplate x:Key="survivorAddonTemplate" DataType="{x:Type m:PreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64" VerticalAlignment="Center"
-                       Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
+                       Source="{Binding Info, Converter={StaticResource urlToImageSource}}">
                 </Image>
                 <TextBlock TextAlignment="Center" Margin="4">
-                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
-                    <LineBreak/><Run Text="{Binding AddOns.Name, Mode=OneWay}" FontWeight="Black"/>
+                    <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
+                    <LineBreak/><Run Text="{Binding Name, Mode=OneWay}" FontWeight="Black"/>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="killerAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
+        <DataTemplate x:Key="killerAddonTemplate" DataType="{x:Type m:PreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64"
                        Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
                 </Image>
                 <TextBlock TextAlignment="Center" Margin="4">
-                    <Run FontSize="12" Text="{Binding AddOns.Owner}"/>
-                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
-                    <LineBreak/><Run Text="{Binding AddOns.Name}" FontWeight="Black"/>
+                    <Run FontSize="12" Text="{Binding Info.Owner}"/>
+                    <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
+                    <LineBreak/><Run Text="{Binding Name}" FontWeight="Black"/>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
@@ -57,14 +56,14 @@
     </Window.Resources>
     <Window.DataContext>
         <vm:PackDetailViewModel x:Name="ViewModel"/>
-    </Window.DataContext>
+    </Window.DataContext>-->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- Only show as scrolling info -->
-        <TabControl SelectionChanged="SetDetailFocusModeViaTab">
+        <!--<TabControl SelectionChanged="SetDetailFocusModeViaTab">
             <TabControl.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
@@ -185,24 +184,24 @@
                     <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Status'}"/>
                     <RowDefinition Height="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusGrid}, ConverterParameter='Offerings'}"/>
                 </Grid.RowDefinitions>
-                <!-- Pack detail -->
+                --><!-- Pack detail --><!--
                 <Grid Grid.Row="0" x:Name="packDetailPanel" MinHeight="100">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <!-- Banner, if it's exist -->
+                    --><!-- Banner, if it's exist --><!--
                     <Image Grid.ColumnSpan="2" Visibility="{Binding HasBanner, Converter={StaticResource boolToVisibility}}"
                        Source="{Binding BannerURL, Converter={StaticResource urlToImageSource}}"/>
 
-                    <!-- Show this if it can't find any perk to match user wanted preview perk
-                    or creator didn't assign primary preview icon-->
+                    --><!-- Show this if it can't find any perk to match user wanted preview perk
+                    or creator didn't assign primary preview icon--><!--
                     <ui:PersonPicture DisplayName="{Binding SelectedPack.Name}"
                                   MaxWidth="72" MaxHeight="72" Margin="10"
                                   Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNull}}"/>
 
-                    <!-- Hero perk display assign by creator, 
-                    or first selected perk from user -->
+                    --><!-- Hero perk display assign by creator, 
+                    or first selected perk from user --><!--
                     <Image Source="{Binding HeroIconURL, Converter={StaticResource urlToImageSource}}"
                        MaxWidth="72" MaxHeight="72" Margin="10"
                        Visibility="{Binding HeroIconURL, Converter={StaticResource revealIfNotNull}}">
@@ -218,7 +217,7 @@
                                FontWeight="Black"/>
                         <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
                         <TextBlock FontSize="14">
-                            <!-- Open Git profile? -->
+                            --><!-- Open Git profile? --><!--
                             Made by <Hyperlink Command="{Binding OpenOwnerURL}"><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
                         </TextBlock>
                         <StackPanel Margin="0,5" Orientation="Horizontal">
@@ -238,7 +237,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Readme preview -->
+                --><!-- Readme preview --><!--
                 <Grid Grid.Row="1" Visibility="{Binding HasReadmeMD, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -247,7 +246,7 @@
                     <Rectangle Fill="Black"/>
                     <TextBlock Text="Readme" FontSize="18" VerticalAlignment="Center"/>
                     
-                    <!--Expand to readme-->
+                    --><!--Expand to readme--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Readme" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
@@ -256,7 +255,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Readme'}">
@@ -279,13 +278,13 @@
                                Visibility="{Binding CurrentDisplayMode, Converter={StaticResource focusToBool}, ConverterParameter='Overview'}"/>
                 </Grid>
 
-                <!-- Perks -->
+                --><!-- Perks --><!--
                 <Grid Grid.Row="2" Visibility="{Binding SelectedPack.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <!-- Perks sample preview -->
+                    --><!-- Perks sample preview --><!--
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Perks" FontSize="18" VerticalAlignment="Center"/>
                         <Button Margin="4,0" Visibility="{Binding CurrentDisplayMode, Converter={StaticResource focusToVisibility},
@@ -314,7 +313,7 @@
                             </ui:FlyoutService.Flyout>
                         </Button>
                     </StackPanel>
-                    <!--Expand to perk list-->
+                    --><!--Expand to perk list--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Perks" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
@@ -323,7 +322,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Perks'}">
@@ -338,7 +337,7 @@
                                  MaxHeight="{Binding CurrentDisplayMode, Converter={StaticResource focusToLength},
                         ConverterParameter='Overview|172|-1'}">
                         <ui:GridView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type pv:PerkPreviewItem}">
+                            <DataTemplate DataType="{x:Type m:PreviewItem}">
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
                                            Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
@@ -353,7 +352,7 @@
                     </ui:GridView>
                 </Grid>
 
-                <!-- Portraits -->
+                --><!-- Portraits --><!--
                 <Grid Grid.Row="3" Visibility="{Binding SelectedPack.ContentInfo.HasPortraits, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -368,7 +367,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Portraits'}">
                         <StackPanel Orientation="Horizontal">
@@ -396,7 +395,7 @@
                     </ui:GridView>
                 </Grid>
 
-                <!-- Powers -->
+                --><!-- Powers --><!--
                 <Grid Grid.Row="4" Visibility="{Binding SelectedPack.ContentInfo.HasPowers, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -411,7 +410,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Powers'}">
                         <StackPanel Orientation="Horizontal">
@@ -440,7 +439,7 @@
                     </ui:GridView>
                 </Grid>
                 
-                <!-- Items -->
+                --><!-- Items --><!--
                 <Grid Grid.Row="5" Visibility="{Binding SelectedPack.ContentInfo.HasItems, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -455,7 +454,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Items'}">
                         <StackPanel Orientation="Horizontal">
@@ -483,7 +482,7 @@
                     </ui:GridView>
                 </Grid>
 
-                <!-- Addons -->
+                --><!-- Addons --><!--
                 <Grid Grid.Row="6" Visibility="{Binding SelectedPack.ContentInfo.HasAddons, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -500,7 +499,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Addons'}">
@@ -517,7 +516,7 @@
                                  ItemTemplateSelector="{StaticResource addonsPreviewTemplator}"/>
                 </Grid>
 
-                <!-- Status effect -->
+                --><!-- Status effect --><!--
                 <Grid Grid.Row="7" Visibility="{Binding SelectedPack.ContentInfo.HasStatus, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -532,7 +531,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Status'}">
                         <StackPanel Orientation="Horizontal">
@@ -560,7 +559,7 @@
                     </ui:GridView>
                 </Grid>
 
-                <!-- Offerings -->
+                --><!-- Offerings --><!--
                 <Grid Grid.Row="8" Visibility="{Binding SelectedPack.ContentInfo.HasOfferings, Converter={StaticResource boolToVisibility}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -575,7 +574,7 @@
                             <ui:FontIcon Glyph="" Margin="4,0,-4,0"/>
                         </StackPanel>
                     </Button>
-                    <!--Return to detail-->
+                    --><!--Return to detail--><!--
                     <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Offerings'}">
                         <StackPanel Orientation="Horizontal">
@@ -604,6 +603,6 @@
                 </Grid>
 
             </Grid>
-        </ScrollViewer>
+        </ScrollViewer>-->
     </Grid>
 </Window>

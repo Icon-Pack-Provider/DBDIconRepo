@@ -1,42 +1,42 @@
 ﻿using DBDIconRepo.Model;
+using IconPack.Helper;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PackInfo = IconPack.Helper.Info;
 
 namespace DBDIconRepo.Helper
 {
     public static class PackSelectionHelper
     {
-        public static IBaseItemInfo? GetItemInfo(string path)
+        public static IBasic? GetItemInfo(string path)
         {
             try
             {
+                string file = GetPathWithoutExtension(path);
                 if (path.StartsWith("CharPortraits"))
-                    return new GenericItemInfo(PackInfo.Portraits[GetPathWithoutExtension(path)]);
-                //PackInfo.Emblems
+                    return Info.Portraits[file];
                 else if (path.StartsWith("DailyRituals"))
-                    return new GenericItemInfo(PackInfo.DailyRituals[GetPathWithoutExtension(path)]);
+                    return Info.DailyRituals[file];
                 else if (path.StartsWith("Emblems"))
-                    return new GenericItemInfo(PackInfo.Emblems[GetPathWithoutExtension(path)]);
+                    return Info.Emblems[GetPathWithoutExtension(path)];
                 else if (path.StartsWith("Favors"))
-                    return new GenericItemInfo(PackInfo.Offerings[GetPathWithoutExtension(path)]);
+                    return Info.Offerings[GetPathWithoutExtension(path)];
                 else if (path.StartsWith("ItemAddons"))
-                    return PackInfo.GetItemAddonsInfo(path);
+                    return Info.Addons[file];
                 else if (path.StartsWith("Items"))
-                    return new GenericItemInfo(PackInfo.Items[GetPathWithoutExtension(path)]);
+                    return Info.Items[GetPathWithoutExtension(path)];
                 else if (path.StartsWith("Powers"))
-                    return PackInfo.Powers[GetPathWithoutExtension(path)];
+                    return Info.Powers[GetPathWithoutExtension(path)];
                 else if (path.StartsWith("Perks"))
-                    return PackInfo.Perks[GetPathWithoutExtension(path)];
+                    return Info.Perks[GetPathWithoutExtension(path)];
                 else if (path.StartsWith("StatusEffects"))
-                    return new GenericItemInfo(PackInfo.StatusEffects[GetPathWithoutExtension(path)]);
+                    return Info.StatusEffects[GetPathWithoutExtension(path)];
                 else
                     return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

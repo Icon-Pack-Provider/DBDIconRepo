@@ -34,12 +34,12 @@ namespace DBDIconRepo
             {
                 if (window is PackDetail pd)
                 {
-                    if (pd.ViewModel.SelectedPack == message.Selected)
-                    {
-                        pd.Hide();
-                        pd.Show();
-                        return;
-                    }
+                    //if (pd.ViewModel.SelectedPack == message.Selected)
+                    //{
+                    //    pd.Hide();
+                    //    pd.Show();
+                    //    return;
+                    //}
                 }
             }
 
@@ -61,8 +61,6 @@ namespace DBDIconRepo
         {
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
-
-        
     }
 
     public class IconPreviewTemplateSelector : DataTemplateSelector

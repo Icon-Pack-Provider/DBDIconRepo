@@ -7,7 +7,6 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="720" Width="1024">
     <Window.Resources>
@@ -20,8 +19,6 @@
         <convert:URLtoAbsoluteURI x:Key="url2bitmapuri"/>
         <convert:PackStateToVisibility x:Key="packStateToVisibility"/>
         <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
-        <system:Boolean x:Key="BTrue">True</system:Boolean>
-        <system:Boolean x:Key="BFalse">False</system:Boolean>
         <DataTemplate x:Key="IconPackIconDisplay">
             <Image Width="100" Height="100" Source="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
         </DataTemplate>
