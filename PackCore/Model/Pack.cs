@@ -23,8 +23,8 @@ namespace IconPack.Model
             set => Set(ref _description, value);
         }
 
-        string? _author;
-        public string? Author
+        ObservableCollection<string>? _author;
+        public ObservableCollection<string>? Authors
         {
             get => _author;
             set => Set(ref _author, value);

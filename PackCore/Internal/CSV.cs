@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using IconPack.Model.Icon;
 using System.Globalization;
-using IconPack.Model.Icon;
+using System.Reflection;
 
 namespace IconPack.Internal
 {
@@ -24,11 +24,6 @@ namespace IconPack.Internal
             string name = $"IconPack.Resource.{key}";
 
             return assembly.GetManifestResourceStream(name);
-            //System.Resources
-            //if (!key.EndsWith(".csv"))
-            //    key += ".csv";
-            //var eProv = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-            //return eProv.GetFileInfo(key).CreateReadStream();
         }
 
         private const string PortraitCSVFile = "portrait.csv";
