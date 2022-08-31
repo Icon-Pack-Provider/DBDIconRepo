@@ -1,5 +1,5 @@
 ﻿using CsvHelper.Configuration;
-using IconPack.Model;
+using IconPack.Model.Icon;
 
 namespace IconPack.Internal
 {
@@ -22,7 +22,7 @@ namespace IconPack.Internal
         }
     }
 
-    internal class PowerMapper : ClassMap<Model.Power>
+    internal class PowerMapper : ClassMap<Power>
     {
         public PowerMapper()
         {
@@ -33,7 +33,7 @@ namespace IconPack.Internal
         }
     }
 
-    internal class AddonMapper : ClassMap<Model.Addon>
+    internal class AddonMapper : ClassMap<Addon>
     {
         public AddonMapper()
         {
@@ -44,7 +44,7 @@ namespace IconPack.Internal
             Map(m => m.Owner).Name("Owner");
         }
     }
-    internal class PerkMapper : ClassMap<Model.Perk>
+    internal class PerkMapper : ClassMap<Perk>
     {
         public PerkMapper()
         {

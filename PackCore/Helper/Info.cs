@@ -1,5 +1,5 @@
 ﻿using IconPack.Internal;
-using IconPack.Model;
+using IconPack.Model.Icon;
 
 namespace IconPack.Helper
 {

@@ -1,9 +1,8 @@
 ﻿using IconPack.Helper;
-using IconPack.Internal;
 
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
-    public partial class Addon : Observable, IBasic, IFolder
+    public partial class Perk : Observable, IBasic
     {
 #nullable enable
         string? folder;
@@ -21,21 +20,12 @@ namespace IconPack.Model
             set => Set(ref file, value);
         }
 
-        //Power name
         string name;
         public string Name
         {
             get => name;
             set => Set(ref name, value);
         }
-
-        string _for;
-        public string For
-        {
-            get => _for;
-            set => Set(ref _for, value);
-        }
-
 
         string owner;
         public string Owner

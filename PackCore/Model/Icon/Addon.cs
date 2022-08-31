@@ -1,10 +1,9 @@
 ﻿using IconPack.Helper;
 using IconPack.Internal;
 
-#nullable enable
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
-    public partial class Power : Observable, IBasic, IFolder
+    public partial class Addon : Observable, IBasic, IFolder
     {
 #nullable enable
         string? folder;
@@ -30,7 +29,14 @@ namespace IconPack.Model
             set => Set(ref name, value);
         }
 
-        //Killer name that use this power
+        string _for;
+        public string For
+        {
+            get => _for;
+            set => Set(ref _for, value);
+        }
+
+
         string owner;
         public string Owner
         {

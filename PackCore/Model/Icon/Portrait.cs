@@ -1,8 +1,8 @@
 ﻿using IconPack.Helper;
 
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
-    public partial class Emblem : Observable, IBasic
+    public partial class Portrait : Observable, IBasic
     {
         string file;
         public string File

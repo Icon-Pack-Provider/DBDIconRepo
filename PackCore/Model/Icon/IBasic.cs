@@ -1,4 +1,4 @@
-﻿namespace IconPack.Model
+﻿namespace IconPack.Model.Icon
 {
     public interface IBasic
     {

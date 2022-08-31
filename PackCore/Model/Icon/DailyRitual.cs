@@ -1,19 +1,9 @@
 ﻿using IconPack.Helper;
-using IconPack.Internal;
 
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
-    public partial class Offering : Observable, IBasic, IFolder
+    public partial class DailyRitual : Observable, IBasic
     {
-#nullable enable
-        string? folder;
-        public string? Folder
-        {
-            get => folder;
-            set => Set(ref folder, value);
-        }
-#nullable disable
-
         string file;
         public string File
         {

@@ -1,7 +1,7 @@
 ﻿using IconPack.Helper;
 using IconPack.Internal;
 
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
     public partial class Item : Observable, IBasic, IFolder
     {

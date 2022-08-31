@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Globalization;
-using IconPack.Model;
+using IconPack.Model.Icon;
 
 namespace IconPack.Internal
 {

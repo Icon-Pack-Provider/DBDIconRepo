@@ -1,6 +1,6 @@
 ﻿using IconPack.Helper;
 
-namespace IconPack.Model
+namespace IconPack.Model.Icon
 {
     public partial class StatusEffect : Observable, IBasic
     {
