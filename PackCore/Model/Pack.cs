@@ -53,7 +53,7 @@ namespace IconPack.Model
         }
 
         PackContentInfo? _contentInfo;
-        public PackContentInfo ContentInfo
+        public PackContentInfo? ContentInfo
         {
             get => _contentInfo;
             set => Set(ref _contentInfo, value);

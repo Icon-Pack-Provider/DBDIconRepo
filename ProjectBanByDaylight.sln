@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SortAllIconsIntoFolder", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconRepository", "IconRepository\IconRepository.csproj", "{B0F9FB66-DAD1-4E83-870C-8B8C94729624}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPack", "PackCore\IconPack.csproj", "{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPackAPI", "PackCore\IconPackAPI.csproj", "{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
