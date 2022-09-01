@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModernWpf.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,39 @@ namespace IconRepository
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void SwitchPage(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            string? tag = string.Empty;
+            if (args is null)
+            {
+                //Set tag to startup page
+                tag = "AllPack";
+            }
+            else
+            {
+                if (args.IsSettingsInvoked)
+                {
+                    mainContentDisplay.Navigate(new View.Settings());
+                    return;
+                }
+                tag = args.InvokedItemContainer.Tag.ToString();
+            }
+            switch (tag)
+            {
+                case "AllPack":
+                    mainContentDisplay.Navigate(new View.AllPack());
+                    break;
+            }
+        }
+
+        private async void StartupPageSelect(object sender, RoutedEventArgs e)
+        {
+            //TODO:Read from setting to load selected page
+            //For now
+            mainNavigation.SelectedItem = allPacks;
+            SwitchPage(null, null);
         }
     }
 }

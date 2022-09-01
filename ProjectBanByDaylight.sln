@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SortAllIconsIntoFolder", "Tools\SortAllIconsIntoFolder\SortAllIconsIntoFolder.csproj", "{0D642F63-E229-4FF6-A06C-BD7DC4DB771F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconRepository", "IconRepository\IconRepository.csproj", "{B0F9FB66-DAD1-4E83-870C-8B8C94729624}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9} = {C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPackAPI", "PackCore\IconPackAPI.csproj", "{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}"
 EndProject

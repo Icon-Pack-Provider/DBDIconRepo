@@ -5,8 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IconRepository"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Dead by Daylight: Icon Repository" Height="450" Width="800"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True">
+    <ui:NavigationView IsBackEnabled="False" IsBackButtonVisible="Collapsed"
+                       PaneDisplayMode="Left" ItemInvoked="SwitchPage"
+                       Loaded="StartupPageSelect" x:Name="mainNavigation">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Icon="Home" Content="All packs" Tag="AllPack" x:Name="allPacks"/>
+            <ui:NavigationViewItem Content="Favorite [Soon™]" IsEnabled="False">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE734;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <!--<ui:NavigationViewItem Content="History" Icon="Clock"/>-->
+        </ui:NavigationView.MenuItems>
+        <!--<ui:NavigationView.FooterMenuItems>
+            <ui:NavigationViewItem Icon="Contact" Content="Login" SelectsOnInvoked="False"/>
+        </ui:NavigationView.FooterMenuItems>-->
+        <Frame x:Name="mainContentDisplay" NavigationUIVisibility="Hidden"/>
+    </ui:NavigationView>
 </Window>
