@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static IconRepository.Strings.Terms;
+using static IconRepository.String.Terms;
 
 namespace IconRepository.Service
 {

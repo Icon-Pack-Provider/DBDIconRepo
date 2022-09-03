@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static IconRepository.Strings.Terms;
+using static IconRepository.String.Terms;
 
 namespace IconRepository.Model
 {

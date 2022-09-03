@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using IconPack.Helper;
-using IconRepository.Dialogs;
+using IconRepository.Dialog;
 using IconRepository.Service;
 using IconRepository.ViewModel;
 using ModernWpf.Controls;

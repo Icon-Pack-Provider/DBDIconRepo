@@ -1,6 +1,6 @@
 ﻿using ModernWpf.Controls;
 
-namespace IconRepository.Dialogs
+namespace IconRepository.Dialog
 {
     /// <summary>
     /// Interaction logic for GitLogin.xaml

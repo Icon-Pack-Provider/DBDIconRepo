@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Windows;
-using static IconRepository.Strings.Terms;
+using static IconRepository.String.Terms;
 
 namespace IconRepository
 {
