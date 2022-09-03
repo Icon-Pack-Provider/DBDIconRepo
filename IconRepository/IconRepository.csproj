@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
   </ItemGroup>
 
@@ -16,4 +17,17 @@
     <ProjectReference Include="..\PackCore\IconPackAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helper\" />
+  </ItemGroup>
+
+	<Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
+		<!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
+
+		<ItemGroup>
+			<FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+			<Analyzer Remove="@(Analyzer)" />
+			<Analyzer Include="@(FilteredAnalyzer)" />
+		</ItemGroup>
+	</Target>
 </Project>
