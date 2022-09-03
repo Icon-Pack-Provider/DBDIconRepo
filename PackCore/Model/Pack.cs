@@ -1,4 +1,5 @@
 ﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 using IconPack.Helper;
 using Octokit;
 using System.Collections.ObjectModel;
@@ -7,60 +8,31 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace IconPack.Model
 {
-    public class Pack : Observable
+    public partial class Pack : ObservableObject
     {
+        [ObservableProperty]
         string? _name;
-        public string? Name
-        {
-            get => _name;
-            set => Set(ref _name, value);
-        }
 
+        [ObservableProperty]
         string? _description;
-        public string? Description
-        {
-            get => _description;
-            set => Set(ref _description, value);
-        }
 
-        ObservableCollection<string>? _author;
-        public ObservableCollection<string>? Authors
-        {
-            get => _author;
-            set => Set(ref _author, value);
-        }
+        [ObservableProperty]
+        ObservableCollection<string>? _authors;
 
-        string? _url;
-        public string? URL
-        {
-            get => _url;
-            set => Set(ref _url, value);
-        }
+        [ObservableProperty]
+        string? _uRL;
 
+        [ObservableProperty]
         DateTime _lastUpdate;
-        [JsonConverter(typeof(DateTimeConversion))]
-        public DateTime LastUpdate
-        {
-            get => _lastUpdate;
-            set => Set(ref _lastUpdate, value);
-        }
 
+        [ObservableProperty]
         PackRepositoryInfo? _repository;
-        public PackRepositoryInfo? Repository
-        {
-            get => _repository;
-            set => Set(ref _repository, value);
-        }
 
+        [ObservableProperty]
         PackContentInfo? _contentInfo;
-        public PackContentInfo? ContentInfo
-        {
-            get => _contentInfo;
-            set => Set(ref _contentInfo, value);
-        }
     }
 
-    public partial class PackRepositoryInfo : Observable
+    public partial class PackRepositoryInfo : ObservableObject
     {
         public PackRepositoryInfo() { }
         public PackRepositoryInfo(Repository repo)
@@ -72,44 +44,23 @@ namespace IconPack.Model
             CloneUrl = repo.CloneUrl;
         }
 
+        [ObservableProperty]
         string? _name;
-        public string? Name
-        {
-            get => _name;
-            set => Set(ref _name, value);
-        }
 
-        long _id;
-        public long ID
-        {
-            get => _id;
-            set => Set(ref _id, value);
-        }
+        [ObservableProperty]
+        long _iD;
 
+        [ObservableProperty]
         string? _owner;
-        public string? Owner
-        {
-            get => _owner;
-            set => Set(ref _owner, value);
-        }
 
+        [ObservableProperty]
         string? _defaultBranch;
-        public string? DefaultBranch
-        {
-            get => _defaultBranch;
-            set => Set(ref _defaultBranch, value);
-        }
 
-
+        [ObservableProperty]
         string? _cloneUrl;
-        public string? CloneUrl
-        {
-            get => _cloneUrl;
-            set => Set(ref _cloneUrl, value);
-        }
     }
 
-    public partial class PackContentInfo : Observable
+    public partial class PackContentInfo : ObservableObject
     {
         public PackContentInfo() { }
 
@@ -134,62 +85,29 @@ namespace IconPack.Model
             return info;
         }
 
+        [ObservableProperty]
         bool _hasPerks;
-        public bool HasPerks
-        {
-            get => _hasPerks;
-            set => Set(ref _hasPerks, value);
-        }
 
+        [ObservableProperty]
         bool _hasPortraits;
-        public bool HasPortraits
-        {
-            get => _hasPortraits;
-            set => Set(ref _hasPortraits, value);
-        }
 
-
+        [ObservableProperty]
         bool _hasPowers;
-        public bool HasPowers
-        {
-            get => _hasPowers;
-            set => Set(ref _hasPowers, value);
-        }
 
+        [ObservableProperty]
         bool _hasItems;
-        public bool HasItems
-        {
-            get => _hasItems;
-            set => Set(ref _hasItems, value);
-        }
 
+        [ObservableProperty]
         bool _hasStatus;
-        public bool HasStatus
-        {
-            get => _hasStatus;
-            set => Set(ref _hasStatus, value);
-        }
 
+        [ObservableProperty]
         bool _hasOfferings;
-        public bool HasOfferings
-        {
-            get => _hasOfferings;
-            set => Set(ref _hasOfferings, value);
-        }
 
+        [ObservableProperty]
         bool _hasAddons;
-        public bool HasAddons
-        {
-            get => _hasAddons;
-            set => Set(ref _hasAddons, value);
-        }
 
+        [ObservableProperty]
         ObservableCollection<string>? _files;
-        public ObservableCollection<string>? Files
-        {
-            get => _files;
-            set => Set(ref _files, value);
-        }
     }
 }
 #nullable disable

@@ -1,23 +1,15 @@
-﻿using IconPack.Helper;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconPack.Helper;
 
 namespace IconPack.Model.Icon
 {
-    public partial class StatusEffect : Observable, IBasic
+    public partial class StatusEffect : ObservableObject, IBasic
     {
+        [ObservableProperty]
         string file;
-        public string File
-        {
-            get => file;
-            set => Set(ref file, value);
-        }
 
         //Power name
+        [ObservableProperty]
         string name;
-        public string Name
-        {
-            get => name;
-            set => Set(ref name, value);
-        }
-
     }
 }

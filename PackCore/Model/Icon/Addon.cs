@@ -1,47 +1,27 @@
-﻿using IconPack.Helper;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconPack.Helper;
 using IconPack.Internal;
 
 namespace IconPack.Model.Icon
 {
-    public partial class Addon : Observable, IBasic, IFolder
+    public partial class Addon : ObservableObject, IBasic, IFolder
     {
 #nullable enable
+        [ObservableProperty]
         string? folder;
-        public string? Folder
-        {
-            get => folder;
-            set => Set(ref folder, value);
-        }
 #nullable disable
 
+        [ObservableProperty]
         string file;
-        public string File
-        {
-            get => file;
-            set => Set(ref file, value);
-        }
 
         //Power name
+        [ObservableProperty]
         string name;
-        public string Name
-        {
-            get => name;
-            set => Set(ref name, value);
-        }
 
+        [ObservableProperty]
         string _for;
-        public string For
-        {
-            get => _for;
-            set => Set(ref _for, value);
-        }
 
-
+        [ObservableProperty]
         string owner;
-        public string Owner
-        {
-            get => owner;
-            set => Set(ref owner, value);
-        }
     }
 }

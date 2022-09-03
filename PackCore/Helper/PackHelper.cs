@@ -9,9 +9,21 @@ namespace IconPack.Helper;
 
 public static class PackHelper
 {
+    public static void InitializeGitService(GitHubClient hostGitService) =>
+        OctokitService.Instance.InitializeGit(hostGitService);
+
+    public static void InitializeGitService(string gitToken) =>
+        OctokitService.Instance.InitializeGit(gitToken);
+
+    public static void InitializeGitService() =>
+        OctokitService.Instance.InitializeGit();
+
     private static ThrottleDispatcher _throttler;
     public static async Task<ObservableCollection<Pack>> GetPacks()
     {
+        if (OctokitService.Instance.GitHubClientInstance is null)
+            throw new NullReferenceException("Github service didn't initialize\r\nNo token provided");
+        
         var packs = new ObservableCollection<Pack>();
         _throttler = new(5000);
         await _throttler.ThrottleAsync(async () =>
@@ -44,9 +56,6 @@ public static class PackHelper
 
     private static async Task<ObservableCollection<Repository>> SearchGit()
     {
-        if (OctokitService.Instance.GitHubClientInstance is null)
-            throw new NullReferenceException("Github service didn't initialize\r\nNo token provided");
-
         var request = new SearchRepositoriesRequest($"topic:{Terms.PackTag}");
         var result = await OctokitService.Instance.GitHubClientInstance.Search.SearchRepo(request);
         return new ObservableCollection<Repository>(result.Items);

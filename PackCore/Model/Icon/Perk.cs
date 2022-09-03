@@ -1,37 +1,22 @@
-﻿using IconPack.Helper;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconPack.Helper;
 
 namespace IconPack.Model.Icon
 {
-    public partial class Perk : Observable, IBasic
+    public partial class Perk : ObservableObject, IBasic
     {
 #nullable enable
+        [ObservableProperty]
         string? folder;
-        public string? Folder
-        {
-            get => folder;
-            set => Set(ref folder, value);
-        }
 #nullable disable
 
+        [ObservableProperty]
         string file;
-        public string File
-        {
-            get => file;
-            set => Set(ref file, value);
-        }
 
+        [ObservableProperty]
         string name;
-        public string Name
-        {
-            get => name;
-            set => Set(ref name, value);
-        }
 
+        [ObservableProperty]
         string owner;
-        public string Owner
-        {
-            get => owner;
-            set => Set(ref owner, value);
-        }
     }
 }
