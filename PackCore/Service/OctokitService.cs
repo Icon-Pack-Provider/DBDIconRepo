@@ -17,11 +17,6 @@ public class OctokitService
             var tokenAuth = new Credentials(token);
             GitHubClientInstance.Credentials = tokenAuth;
         }
-        else
-        {
-            var tokenAuth = new Credentials(string.Empty, AuthenticationType.Anonymous);
-            GitHubClientInstance.Credentials = tokenAuth;
-        }
         
     }
 

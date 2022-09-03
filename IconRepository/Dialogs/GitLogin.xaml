@@ -1,0 +1,21 @@
+﻿<ui:ContentDialog
+    x:Class="IconRepository.Dialogs.GitLogin"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Dailer.Dialog"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    mc:Ignorable="d"
+    Title="Login"
+    PrimaryButtonText="Login"
+    SecondaryButtonText="Cancel">
+
+    <StackPanel Orientation="Vertical">
+        <TextBlock Text="Login to save favorite icon repository"/>
+        <!--TODO:Switch this to oauth-->
+        <TextBox ui:ControlHelper.PlaceholderText="Personal access token" Text=""
+                 x:FieldModifier="public" x:Name="tokenInput"
+                 Margin="0,5"/>
+    </StackPanel>
+</ui:ContentDialog>

@@ -7,7 +7,11 @@
         mc:Ignorable="d"
         Title="Dead by Daylight: Icon Repository" Height="450" Width="800"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:converter="clr-namespace:IconRepository.Converter"
         ui:WindowHelper.UseModernWindowStyle="True">
+    <Window.Resources>
+        <converter:IconBasedOnLink x:Key="iconBasedOnLink"/>
+    </Window.Resources>
     <ui:NavigationView IsBackEnabled="False" IsBackButtonVisible="Collapsed"
                        PaneDisplayMode="Left" ItemInvoked="SwitchPage"
                        Loaded="StartupPageSelect" x:Name="mainNavigation">
@@ -20,9 +24,10 @@
             </ui:NavigationViewItem>
             <!--<ui:NavigationViewItem Content="History" Icon="Clock"/>-->
         </ui:NavigationView.MenuItems>
-        <!--<ui:NavigationView.FooterMenuItems>
-            <ui:NavigationViewItem Icon="Contact" Content="Login" SelectsOnInvoked="False"/>
-        </ui:NavigationView.FooterMenuItems>-->
+        <ui:NavigationView.FooterMenuItems>
+            <ui:NavigationViewItem Content="{Binding Git.Username, Mode=OneWay}" SelectsOnInvoked="False" Tag="Login"
+                                   Icon="{Binding Git.Avatar, Converter={StaticResource iconBasedOnLink}}"/>
+        </ui:NavigationView.FooterMenuItems>
         <Frame x:Name="mainContentDisplay" NavigationUIVisibility="Hidden"/>
     </ui:NavigationView>
 </Window>

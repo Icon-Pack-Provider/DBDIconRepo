@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using IconRepository.Model;
+using IconRepository.Service;
+using IconRepository.ViewModel;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.IO;
 using System.Windows;
+using static IconRepository.Strings.Terms;
 
 namespace IconRepository
 {
@@ -13,5 +17,13 @@ namespace IconRepository
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Ioc.Default.ConfigureServices(new ServiceCollection()
+                .AddSingleton(SettingHelper.Load())
+                .AddSingleton<IGit, Service.Octokit>()
+                .AddSingleton<AllPackViewModel>()                
+                .BuildServiceProvider());
+        }
     }
 }

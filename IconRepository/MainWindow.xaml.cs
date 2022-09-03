@@ -1,4 +1,9 @@
-﻿using ModernWpf.Controls;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using IconPack.Helper;
+using IconRepository.Dialogs;
+using IconRepository.Service;
+using IconRepository.ViewModel;
+using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +26,17 @@ namespace IconRepository
     /// </summary>
     public partial class MainWindow : Window
     {
+        public AllPackViewModel? CodeViewModel => DataContext as AllPackViewModel;
+        private IGit? Git;
+
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = Ioc.Default.GetService<AllPackViewModel>();
+            Git = Ioc.Default.GetService<IGit>();
         }
 
-        private void SwitchPage(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        private async void SwitchPage(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             string? tag = string.Empty;
             if (args is null)
@@ -41,17 +51,32 @@ namespace IconRepository
                     mainContentDisplay.Navigate(new View.Settings());
                     return;
                 }
-                tag = args.InvokedItemContainer.Tag.ToString();
+                if (!string.IsNullOrEmpty($"{args.InvokedItemContainer.Tag}"))
+                    tag = args.InvokedItemContainer.Tag.ToString();
             }
             switch (tag)
             {
                 case "AllPack":
                     mainContentDisplay.Navigate(new View.AllPack());
                     break;
+                case "Login":
+                    GitLogin tokenGather = new();
+                    var reply = await tokenGather.ShowAsync();
+                    if (reply == ContentDialogResult.Primary)
+                    {
+                        string token = tokenGather.tokenInput.Text;
+                        if (string.IsNullOrEmpty(token))
+                            break;
+                        CodeViewModel.AppConfig.GitToken = token;
+                        //Try login
+                        Git.ReLogin(token);
+                        PackHelper.InitializeGitService(Git.Client);
+                    }
+                    break;
             }
         }
 
-        private async void StartupPageSelect(object sender, RoutedEventArgs e)
+        private void StartupPageSelect(object sender, RoutedEventArgs e)
         {
             //TODO:Read from setting to load selected page
             //For now

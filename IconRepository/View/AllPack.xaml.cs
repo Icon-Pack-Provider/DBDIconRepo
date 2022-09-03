@@ -22,7 +22,7 @@ namespace IconRepository.View
     {
         public AllPack()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
     }
 }

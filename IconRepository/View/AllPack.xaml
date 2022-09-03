@@ -7,6 +7,8 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      d:DataContext="{x:Type vm:AllPackViewModel}"
+      xmlns:vm="clr-namespace:IconRepository.ViewModel"
       Title="AllPack">
 
     <Grid>
@@ -20,11 +22,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            
             <ui:AutoSuggestBox VerticalAlignment="Center">
                 <ui:AutoSuggestBox.QueryIcon>
                     <ui:FontIcon Glyph="&#xE094;"/>
                 </ui:AutoSuggestBox.QueryIcon>
             </ui:AutoSuggestBox>
+            
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Separator Margin="2.5,0"/>
                 <Button>
