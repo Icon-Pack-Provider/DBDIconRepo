@@ -25,7 +25,7 @@
             <!--<ui:NavigationViewItem Content="History" Icon="Clock"/>-->
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
-            <ui:NavigationViewItem Content="{Binding Git.Username, Mode=OneWay}" SelectsOnInvoked="False" Tag="Login"
+            <ui:NavigationViewItem d:Content="Login" d:Icon="Contact" Content="{Binding Git.Username, Mode=OneWay}" SelectsOnInvoked="False" Tag="Login"
                                    Icon="{Binding Git.Avatar, Converter={StaticResource iconBasedOnLink}}"/>
         </ui:NavigationView.FooterMenuItems>
         <Frame x:Name="mainContentDisplay" NavigationUIVisibility="Hidden"/>

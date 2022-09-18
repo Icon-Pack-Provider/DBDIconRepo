@@ -15,7 +15,7 @@ namespace IconRepository.String
             = "IconRepository";
 #endif
 
-        public const string ConfigFile = "config.json";
+        public const string ConfigFile = "config";
 
         /// <summary>
         /// Production head value for OctokitAPI

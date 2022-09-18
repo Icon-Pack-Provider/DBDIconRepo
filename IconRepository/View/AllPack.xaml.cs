@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using IconRepository.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,16 @@ namespace IconRepository.View
     /// </summary>
     public partial class AllPack : Page
     {
+
         public AllPack()
         {
             InitializeComponent();
+            DataContext = Ioc.Default.GetService<AllPackViewModel>();
+        }
+
+        private void FindSubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            (DataContext as AllPackViewModel).StartSearchCommand.Execute(null);
         }
     }
 }

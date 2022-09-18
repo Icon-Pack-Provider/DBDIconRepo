@@ -58,6 +58,7 @@ namespace IconRepository
             {
                 case "AllPack":
                     mainContentDisplay.Navigate(new View.AllPack());
+                    await CodeViewModel.LoadPackList();
                     break;
                 case "Login":
                     GitLogin tokenGather = new();

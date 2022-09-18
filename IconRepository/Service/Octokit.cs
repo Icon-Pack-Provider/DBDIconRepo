@@ -15,7 +15,7 @@ namespace IconRepository.Service
     {
         public Octokit()
         {
-            string token = SettingHelper.Load().GitToken;
+            string token = App.Config.GitToken;
             if (!string.IsNullOrEmpty(token))
             {
                 ReLogin(token);
@@ -36,6 +36,7 @@ namespace IconRepository.Service
         {
             Client = new(new ProductHeaderValue(PHV));
             Client.Credentials = new(token);
+            IconPack.Helper.PackHelper.InitializeGitService(Client);
             LoadUserInfo().Await(() =>
             {
                 OnPropertyChanged(nameof(Username));
@@ -43,7 +44,7 @@ namespace IconRepository.Service
             }, 
             (e) =>
             {
-                Username = "Login";
+                Username = "Logged in";
                 Avatar = null;
             });
         }
@@ -51,8 +52,9 @@ namespace IconRepository.Service
         public async Task LoadUserInfo()
         {
             var user = await Client.User.Current();
-            Username = user.Name is null ? user.Login : $"{user.Name} ({user.Login})";
-            Avatar = user.AvatarUrl;
+            var moreInfo = await Client.User.Get(user.Login);
+            Username = moreInfo.Name is null ? user.Login : $"{moreInfo.Name} ({moreInfo.Login})";
+            Avatar = moreInfo.AvatarUrl;
         }
 
         [ObservableProperty]

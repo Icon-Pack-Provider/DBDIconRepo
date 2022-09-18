@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconRepository", "IconRepos
 		{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9} = {C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPackAPI", "PackCore\IconPackAPI.csproj", "{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconInfo", "PackCore\IconInfo.csproj", "{C0A67F3F-BD15-48AA-B9E0-51C32E933DC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

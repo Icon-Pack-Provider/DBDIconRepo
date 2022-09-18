@@ -6,10 +6,14 @@
       xmlns:local="clr-namespace:IconRepository.View"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
+      xmlns:convert="clr-namespace:IconRepository.Converter"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       d:DataContext="{x:Type vm:AllPackViewModel}"
       xmlns:vm="clr-namespace:IconRepository.ViewModel"
       Title="AllPack">
+    <Page.Resources>
+        <convert:InstantSearchToIcon x:Key="instantSearchToIcon"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -22,27 +26,35 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
-            <ui:AutoSuggestBox VerticalAlignment="Center">
-                <ui:AutoSuggestBox.QueryIcon>
-                    <ui:FontIcon Glyph="&#xE094;"/>
-                </ui:AutoSuggestBox.QueryIcon>
-            </ui:AutoSuggestBox>
-            
+
+            <ui:AutoSuggestBox VerticalAlignment="Center" 
+                               Text="{Binding SearchKeyword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               QueryIcon="{Binding Config.UseInstantSearch, Mode=OneWay, Converter={StaticResource instantSearchToIcon}}"
+                               QuerySubmitted="FindSubmitted"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Separator Margin="2.5,0"/>
                 <Button>
                     <ui:SymbolIcon Symbol="Sort"/>
                     <ui:FlyoutService.Flyout>
                         <ui:MenuFlyout Placement="Bottom">
-                            <MenuItem Header="Name" IsCheckable="True"/>
-                            <MenuItem Header="Author" IsCheckable="True"/>
-                            <MenuItem Header="Last update" IsCheckable="True"/>
+                            <MenuItem Header="Name" IsCheckable="True" 
+                                      Command="{Binding SetSortByNameCommand}"
+                                      IsChecked="{Binding IsSortByName, Mode=OneWay}"/>
+                            <MenuItem Header="Author" IsCheckable="True" 
+                                      Command="{Binding SetSortByAuthorCommand}"
+                                      IsChecked="{Binding IsSortByAuthor, Mode=OneWay}"/>
+                            <MenuItem Header="Last update" IsCheckable="True" 
+                                      Command="{Binding SetSortByLastUpdateCommand}"
+                                      IsChecked="{Binding IsSortByLastUpdate, Mode=OneWay}"/>
 
                             <Separator/>
 
-                            <MenuItem Header="Ascending" IsCheckable="True"/>
-                            <MenuItem Header="Descending" IsCheckable="True"/>
+                            <MenuItem Header="Ascending" IsCheckable="True"
+                                      Command="{Binding SetSortByAscendingCommand}"
+                                      IsChecked="{Binding IsSortByAscending, Mode=OneWay}"/>
+                            <MenuItem Header="Descending" IsCheckable="True"
+                                      Command="{Binding SetSortByDescendingCommand}"
+                                      IsChecked="{Binding IsSortByDescending, Mode=OneWay}"/>
                         </ui:MenuFlyout>
                     </ui:FlyoutService.Flyout>
                 </Button>
@@ -78,7 +90,47 @@
                 </Button>
             </StackPanel>
         </Grid>
-        
-        
+
+        <!--Pack listing-->
+        <Grid Grid.Row="1">
+            <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredPack, Mode=OneWay}"
+                         IsSelectionEnabled="False"
+                         Padding="12">
+                <ui:GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!--Banner/Icons-->
+                                <RowDefinition Height="Auto"/>
+                                <!--Name-->
+                                <RowDefinition Height="Auto"/>
+                                <!--Author-->
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding Name}" Grid.Row="1"/>
+                            <TextBlock Grid.Row="2">
+                                Author: <Run Text="{Binding AuthorDisplay}"/>
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ui:GridView.ItemTemplate>
+            </ui:GridView>
+            
+            <!-- Display info regard pack display state -->
+            <StackPanel Orientation="Vertical" Margin="12" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Visibility="{Binding IsPackDisplayLoading, Mode=OneWay}">
+                <ui:ProgressRing Width="48" Height="48" IsActive="True"/>
+                <TextBlock Text="Updating pack repository" Margin="0,4"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="12" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Visibility="{Binding IsPackDisplayHasNoPack, Mode=OneWay}">
+                <TextBlock Text="No pack found with current keyword/filters"/>
+                <TextBlock Text="Try clearing keywords/filters"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

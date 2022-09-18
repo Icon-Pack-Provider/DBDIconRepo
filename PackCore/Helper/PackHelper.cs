@@ -18,18 +18,13 @@ public static class PackHelper
     public static void InitializeGitService() =>
         OctokitService.Instance.InitializeGit();
 
-    private static ThrottleDispatcher _throttler;
     public static async Task<ObservableCollection<Pack>> GetPacks()
     {
         if (OctokitService.Instance.GitHubClientInstance is null)
             throw new NullReferenceException("Github service didn't initialize\r\nNo token provided");
         
         var packs = new ObservableCollection<Pack>();
-        _throttler = new(5000);
-        await _throttler.ThrottleAsync(async () =>
-        {
-            packs = await GetPacksAsync();
-        });
+        packs = await GetPacksAsync();
         return packs;
     }
 

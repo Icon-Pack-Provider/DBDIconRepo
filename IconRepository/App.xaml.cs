@@ -17,10 +17,14 @@ namespace IconRepository
     /// </summary>
     public partial class App : Application
     {
+        private static Setting _config;
+        public static Setting Config => _config;
         public App()
         {
+            if (_config is null)
+                _config = SettingHelper.Load();
             Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton(SettingHelper.Load())
+                .AddSingleton(_config)
                 .AddSingleton<IGit, Service.Octokit>()
                 .AddSingleton<AllPackViewModel>()                
                 .BuildServiceProvider());
