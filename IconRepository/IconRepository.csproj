@@ -17,10 +17,6 @@
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PackCore\IconInfo.csproj" />
-  </ItemGroup>
-
 	<Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
 		<!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
 
