@@ -1,33 +1,28 @@
 ﻿using DBDIconRepo.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace DBDIconRepo.Converters
-{
-    public class PerkSortByToBool : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is PerkSortBy mode)
-            {
-                if (parameter is string str)
-                {
-                    PerkSortBy compare = Enum.Parse<PerkSortBy>(str);
-                    if (mode == compare)
-                        return true;
-                }
-            }
-            return false;
-        }
+namespace DBDIconRepo.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+public class PerkSortByToBool : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is PerkSortBy mode)
         {
-            throw new NotImplementedException();
+            if (parameter is string str)
+            {
+                PerkSortBy compare = Enum.Parse<PerkSortBy>(str);
+                if (mode == compare)
+                    return true;
+            }
         }
+        return false;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }
