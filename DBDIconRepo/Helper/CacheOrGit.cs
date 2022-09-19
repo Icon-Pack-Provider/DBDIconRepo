@@ -3,17 +3,15 @@ using IconPack.Model;
 using IconPack.Resource;
 using Octokit;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
-namespace DBDIconRepo.Helper
+namespace DBDIconRepo.Helper;
 {
     public static class CacheOrGit
     {
@@ -342,6 +340,13 @@ namespace DBDIconRepo.Helper
                 Username = username,
                 Password = token
             };
+        }
+
+        public static async Task<byte[]> LoadImage(string url)
+        {
+            using var client = new HttpClient();
+            using var response = await client.GetAsync(url);
+            return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
     }
 }

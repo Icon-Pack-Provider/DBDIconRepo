@@ -42,14 +42,14 @@ namespace DBDIconRepo.Model
             set => Set(ref _useUncuratedContent, value);
         }
 
-        ObservableCollection<string> _selectedPreview = new()
+        ObservableCollection<IconInfo.Internal.IBasic> _selectedPreview = new()
         {
-            "iconPerks_spineChill",
-            "iconPerks_adrenaline",
-            "iconPerks_sloppyButcher",
-            "iconPerks_lightborn"
+            IconInfo.Icons.Perks.Spine_Chill,
+            IconInfo.Icons.Perks.Adrenaline,
+            IconInfo.Icons.Perks.Sloppy_Butcher,
+            IconInfo.Icons.Perks.Lightborn
         };
-        public ObservableCollection<string> PerkPreviewSelection
+        public ObservableCollection<IconInfo.Internal.IBasic> PerkPreviewSelection
         {
             get => _selectedPreview;
             set => Set(ref _selectedPreview, value);
@@ -90,6 +90,38 @@ namespace DBDIconRepo.Model
             set => Set(ref _notDownloadThreshold, value);
         }
 
+        //Banner res
+        //1280x300
+        int bannerDecodeWidth = 256;
+        public int BannerDecodeWidth
+        {
+            get => bannerDecodeWidth;
+            set => Set(ref bannerDecodeWidth, value);
+        }
+
+        int bannerDecodeHeight = 60;
+        public int BannerDecodeHeight
+        {
+            get => bannerDecodeHeight;
+            set => Set(ref bannerDecodeHeight, value);
+        }
+
+        //Perk res | Portrait res
+        //256x256 | 512x512
+        int iconPreviewDecodeWidth = 64;
+        public int IconPreviewDecodeWidth
+        {
+            get => iconPreviewDecodeWidth; 
+            set => Set(ref iconPreviewDecodeWidth, value);
+        }
+
+        int iconPreviewDecodeHeight = 64;
+        public int IconPreviewDecodeHeight
+        {
+            get => iconPreviewDecodeHeight;
+            set => Set(ref iconPreviewDecodeHeight, value);
+        }
+        
 
         #region Messenger manager
         [JsonIgnore]

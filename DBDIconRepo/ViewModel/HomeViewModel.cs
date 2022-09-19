@@ -207,7 +207,7 @@ namespace DBDIconRepo.ViewModel
                 if (gatheredPack is null)
                     continue;
                 //Preview icons
-                await CacheOrGit.GatherPackDisplayData(repo, gatheredPack.Info, Config.PerkPreviewSelection.ToArray());
+                await CacheOrGit.GatherPackDisplayData(repo, gatheredPack.Info, Config.PerkPreviewSelection.Select(i => i.File).ToArray());
                 gatheredPack.HandleURLs();
                 AllAvailablePack.Add(gatheredPack);
             }

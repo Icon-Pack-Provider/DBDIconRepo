@@ -1,18 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DBDIconRepo.Helper;
-using IconPack.Model;
-using System;
-using System.Linq;
-using Info = IconPack.Helper.Info;
+﻿using IconPack.Model;
 
-namespace DBDIconRepo.Model.Preview
+namespace DBDIconRepo.Model.Preview;
+public class DailyRitualPreviewItem : BasePreview
 {
-    public class DailyRitualPreviewItem : BasePreviewItem
-    {
-        public DailyRitualPreviewItem(string path, PackRepositoryInfo repo) : base(path, repo)
-        {
-            if (Info.DailyRituals.ContainsKey(path))
-                Name = Info.DailyRituals[path];
-        }
-    }
+    public DailyRitualPreviewItem(string path, PackRepositoryInfo repo) : base(path, repo) { }
 }

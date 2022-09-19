@@ -1,32 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DBDIconRepo.Helper;
-using IconPack.Model;
-using System;
-using System.Linq;
-using Info = IconPack.Helper.Info;
+﻿using IconPack.Model;
 
-namespace DBDIconRepo.Model.Preview
+namespace DBDIconRepo.Model.Preview;
+
+public partial class AddonPreviewItem : BasePreview
 {
-    public class AddonPreviewItem : BasePreviewItem
+    public AddonPreviewItem(string path, PackRepositoryInfo repo) : base(path, repo)
     {
-        public new string? Name
-        {
-            get
-            {
-                if (AddOns is null)
-                    return null;
-                return AddOns.Name;
-            }
-        }
-
-        public AddOnsInfo? AddOns { get; set; }
-
-        public AddonPreviewItem(string path, PackRepositoryInfo repo) : base(path, repo)
-        {
-            if (Info.GetItemAddonsInfo(path) is AddOnsInfo info)
-            {
-                AddOns = info;
-            }
-        }
     }
 }

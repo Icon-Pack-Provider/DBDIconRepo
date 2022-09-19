@@ -7,9 +7,7 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
-        xmlns:m="clr-namespace:DBDIconRepo.Model"
         xmlns:pv="clr-namespace:DBDIconRepo.Model.Preview"
-        xmlns:im="clr-namespace:IconPack.Model;assembly=IconPack"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         Title="{Binding SelectedPack.Name}"
         mc:Ignorable="d" Height="480" Width="640">
@@ -26,28 +24,28 @@
         <convert:FocusModeToMaxLength x:Key="focusToLength"/>
 
         <convert:PerkSortByToBool x:Key="perkSortByToBool"/>
-        
+
+        <convert:BytesImageDecoderConverter x:Key="imageDecode"/>
+
         <!--Addon preview-->
         <DataTemplate x:Key="survivorAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64" VerticalAlignment="Center"
-                       Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                </Image>
+                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                 <TextBlock TextAlignment="Center" Margin="4">
-                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
-                    <LineBreak/><Run Text="{Binding AddOns.Name, Mode=OneWay}" FontWeight="Black"/>
+                    <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
+                    <LineBreak/><Run Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Black"/>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="killerAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64"
-                       Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                </Image>
+                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                 <TextBlock TextAlignment="Center" Margin="4">
-                    <Run FontSize="12" Text="{Binding AddOns.Owner}"/>
-                    <LineBreak/><Run FontSize="12" Text="{Binding AddOns.For}"/>
-                    <LineBreak/><Run Text="{Binding AddOns.Name}" FontWeight="Black"/>
+                    <Run FontSize="12" Text="{Binding Info.Owner}"/>
+                    <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
+                    <LineBreak/><Run Text="{Binding Info.Name}" FontWeight="Black"/>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
@@ -341,11 +339,10 @@
                             <DataTemplate DataType="{x:Type pv:PerkPreviewItem}">
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run FontSize="12" Text="{Binding Perk.PerkOwner}"/>
-                                        <LineBreak/><Run Text="{Binding Perk.Name}" FontWeight="Black"/>
+                                        <Run FontSize="12" Text="{Binding Info.Owner}"/>
+                                        <LineBreak/><Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -385,10 +382,9 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="192" Height="192"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                        <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -428,11 +424,10 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="72" Height="72"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run FontSize="12" Text="{Binding PowerInfo.PowerOwner}"/>
-                                        <LineBreak/><Run Text="{Binding PowerInfo.Name}" FontWeight="Black"/>
+                                        <Run FontSize="12" Text="{Binding Info.Owner}"/>
+                                        <LineBreak/><Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -472,10 +467,9 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                        <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -549,10 +543,9 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="64" Height="64"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                        <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -592,10 +585,9 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="96" Height="96"
-                                           Source="{Binding IconURL, Converter={StaticResource urlToImageSource}}">
-                                    </Image>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
-                                        <Run Text="{Binding Name}" FontWeight="Black"/>
+                                        <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
@@ -605,5 +597,17 @@
 
             </Grid>
         </ScrollViewer>
+        <Grid HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Grid.RowSpan="2"
+              Visibility="{Binding IsPreparing, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+            <Rectangle Fill="Black" Opacity="0.75"/>
+            <StackPanel Orientation="Vertical"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <ui:ProgressRing Width="48" Height="48" IsActive="True" Margin="5"/>
+                <TextBlock Text="Loading..." FontSize="32"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

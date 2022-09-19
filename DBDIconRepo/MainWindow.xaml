@@ -23,10 +23,22 @@
         <system:Boolean x:Key="BTrue">True</system:Boolean>
         <system:Boolean x:Key="BFalse">False</system:Boolean>
         <DataTemplate x:Key="IconPackIconDisplay">
-            <Image Width="100" Height="100" Source="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+            <Image Width="100" Height="100">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+            </Image>
         </DataTemplate>
         <DataTemplate x:Key="IconPackBannerDisplay">
-            <Image Height="96" Margin="14" Source="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+            <Image Height="96" Margin="14">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+            </Image>
         </DataTemplate>
         <local:IconPreviewTemplateSelector 
             x:Key="iconPreviewTemplateSelector"
@@ -247,8 +259,7 @@
                                     <ui:FontIcon Glyph="" 
                                                  Margin="5,0"
                                                  FontFamily="Segoe MDL2 Assets"/>
-                                    <TextBlock Text="Detail"
-                                               Visibility="{Binding IsDownloading, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
+                                    <TextBlock Text="Detail"/>
                                 </StackPanel>
                             </Button>
                             

@@ -3,6 +3,9 @@ using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
+using IconInfo.Icon;
+using IconInfo.Icons;
+using IconInfo.Internal;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
@@ -19,7 +22,7 @@ using System.Windows.Media.Imaging;
 
 namespace DBDIconRepo.ViewModel
 {
-    public class PackDetailViewModel : ObservableObject
+    public partial class PackDetailViewModel : ObservableObject
     {
         Pack? _selected;
         public Pack? SelectedPack
@@ -48,7 +51,7 @@ namespace DBDIconRepo.ViewModel
             //Get any previewable icon
             foreach (var item in Setting.Instance.PerkPreviewSelection)
             {
-                if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.ToLower())) is string match)
+                if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.File.ToLower())) is string match)
                 {
                     HeroIconURL = URL.GetIconAsGitRawContent(SelectedPack.Repository, match);
                     break;
@@ -64,95 +67,73 @@ namespace DBDIconRepo.ViewModel
                 ReadmeMDContent = translator.Transform(md);
             }
 
-            //Perk icons
+            List<IBasePreview> identifiedItems = new();
+            SelectedPack.ContentInfo.Files
+                .Select(file => IconTypeIdentify.FromBasicInfo(file, SelectedPack.Repository))
+                .AsParallel()
+                .ToList()
+                .ForEach(i => identifiedItems.Add(i));
+
+            //Filter identified items into its own observableCollection
             if (SelectedPack.ContentInfo.HasPerks)
             {
-                var perks = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Perks") ||
-                    file.StartsWith("/Perks") ||
-                    file.StartsWith("\\Perks"))
-                    .Select(i => new PerkPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Perk is not null);
                 await Task.Run(async () =>
                 {
+                    var perks = identifiedItems.Where(i => i.Info is Perk);
                     foreach (var perk in perks)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (PerksPreview is null)
-                                PerksPreview = new ObservableCollection<PerkPreviewItem>();
-                            PerksPreview.Add(perk);
+                            PerksPreview.Add((PerkPreviewItem)perk);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
-                    SortingPerkList();
                 });
+                SortingPerkList();
             }
 
             //Portrait icons
             if (SelectedPack.ContentInfo.HasPortraits)
             {
-                var portraits = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("CharPortraits") ||
-                    file.StartsWith("/CharPortraits") ||
-                    file.StartsWith("\\CharPortraits"))
-                    .Select(i => new PortraitPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var portraits = identifiedItems.Where(i => i.Info is Portrait);
                     foreach (var portrait in portraits)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (PortraitPreview is null)
-                                PortraitPreview = new ObservableCollection<PortraitPreviewItem>();
-                            PortraitPreview.Add(portrait);
+                            PortraitPreview.Add((PortraitPreviewItem)portrait);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 });
-                PortraitPreview = new ObservableCollection<PortraitPreviewItem>(portraits);
             }
 
             //Powers
             if (SelectedPack.ContentInfo.HasPowers)
             {
-                var powers = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Powers") ||
-                    file.StartsWith("/Powers") ||
-                    file.StartsWith("\\Powers"))
-                    .Select(i => new PowerPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var powers = identifiedItems.Where(i => i.Info is Power);
                     foreach (var power in powers)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (PowerPreview is null)
-                                PowerPreview = new ObservableCollection<PowerPreviewItem>();
-                            PowerPreview.Add(power);
+                            PowerPreview.Add((PowerPreviewItem)power);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
-                }); 
+                });
             }
 
             //Items
             if (SelectedPack.ContentInfo.HasItems)
             {
-                var items = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("items") ||
-                    file.StartsWith("/items") ||
-                    file.StartsWith("\\items"))
-                    .Select(i => new ItemPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var items = identifiedItems.Where(i => i.Info is Item);
                     foreach (var item in items)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (ItemsPreview is null)
-                                ItemsPreview = new ObservableCollection<ItemPreviewItem>();
-                            ItemsPreview.Add(item);
+                            ItemsPreview.Add((ItemPreviewItem)item);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 });
@@ -161,21 +142,14 @@ namespace DBDIconRepo.ViewModel
             //Status
             if (SelectedPack.ContentInfo.HasStatus)
             {
-                var status = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("StatusEffects") ||
-                    file.StartsWith("/StatusEffects") ||
-                    file.StartsWith("\\StatusEffects"))
-                    .Select(i => new StatusEffectPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var status = identifiedItems.Where(i => i.Info is StatusEffect);
                     foreach (var st in status)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (StatusEffectsPreview is null)
-                                StatusEffectsPreview = new ObservableCollection<StatusEffectPreviewItem>();
-                            StatusEffectsPreview.Add(st);
+                            StatusEffectsPreview.Add((StatusEffectPreviewItem)st);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 });
@@ -184,21 +158,16 @@ namespace DBDIconRepo.ViewModel
             //Offerings
             if (SelectedPack.ContentInfo.HasOfferings)
             {
-                var offerings = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("Favors") ||
-                    file.StartsWith("/Favors") ||
-                    file.StartsWith("\\Favors"))
-                    .Select(i => new OfferingPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var offerings = identifiedItems.Where(i => i.Info is Offering);
                     foreach (var offering in offerings)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             if (OfferingsPreview is null)
                                 OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
-                            OfferingsPreview.Add(offering);
+                            OfferingsPreview.Add((OfferingPreviewItem)offering);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 });
@@ -207,28 +176,27 @@ namespace DBDIconRepo.ViewModel
             //Addons
             if (SelectedPack.ContentInfo.HasAddons)
             {
-                var addons = SelectedPack.ContentInfo.Files
-                    .Where(file => file.StartsWith("ItemAddons") ||
-                    file.StartsWith("/ItemAddons") ||
-                    file.StartsWith("\\ItemAddons"))
-                    .Select(i => new AddonPreviewItem(i, SelectedPack.Repository))
-                    .Where(preview => preview.Name is not null);
                 await Task.Run(async () =>
                 {
+                    var addons = identifiedItems.Where(i => i.Info is Addon);
                     foreach (var addon in addons)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             if (AddonsPreview is null)
                                 AddonsPreview = new ObservableCollection<AddonPreviewItem>();
-                            AddonsPreview.Add(addon);
+                            AddonsPreview.Add((AddonPreviewItem)addon);
                         }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 });
             }
 
             //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
+            IsPreparing = false;
         }
+
+        [ObservableProperty]
+        bool isPreparing = true;
 
         DetailFocusMode _dm = DetailFocusMode.Overview;
         public DetailFocusMode CurrentDisplayMode
@@ -273,15 +241,46 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Perks display
-        ObservableCollection<PerkPreviewItem>? _perks;
-        public ObservableCollection<PerkPreviewItem>? PerksPreview
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SortedPerks))]
+        ObservableCollection<PerkPreviewItem>? perksPreview = new();
+
+        public async Task SortPerks()
         {
-            get => _perks;
-            set => SetProperty(ref _perks, value);
+            if (SortedPerks is null)
+                SortedPerks = new();
+            else
+                SortedPerks.Clear();
+            var perks = new List<PerkPreviewItem>(PerksPreview);
+            switch (CurrentPerkSortingMethod)
+            {
+                case PerkSortBy.Name:
+                    if (IsPerkSortByAscending)
+                        perks = perks.OrderBy(p => p.Info.Name).ToList();
+                    else
+                        perks = perks.OrderByDescending(p => p.Info.Name).ToList();
+                    break;
+                case PerkSortBy.Owner:
+                    if (IsPerkSortByAscending)
+                        perks = perks.OrderBy(p => ((Perk)p.Info).Owner).ToList();
+                    else
+                        perks = perks.OrderByDescending(p => ((Perk)p.Info).Owner).ToList();
+                    break;
+                case PerkSortBy.Random:
+                    perks = perks.Shuffle().ToList();
+                    break;
+            }
+            foreach (var perk in perks)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    SortedPerks.Add(perk);
+                });
+            }
         }
 
         //Portraits display
-        ObservableCollection<PortraitPreviewItem>? _portrait;
+        ObservableCollection<PortraitPreviewItem>? _portrait = new();
         public ObservableCollection<PortraitPreviewItem>? PortraitPreview
         {
             get => _portrait;
@@ -289,7 +288,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Powers display
-        ObservableCollection<PowerPreviewItem>? _power;
+        ObservableCollection<PowerPreviewItem>? _power = new();
         public ObservableCollection<PowerPreviewItem>? PowerPreview
         {
             get => _power;
@@ -297,7 +296,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Items display
-        ObservableCollection<ItemPreviewItem>? _items;
+        ObservableCollection<ItemPreviewItem>? _items = new();
         public ObservableCollection<ItemPreviewItem>? ItemsPreview
         {
             get => _items;
@@ -305,7 +304,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Addons
-        ObservableCollection<AddonPreviewItem>? _addons;
+        ObservableCollection<AddonPreviewItem>? _addons = new();
         public ObservableCollection<AddonPreviewItem>? AddonsPreview
         {
             get => _addons;
@@ -313,7 +312,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Emblems
-        ObservableCollection<EmblemPreviewItem>? _emblem;
+        ObservableCollection<EmblemPreviewItem>? _emblem = new();
         public ObservableCollection<EmblemPreviewItem>? EmblemPreview
         {
             get => _emblem;
@@ -321,7 +320,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Daily ritual
-        ObservableCollection<DailyRitualPreviewItem>? _dailyRitual;
+        ObservableCollection<DailyRitualPreviewItem>? _dailyRitual = new();
         public ObservableCollection<DailyRitualPreviewItem>? DailyRitualPreview
         {
             get => _dailyRitual;
@@ -329,7 +328,7 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Offering
-        ObservableCollection<OfferingPreviewItem>? _offerings;
+        ObservableCollection<OfferingPreviewItem>? _offerings = new();
         public ObservableCollection<OfferingPreviewItem>? OfferingsPreview
         {
             get => _offerings;
@@ -337,42 +336,31 @@ namespace DBDIconRepo.ViewModel
         }
 
         //Status effects
-        ObservableCollection<StatusEffectPreviewItem>? _statusEffects;
+        ObservableCollection<StatusEffectPreviewItem>? _statusEffects = new();
         public ObservableCollection<StatusEffectPreviewItem>? StatusEffectsPreview
         {
             get => _statusEffects;
             set => SetProperty(ref _statusEffects, value);
         }
 
+        private ObservableCollection<PerkPreviewItem> _sorted = new();
         public ObservableCollection<PerkPreviewItem>? SortedPerks
         {
-            get
-            {
-                if (PerksPreview is null)
-                    return null;
-                switch (CurrentPerkSortingMethod)
-                {
-                    case PerkSortBy.Name:
-                        if (IsPerkSortByAscending)
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderBy(perk => perk.Perk.Name));
-                        else
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderByDescending(perk => perk.Perk.Name));
-                    case PerkSortBy.Owner:
-                        if (IsPerkSortByAscending)
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderBy(perk => perk.Perk.PerkOwner));
-                        else
-                            return new ObservableCollection<PerkPreviewItem>(
-                                PerksPreview.OrderByDescending(perk => perk.Perk.PerkOwner));
-                    case PerkSortBy.Random:
-                        return new ObservableCollection<PerkPreviewItem>(
-                            PerksPreview.Shuffle());
-                }
-                return new ObservableCollection<PerkPreviewItem>(PerksPreview);
-            }
+            get => _sorted;
+            set => SetProperty(ref _sorted, value);
         }
+
+        public void SortingPerkList()
+        {
+            CanSort = false;
+            SortPerks().Await(() =>
+            {
+                CanSort = true;
+            });
+        }
+
+        [ObservableProperty]
+        bool canSort;
 
         PerkSortBy _perkSortBy = PerkSortBy.Name;
         public PerkSortBy CurrentPerkSortingMethod
@@ -394,11 +382,6 @@ namespace DBDIconRepo.ViewModel
                 if (SetProperty(ref _sortPerkAscending, value))
                     SortingPerkList();
             }
-        }
-
-        private void SortingPerkList()
-        {
-            OnPropertyChanged(nameof(SortedPerks));
         }
 
         public ICommand? SetDisplayMode { get; private set; }
