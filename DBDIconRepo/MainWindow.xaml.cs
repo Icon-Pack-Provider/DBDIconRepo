@@ -2,9 +2,6 @@
 using DBDIconRepo.Model;
 using DBDIconRepo.ViewModel;
 using ModernWpf.Controls.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;

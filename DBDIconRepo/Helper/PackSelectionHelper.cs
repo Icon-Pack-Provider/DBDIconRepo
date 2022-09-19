@@ -1,9 +1,6 @@
 ﻿using DBDIconRepo.Model;
 using IconPack.Model;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using PackInfo = IconPack.Helper.Info;
 
 namespace DBDIconRepo.Helper

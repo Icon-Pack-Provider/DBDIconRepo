@@ -1,14 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using IconPack.Model;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using PackInfo = IconPack.Helper.Info;
 
 namespace DBDIconRepo.ViewModel
 {
