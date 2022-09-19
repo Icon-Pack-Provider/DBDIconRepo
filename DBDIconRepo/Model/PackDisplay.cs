@@ -232,18 +232,18 @@ public partial class PackDisplay : ObservableObject
                     matcher.Append(perk.File);
                     matcher.Append(".png");
                 }
-                else if (item is Portrait portrait)
-                {
-                    matcher.Append(IconFolder.Portrait);
-                    if (!string.IsNullOrEmpty(portrait.Folder))
-                    {
-                        matcher.Append('/');
-                        matcher.Append(portrait.Folder);
-                    }
-                    matcher.Append('/');
-                    matcher.Append(portrait.File);
-                    matcher.Append(".png");
-                }
+                //else if (item is Portrait portrait)
+                //{
+                //    matcher.Append(IconFolder.Portrait);
+                //    if (!string.IsNullOrEmpty(portrait.Folder))
+                //    {
+                //        matcher.Append('/');
+                //        matcher.Append(portrait.Folder);
+                //    }
+                //    matcher.Append('/');
+                //    matcher.Append(portrait.File);
+                //    matcher.Append(".png");
+                //}
                 //TODO:Add support for displaying other stuff
 
                 int index = Info.ContentInfo.Files.IndexOf(matcher.ToString());

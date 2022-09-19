@@ -38,14 +38,14 @@ public class Setting : ObservableObject
         set => Set(ref _useUncuratedContent, value);
     }
 
-    ObservableCollection<IconInfo.Internal.IBasic> _selectedPreview = new()
+    ObservableCollection<IconInfo.Icon.Perk> _selectedPreview = new()
     {
         IconInfo.Icons.Perks.Spine_Chill,
         IconInfo.Icons.Perks.Adrenaline,
         IconInfo.Icons.Perks.Sloppy_Butcher,
         IconInfo.Icons.Perks.Lightborn
     };
-    public ObservableCollection<IconInfo.Internal.IBasic> PerkPreviewSelection
+    public ObservableCollection<IconInfo.Icon.Perk> PerkPreviewSelection
     {
         get => _selectedPreview;
         set => Set(ref _selectedPreview, value);

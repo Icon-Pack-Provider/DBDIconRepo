@@ -16,15 +16,12 @@ using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
 
-public class HomeViewModel : ObservableObject
+public partial class HomeViewModel : ObservableObject
 {
     OctokitService gitService => OctokitService.Instance;
     GitHubClient client => gitService.GitHubClientInstance;
     public void InitializeViewModel()
     {
-        //Initialize commands
-        InitializeCommands();
-
         //Monitor settings
         Messenger.Default.Register<HomeViewModel, SettingChangedMessage, string>(this,
             MessageToken.SETTINGVALUECHANGETOKEN, HandleSettingValueChanged);
@@ -214,89 +211,72 @@ public class HomeViewModel : ObservableObject
     #endregion
 
     #region Commands
-    public ICommand? SetFilterOnlyPerks { get; private set; }
-    public ICommand? SetFilterOnlyPortraits { get; private set; }
-    public ICommand? SetFilterShowAll { get; private set; }
-    public ICommand? SetSortAscendingOption { get; private set; }
-    public ICommand? SetSortOptions { get; private set; }
-    public ICommand? BrowseForSteamInstallationPath { get; private set; }
-    public ICommand? FindDBDSteam { get; private set; }
-    public ICommand? FindDBDXbox { get; private set; }
-    public ICommand? FindDBDEpic { get; private set; }
-
-    public ICommand? ResetSettings { get; private set; }
-    public ICommand? UninstallIconPack { get; private set; }
-    public ICommand? InstallThisPack { get; private set; }
-
-
-    private void InitializeCommands()
-    {
-        //Filter
-        SetFilterOnlyPerks = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPerksAction);
-        SetFilterOnlyPortraits = new RelayCommand<RoutedEventArgs>(SetFilterOnlyPortraitsAction);
-        SetFilterShowAll = new RelayCommand<RoutedEventArgs>(SetFilterCompletePackAction);
-        //Sort
-        SetSortAscendingOption = new RelayCommand<bool>(SetSortAscendingOptionAction);
-        SetSortOptions = new RelayCommand<string>(SetSortOptionsAction);
-        //Setting
-        BrowseForSteamInstallationPath = new RelayCommand<RoutedEventArgs>(BrowseForSteamInstallationPathAction);
-        FindDBDSteam = new RelayCommand<RoutedEventArgs>(FindDBDSteamAction);
-        FindDBDXbox = new RelayCommand<RoutedEventArgs>(FindDBDXboxAction);
-        FindDBDEpic = new RelayCommand<RoutedEventArgs>(FindDBDEpicAction);
-        //
-        ResetSettings = new RelayCommand<RoutedEventArgs>(ResetSettingsAction);
-        UninstallIconPack = new RelayCommand<RoutedEventArgs>(UninstallIconPackAction);
-    }
-
-    private void SetFilterOnlyPerksAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void OnlyPerkFilter(RoutedEventArgs? obj)
     {
         Config.FilterOptions.HasPerks = true;
         Config.FilterOptions.HasOfferings =
             Config.FilterOptions.HasStatus =
             Config.FilterOptions.HasPowers =
             Config.FilterOptions.HasPortraits =
+            Config.FilterOptions.HasItems =
             Config.FilterOptions.HasAddons = false;
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    private void SetFilterOnlyPortraitsAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void OnlyPortraitFilter(RoutedEventArgs? obj)
     {
         Config.FilterOptions.HasPortraits = true;
         Config.FilterOptions.HasOfferings =
             Config.FilterOptions.HasStatus =
             Config.FilterOptions.HasPowers =
             Config.FilterOptions.HasPerks =
+            Config.FilterOptions.HasItems =
             Config.FilterOptions.HasAddons = false;
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    private void SetFilterCompletePackAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void ClearFilter(RoutedEventArgs? obj)
     {
         Config.FilterOptions.HasOfferings =
             Config.FilterOptions.HasStatus =
             Config.FilterOptions.HasPowers =
             Config.FilterOptions.HasPortraits =
             Config.FilterOptions.HasAddons =
+            Config.FilterOptions.HasItems =
             Config.FilterOptions.HasPerks = true;
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    private void SetSortAscendingOptionAction(bool input)
+    [RelayCommand]
+    private void SortByAscending() => SetSortAscending(true);
+
+    [RelayCommand]
+    private void SortByDescending() => SetSortAscending(false);
+
+    public void SetSortAscending(bool value)
     {
-        Config.SortAscending = input;
+        Config.SortAscending = value;
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    private void SetSortOptionsAction(string? obj)
+    [RelayCommand]
+    private void SortByName() => SetSortOption(SortOptions.Name);
+    [RelayCommand]
+    private void SortByAuthor() => SetSortOption(SortOptions.Author);
+    [RelayCommand]
+    private void SortByLastUpdate() => SetSortOption(SortOptions.LastUpdate);
+
+    public void SetSortOption(SortOptions option)
     {
-        if (obj is null)
-            return;
-        SortOptions parse = Enum.Parse<SortOptions>(obj);
-        Config.SortBy = parse;
+        Config.SortBy = option;
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    private void BrowseForSteamInstallationPathAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void BrowseForDBD(RoutedEventArgs? obj)
     {
         Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
         {
@@ -313,7 +293,8 @@ public class HomeViewModel : ObservableObject
         }
     }
 
-    private void FindDBDSteamAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void LocateDBD(RoutedEventArgs? obj)
     {
         //Locate steam installation folder
         string? steamPath = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", "").ToString();
@@ -339,14 +320,15 @@ public class HomeViewModel : ObservableObject
         throw new NotImplementedException();
     }
 
-
-    private void ResetSettingsAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void ResetSetting(RoutedEventArgs? obj)
     {
         SettingManager.DeleteSettings();
         App.Current.Shutdown();
     }
 
-    private void UninstallIconPackAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void UninstallIconPack(RoutedEventArgs? obj)
     {
         if (string.IsNullOrEmpty(Config.DBDInstallationPath))
             return;
