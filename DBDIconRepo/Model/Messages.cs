@@ -1,112 +1,111 @@
 ﻿using IconPack.Model;
 using System.Collections.Generic;
 
-namespace DBDIconRepo.Model
+namespace DBDIconRepo.Model;
+
+public class FilterOptionChangedMessage
 {
-    public class FilterOptionChangedMessage
+    public string KeyChanged { get; private set; }
+    public FilterOptions Changed { get; private set; }
+
+    public FilterOptionChangedMessage(string key, FilterOptions value)
     {
-        public string KeyChanged { get; private set; }
-        public FilterOptions Changed { get; private set; }
-
-        public FilterOptionChangedMessage(string key, FilterOptions value)
-        {
-            KeyChanged = key;
-            Changed = value;
-        }
+        KeyChanged = key;
+        Changed = value;
     }
+}
 
-    public class SettingChangedMessage
+public class SettingChangedMessage
+{
+    public string? PropertyName { get; private set; }
+    public object? Value { get; private set; }
+
+    public SettingChangedMessage(string? property, object? value)
     {
-        public string? PropertyName { get; private set; }
-        public object? Value { get; private set; }
-
-        public SettingChangedMessage(string? property, object? value)
-        {
-            PropertyName = property;
-            Value = value;
-        }
+        PropertyName = property;
+        Value = value;
     }
+}
 
-    public class RequestSearchQueryMessage
+public class RequestSearchQueryMessage
+{
+    public string? Query { get; private set; }
+
+    public RequestSearchQueryMessage(string? _required)
     {
-        public string? Query { get; private set; }
-
-        public RequestSearchQueryMessage(string? _required)
-        {
-            Query = _required;
-        }
+        Query = _required;
     }
+}
 
-    public class RequestDownloadRepo
+public class RequestDownloadRepo
+{
+    public Pack Info { get; private set; }
+
+    public RequestDownloadRepo(Pack _pack)
     {
-        public Pack Info { get; private set; }
-
-        public RequestDownloadRepo(Pack _pack)
-        {
-            Info = _pack;
-        }
+        Info = _pack;
     }
+}
 
 
-    public class DownloadRepoProgressReportMessage
+public class DownloadRepoProgressReportMessage
+{
+    public DownloadState CurrentState { get; private set; }
+    public double EstimateProgress { get; private set; }
+
+    public DownloadRepoProgressReportMessage(DownloadState currentState, double estimateProgress)
     {
-        public DownloadState CurrentState { get; private set; }
-        public double EstimateProgress { get; private set; }
-
-        public DownloadRepoProgressReportMessage(DownloadState currentState, double estimateProgress)
-        {
-            CurrentState = currentState;
-            EstimateProgress = estimateProgress;
-        }
-        public DownloadRepoProgressReportMessage()
-        {
-            CurrentState = DownloadState.Transfering;
-            EstimateProgress = -1;
-        }
+        CurrentState = currentState;
+        EstimateProgress = estimateProgress;
     }
-
-    public class IndetermineRepoProgressReportMessage : DownloadRepoProgressReportMessage
+    public DownloadRepoProgressReportMessage()
     {
-        public IndetermineRepoProgressReportMessage()
-        {
-        }
+        CurrentState = DownloadState.Transfering;
+        EstimateProgress = -1;
     }
+}
 
-    public class WaitForInstallMessage
+public class IndetermineRepoProgressReportMessage : DownloadRepoProgressReportMessage
+{
+    public IndetermineRepoProgressReportMessage()
     {
-        public IList<IPackSelectionItem> PackInstallSelection { get; private set; }
-
-        public WaitForInstallMessage(IList<IPackSelectionItem> selections)
-            => PackInstallSelection = selections;
     }
+}
 
-    public class RequestViewPackDetailMessage
+public class WaitForInstallMessage
+{
+    public IList<IPackSelectionItem> PackInstallSelection { get; private set; }
+
+    public WaitForInstallMessage(IList<IPackSelectionItem> selections)
+        => PackInstallSelection = selections;
+}
+
+public class RequestViewPackDetailMessage
+{
+    public Pack? Selected { get; private set; }
+    public RequestViewPackDetailMessage(Pack? requested)
     {
-        public Pack? Selected { get; private set; }
-        public RequestViewPackDetailMessage(Pack? requested)
-        {
-            Selected = requested;
-        }
+        Selected = requested;
     }
+}
 
-    public class InstallationProgressReportMessage
+public class InstallationProgressReportMessage
+{
+    public string Filename { get; private set; }
+    public int TotalInstall { get; private set; }
+
+    public InstallationProgressReportMessage(string name, int total)
     {
-        public string Filename { get; private set; }
-        public int TotalInstall { get; private set; }
-
-        public InstallationProgressReportMessage(string name, int total)
-        {
-            Filename = name;
-            TotalInstall = total;
-        }
+        Filename = name;
+        TotalInstall = total;
     }
+}
 
-    public enum DownloadState
-    {
-        Enumerating,
-        Compressing,
-        Transfering,
-        CheckingOut,
-        Done
-    }
+public enum DownloadState
+{
+    Enumerating,
+    Compressing,
+    Transfering,
+    CheckingOut,
+    Done
 }

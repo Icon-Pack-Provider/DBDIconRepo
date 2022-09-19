@@ -3,39 +3,38 @@ using System.IO;
 using DBDIconRepo.Helper;
 using Octokit;
 
-namespace DBDIconRepo.Service
-{
-    public class OctokitService
-    {
-        public GitHubClient? GitHubClientInstance;
-        private string token = "";
+namespace DBDIconRepo.Service;
 
-        public void InitializeGit()
+public class OctokitService
+{
+    public GitHubClient? GitHubClientInstance;
+    private string token = "";
+
+    public void InitializeGit()
+    {
+        GitHubClientInstance = new GitHubClient(new ProductHeaderValue("ballz"));
+        if (string.IsNullOrEmpty(token))
         {
-            GitHubClientInstance = new GitHubClient(new ProductHeaderValue("ballz"));
-            if (string.IsNullOrEmpty(token))
+            string tokenFile = $"{Environment.CurrentDirectory}\\token.txt";
+            if (File.Exists(tokenFile))
             {
-                string tokenFile = $"{Environment.CurrentDirectory}\\token.txt";
-                if (File.Exists(tokenFile))
-                {
-                    token = File.ReadAllText(tokenFile);
-                }
-            }
-            if (!string.IsNullOrEmpty(token))
-            {
-                var tokenAuth = new Credentials(token);
-                GitHubClientInstance.Credentials = tokenAuth;
+                token = File.ReadAllText(tokenFile);
             }
         }
-
-        public static OctokitService Instance
+        if (!string.IsNullOrEmpty(token))
         {
-            get
-            {
-                if (!Singleton<OctokitService>.HasInitialize)
-                    Singleton<OctokitService>.Instance.InitializeGit();
-                return Singleton<OctokitService>.Instance;
-            }
+            var tokenAuth = new Credentials(token);
+            GitHubClientInstance.Credentials = tokenAuth;
+        }
+    }
+
+    public static OctokitService Instance
+    {
+        get
+        {
+            if (!Singleton<OctokitService>.HasInitialize)
+                Singleton<OctokitService>.Instance.InitializeGit();
+            return Singleton<OctokitService>.Instance;
         }
     }
 }

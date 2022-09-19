@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace DBDIconRepo.Helper
-{
+namespace DBDIconRepo.Helper;
+
 	public static class TaskExtensions
 	{
 		public async static void Await(this Task task, Action onComplete = null, Action<Exception> onError = null)
@@ -18,4 +18,3 @@ namespace DBDIconRepo.Helper
 			}
 		}
 	}
-}
