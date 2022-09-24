@@ -45,7 +45,7 @@ public static class IconManager
             if (item.IsSelected != true)
                 continue;
             //Report currently install file
-            Messenger.Default.Send(new InstallationProgressReportMessage(item.Name, selections.Count), $"{MessageToken.REPORTINSTALLPACKTOKEN}{packInfo.Repository.Name}");
+            Messenger.Default.Send(new InstallationProgressReportMessage(item.FullPath, selections.Count), $"{MessageToken.REPORTINSTALLPACKTOKEN}{packInfo.Repository.Name}");
 
             string iconPath = CacheOrGit.GetContentPath(packInfo.Repository.Owner, packInfo.Repository.Name, item.FullPath);
             string targetPath = $"{dbdPath}\\DeadByDaylight\\Content\\UI\\Icons\\{item.FilePath}";
@@ -56,14 +56,31 @@ public static class IconManager
             if (File.Exists(targetPath))
             {
                 File.Delete(targetPath);
-                //File.OpenRead(@"C:test.bin");
-                //string hash = BitConverter.ToString(System.Security.Cryptography.SHA1.Create().ComputeHash(FileOptions)); 
             }
-            //File.Copy broke :/
-            var stream = await File.ReadAllBytesAsync(iconPath);
-            using FileStream fs = new(targetPath, FileMode.Create, FileAccess.Write);
-            fs.Write(stream, 0, stream.Length);
+            try
+            {
+                var stream = await File.ReadAllBytesAsync(iconPath);
+                using FileStream fs = new(targetPath, FileMode.Create, FileAccess.Write);
+                fs.Write(stream, 0, stream.Length);
+            }
+            catch (DirectoryNotFoundException noDir)
+            {
+                //Re-clone???
+                throw new RepoNotUpdatedException();
+            }
+            catch (FileNotFoundException noFile)
+            {
+                throw new RepoNotUpdatedException();
+            }
         }
     }
+
+}
+
+/// <summary>
+/// Indicate the current pack need to clone again
+/// </summary>
+public class RepoNotUpdatedException : Exception
+{
 
 }

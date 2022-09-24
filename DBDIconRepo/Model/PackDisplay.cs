@@ -52,7 +52,7 @@ public partial class PackDisplay : ObservableObject
 
     private void InitializeCommand()
     {
-        SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction); 
+        SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction);
         InstallThisPack = new RelayCommand<RoutedEventArgs>(InstallThisPackAction);
         OpenPackDetailWindow = new RelayCommand<RoutedEventArgs>(OpenPackDetailWindowAction);
     }
@@ -82,11 +82,11 @@ public partial class PackDisplay : ObservableObject
                 Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
                     $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
                     HandleInstallProgress);
-                //Actually ask to start download
-                CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info).Await(() =>
-                {
-                    IconManager.Install(Setting.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
-                });
+                CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info)
+                    .Await(() =>
+                    {
+                        IconManager.Install(Setting.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
+                    });
             }
             else
             {
@@ -103,7 +103,7 @@ public partial class PackDisplay : ObservableObject
                     IconManager.Install(Setting.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
                 });
             }
-        }            
+        }
     }
 
     private void SearchForThisAuthorAction(RoutedEventArgs? obj)
@@ -151,7 +151,7 @@ public partial class PackDisplay : ObservableObject
         }
 
         //Check if it's done
-        if ((TotalDownloadProgress >= 99 && message.CurrentState <= DownloadState.CheckingOut) 
+        if ((TotalDownloadProgress >= 99 && message.CurrentState <= DownloadState.CheckingOut)
             || message.CurrentState == DownloadState.Done)
         {
             Messenger.Default.Unregister<DownloadRepoProgressReportMessage, string>(recipient, $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}");

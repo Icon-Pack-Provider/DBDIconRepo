@@ -3,21 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:m="clr-namespace:DBDIconRepo.Model"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         xmlns:convert="clr-namespace:DBDIconRepo.Converters"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
+        xmlns:m="clr-namespace:DBDIconRepo.Model"
+        ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d" Height="480" Width="600">
     <Window.DataContext>
         <vm:PackInstallViewModel x:Name="ViewModel"/>
     </Window.DataContext>
     <Window.Resources>
-        <convert:ShowSpecificTextIfNullConverter x:Key="nullToText"/>
-        <convert:RevealIfNull x:Key="showIfNull"/>
-        <convert:RevealIfNotNull x:Key="showIfNotNull"/>
-        <convert:InfoSummaryConverter x:Key="infoSummary"/>
+        <DataTemplate x:Key="noInfo" DataType="{x:Type m:IPackSelectionItem}">
+            <Grid>
+                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch"
+                          Content="{Binding FullPath}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="hasInfo" DataType="{x:Type m:IPackSelectionItem}">
+            <Grid>
+                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch">
+                    <CheckBox.Content>
+                        <TextBlock>
+                            <Run Text="{Binding FullPath}"/> (<Run Text="{Binding Info.Name}"/>)
+                        </TextBlock>
+                    </CheckBox.Content>
+                </CheckBox>
+            </Grid>
+        </DataTemplate>
+        <local:ShowInfoOrNoInfo x:Key="selectorDisplay"
+                                NoInfo="{StaticResource noInfo}"
+                                HasInfo="{StaticResource hasInfo}"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,65 +45,18 @@
         </Grid.RowDefinitions>
         <TextBlock Text="Select which components to install" FontSize="18" Margin="4,0" FontWeight="Bold"/>
 
-        <ui:ListView Grid.Row="1" ItemsSource="{Binding InstallableItems}" IsSelectionEnabled="False">
-            <ui:ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
-                            <CheckBox.Content>
-                                <TextBlock>
-                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
-                                </TextBlock>
-                            </CheckBox.Content>
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
-                            <CheckBox.Content>
-                                <TextBlock Text="{Binding Name}"/>
-                            </CheckBox.Content>
-                        </CheckBox>
-                    </StackPanel>
-                </DataTemplate>
-            </ui:ListView.ItemTemplate>
-        </ui:ListView>
-        <!--<TreeView Grid.Row="1" ItemsSource="{Binding InstallableItems}">
-            --><!-- Expand all items by default, but cause app to froze quite a while -->
-            <!--<TreeView.ItemContainerStyle>
-                <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
-                    <Setter Property="TreeViewItem.IsExpanded" Value="True"/>
+        <ListBox Grid.Row="1" 
+                 ItemsSource="{Binding InstallableItems, Mode=TwoWay}" 
+                 SelectionMode="Multiple" 
+                 ItemTemplateSelector="{StaticResource selectorDisplay}"
+                 ScrollViewer.CanContentScroll="False">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                 </Style>
-            </TreeView.ItemContainerStyle>--><!--
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFolder}"
-                                          ItemsSource="{Binding Childs}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
-                            <Run Text="{Binding Info.Name}"/> (<Run Text="{Binding Name}"/>)
-                        </TextBlock>
-                        <TextBlock Text="{Binding Name}" Visibility="{Binding Info, Converter={StaticResource showIfNull}}"/>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type m:PackSelectionFile}">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                  Visibility="{Binding Info, Converter={StaticResource showIfNotNull}}">
-                            <CheckBox.Content>
-                                <TextBlock>
-                                    <Run Text="{Binding Info, Converter={StaticResource infoSummary}}"/> (<Run Text="{Binding Name}"/>)
-                                </TextBlock>
-                            </CheckBox.Content>
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                  Visibility="{Binding Info, Converter={StaticResource showIfNull}}">
-                            <CheckBox.Content>
-                                <TextBlock Text="{Binding Name}"/>
-                            </CheckBox.Content>
-                        </CheckBox>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
-        </TreeView>-->
+            </ListBox.ItemContainerStyle>
+        </ListBox>
         
         <Rectangle Grid.Row="2" Fill="{DynamicResource CommandBarBackground}"/>
         <ui:CommandBar Grid.Row="2" DefaultLabelPosition="Bottom">

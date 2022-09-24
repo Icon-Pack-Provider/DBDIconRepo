@@ -14,34 +14,25 @@ public static class IconTypeIdentify
     public static IBasic? FromPath(string path)
     {
         FileInfo fileInfo = new(path);
-        if (path.StartsWith(Terms.Portrait))
-            return Info.Portraits[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.DailyRitual))
-            return Info.DailyRituals[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.Emblem))
-            return Info.Emblems[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.Offering))
-            return Info.Offerings[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.Addon))
+        string name = fileInfo.NameOnly();
+        string start = path.Substring(0, path.IndexOf('/'));
+        switch (start)
         {
-            if (fileInfo.Directory.Name != Terms.Addon)
-                return Info.GetAddon(fileInfo.NameOnly(), fileInfo.Directory.Name);
-            return Info.GetAddon(fileInfo.NameOnly());
+            case Terms.Portrait: return Info.Portraits.ContainsKey(name) ? Info.Portraits[name] : UnknownIcon(path);
+            case Terms.DailyRitual: return Info.DailyRituals.ContainsKey(name) ? Info.DailyRituals[name] : UnknownIcon(path);
+            case Terms.Emblem: return Info.Emblems.ContainsKey(name) ? Info.Emblems[name] : UnknownIcon(path);
+            case Terms.Offering: return Info.Offerings.ContainsKey(name) ? Info.Offerings[name] : UnknownIcon(path);
+            case Terms.Item: return Info.Items.ContainsKey(name) ? Info.Items[name] : UnknownIcon(path);
+            case Terms.Power: return Info.Powers.ContainsKey(name) ? Info.Powers[name] : UnknownIcon(path);
+            case Terms.Perk: return Info.Perks.ContainsKey(name) ? Info.Perks[name] : UnknownIcon(path);
+            case Terms.StatusEffect: return Info.StatusEffects.ContainsKey(name) ? Info.StatusEffects[name] : UnknownIcon(path);
+            case Terms.Addon:
+                if (fileInfo.Directory.Name != Terms.Addon)
+                    return Info.GetAddon(name, fileInfo.Directory.Name);
+                return Info.GetAddon(name);
+            default:
+                return UnknownIcon(path);
         }
-        else if (path.StartsWith(Terms.Item))
-            return Info.Items[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.Power))
-            return Info.Powers[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.Perk))
-            return Info.Perks[fileInfo.NameOnly()];
-        else if (path.StartsWith(Terms.StatusEffect))
-            return Info.StatusEffects[fileInfo.NameOnly()];
-        else
-            return new UnknownIcon()
-            {
-                File = fileInfo.NameOnly(),
-                Name = fileInfo.NameOnly()
-            };
     }
 
     public static BasePreview FromBasicInfo(string path, PackRepositoryInfo repo)
@@ -111,25 +102,21 @@ public static class IconTypeIdentify
 
     public static IBasic UnknownIcon(string path)
     {
-        if (path.StartsWith(Terms.Portrait))
-            return new Portrait() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.DailyRitual))
-            return new DailyRitual() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Emblem))
-            return new Emblem() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Offering))
-            return new Offering() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Addon))
-            return new Addon() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Item))
-            return new Item() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Power))
-            return new Power() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.Perk))
-            return new Perk() { File = path.NameOnly(), Name = path.NameOnly() };
-        else if (path.StartsWith(Terms.StatusEffect))
-            return new StatusEffect() { File = path.NameOnly(), Name = path.NameOnly() };
-        else
-            return new UnknownIcon(path);
+        FileInfo fileInfo = new(path);
+        string name = fileInfo.NameOnly();
+        string start = path.Substring(0, path.IndexOf('/'));
+        switch (start)
+        {
+            case Terms.Portrait: return new Portrait() { File = name, Name = name };
+            case Terms.DailyRitual: return new DailyRitual() { File = name, Name = name };
+            case Terms.Emblem: return new Emblem() { File = name, Name = name };
+            case Terms.Addon: return new Addon() { File = name, Name = name };
+            case Terms.Offering: return new Offering() { File = name, Name = name };
+            case Terms.Item: return new Item() { File = name, Name = name };
+            case Terms.Power: return new Power() { File = name, Name = name };
+            case Terms.Perk: return new Perk() { File = name, Name = name };
+            case Terms.StatusEffect: return new StatusEffect() { File = name, Name = name };
+            default: return new UnknownIcon(path);
+        }
     }
 }

@@ -188,21 +188,22 @@ public static class CacheOrGit
 
     //TODO:Deal with other pack type (Portrait, etc)
     private static Throttler _throttler = new(250);
-    public static async Task DownloadPack(Repository repo, Pack pack)
+    public static async Task DownloadPack(Repository repo, Pack pack, bool cloneAnyway = false)
     {
         string repoCachedFolder = $"{Environment.CurrentDirectory}\\{CachedFolderName}\\{repo.Owner.Login}\\{repo.Name}";
 
         var user = await client.User.Current();
         var token = client.Credentials.GetToken();
 
-        if (!Directory.Exists(repoCachedFolder))
+    reclone:
+        if (!Directory.Exists(repoCachedFolder) || cloneAnyway)
         {
             Directory.CreateDirectory(repoCachedFolder);
             //Start new download
             //pull from remote
             try
             {
-                Task.Run(() =>
+                await Task.Run(() =>
                 {
                     LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, repoCachedFolder, new LibGit2Sharp.CloneOptions()
                     {
@@ -212,7 +213,7 @@ public static class CacheOrGit
                         OnCheckoutProgress = (path, complete, total) => ReportCheckoutProgress(repo.Name, path, complete, total),
                         IsBare = false
                     });
-                }).Await();
+                });
             }
             catch (Exception ex)
             {
@@ -222,10 +223,14 @@ public static class CacheOrGit
         else
         {
             DirectoryInfo dir = new(repoCachedFolder);
-            int count = dir.GetFiles("*", SearchOption.AllDirectories).Count();
-            long size = dir.GetFiles("*", SearchOption.AllDirectories)
-                .Select(file => file.Length).Sum();
-
+            var files = dir.GetFiles("*", SearchOption.AllDirectories).ToList();
+            int count = files.Count;
+            long size = files.Select(file => file.Length).Sum();
+            if (size == 0)
+            {
+                Directory.Delete(dir.FullName);
+                goto reclone;
+            }
 
             //Get a latest commit date on both local and remote
             DateTime localLatestCommit = DateTime.MinValue;

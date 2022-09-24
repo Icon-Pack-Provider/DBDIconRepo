@@ -1,5 +1,7 @@
-﻿using ModernWpf.Controls.Primitives;
+﻿using IconPack.Model;
+using ModernWpf.Controls.Primitives;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace DBDIconRepo.Dialog;
 
@@ -13,7 +15,7 @@ public partial class PackInstall : Window
         InitializeComponent();
     }
 
-    public PackInstall(IconPack.Model.Pack? selected)
+    public PackInstall(Pack? selected)
     {
         InitializeComponent();
         DataContext = new ViewModel.PackInstallViewModel(selected);
@@ -34,5 +36,26 @@ public partial class PackInstall : Window
     {
         DialogResult = false;
         this.Close();
+    }
+}
+
+public class ShowInfoOrNoInfo : DataTemplateSelector
+{
+    public DataTemplate HasInfo { get; set; }
+    public DataTemplate NoInfo { get; set; }
+
+    public override DataTemplate SelectTemplate(object item, DependencyObject container)
+    {
+        if (item is Model.IPackSelectionItem selectable)
+        {
+            if (selectable.Info is null)
+                return NoInfo;
+            else if (string.IsNullOrEmpty(selectable.Info.Name))
+                return NoInfo;
+            else if (selectable.Info.Name.Contains('_'))
+                return NoInfo;
+            return HasInfo;
+        }
+        return base.SelectTemplate(item, container);
     }
 }

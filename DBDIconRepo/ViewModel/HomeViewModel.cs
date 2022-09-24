@@ -187,7 +187,6 @@ public partial class HomeViewModel : ObservableObject
     public Setting? Config => Setting.Instance;
 
     #region GIT
-    
     private const string PackTag = "dbd-icon-pack";
     public async Task FindPack()
     {

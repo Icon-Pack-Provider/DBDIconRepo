@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
+using IconInfo.Internal;
 using IconPack.Model;
 using System.Linq;
 
@@ -9,58 +10,36 @@ public interface IPackSelectionItem
 {
     string? FullPath { get; set; }
     string? FilePath { get; }
-    string? Name { get; set; }
     bool? IsSelected { get; set; }
-    IBaseItemInfo? Info { get; set; }
+    IBasic? Info { get; set; }
 }
 
-public class PackSelectionFile : ObservableObject, IPackSelectionItem
+public partial class PackSelectionFile : ObservableObject, IPackSelectionItem
 {
-    string? _fullPath;
-    /// <summary>
-    /// Filename
-    /// </summary>
-    public string? FullPath
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilePath))]
+    string? fullPath;
+    public string FilePath
     {
-        get => _fullPath;
-        set => SetProperty(ref _fullPath, value);
+        get
+        {
+            if (FullPath is null)
+                return "";
+            return FullPath.Replace('/', '\\');
+        }
     }
 
-    public string FilePath => FullPath.Replace('/', '\\');
+    [ObservableProperty]
+    bool? isSelected = true;
 
-    string? _name;
-    /// <summary>
-    /// Filename
-    /// </summary>
-    public string? Name
-    {
-        get => _name;
-        set => SetProperty(ref _name, value);
-    }
+    [ObservableProperty]
+    IBasic? info;
 
-    bool? _selected;
-    public bool? IsSelected
-    {
-        get => _selected;
-        set => SetProperty(ref _selected, value);
-    }
-
-    IBaseItemInfo? _info;
-    public IBaseItemInfo? Info
-    {
-        get => _info;
-        set => SetProperty(ref _info, value);
-    }
-    public PackSelectionFile()
-    {
-        IsSelected = true;
-    }
+    public PackSelectionFile() { }
 
     public PackSelectionFile(string path)
     {
+        Info = IconTypeIdentify.FromPath(path);
         FullPath = path;
-        Name = path.Split('/', System.StringSplitOptions.RemoveEmptyEntries).Last().Replace(".png", "");
-        IsSelected = true;
-        Info = PackSelectionHelper.GetItemInfo(path);
     }
 }

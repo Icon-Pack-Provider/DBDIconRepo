@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace DBDIconRepo.ViewModel;
 
-public class PackInstallViewModel : ObservableObject
+public partial class PackInstallViewModel : ObservableObject
 {
     Pack? _selected;
     public Pack? SelectedPack
