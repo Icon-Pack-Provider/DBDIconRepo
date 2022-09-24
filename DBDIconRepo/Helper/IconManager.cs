@@ -23,18 +23,31 @@ public static class IconManager
         "hidden.png",
         "categoryIcon_outfits_lg.png"
     };
-    public static void Uninstall(string dbdPath)
+    public static bool Uninstall(string dbdPath)
     {
-        DirectoryInfo info = new DirectoryInfo($"{dbdPath}\\DeadByDaylight\\Content\\UI\\Icons");
-        var files = info.GetFiles("*", SearchOption.AllDirectories);
-        foreach (var file in files)
+        try
         {
-            if (ignoreList.Contains(file.Name))
-                continue;
-            if (ignoreDirectory.Contains(file.Directory.Name))
-                continue;
+            DirectoryInfo info = new DirectoryInfo(dbdPath);
+            if (!dbdPath.Contains("UI") && !dbdPath.Contains("Icons"))
+            {
+                info = new($"{dbdPath}\\DeadByDaylight\\Content\\UI\\Icons");
+            }
+            
+            var files = info.GetFiles("*", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                if (ignoreList.Contains(file.Name))
+                    continue;
+                if (ignoreDirectory.Contains(file.Directory.Name))
+                    continue;
 
-            file.Delete();
+                file.Delete();
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 

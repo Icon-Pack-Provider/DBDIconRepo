@@ -331,7 +331,10 @@ public partial class HomeViewModel : ObservableObject
     {
         if (string.IsNullOrEmpty(Config.DBDInstallationPath))
             return;
-        IconManager.Uninstall(Config.DBDInstallationPath);
+        if (IconManager.Uninstall(Config.DBDInstallationPath))
+        {
+            MessageBox.Show($"Icon pack uninstall succesfully!");
+        }
     }
 
     #endregion
