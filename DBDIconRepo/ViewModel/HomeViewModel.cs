@@ -30,18 +30,19 @@ public partial class HomeViewModel : ObservableObject
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
 
-        if (AllAvailablePack is null)
-            AllAvailablePack = new ObservableCollection<PackDisplay>();
-        FindPack().Await(() =>
+        Task.Run(async () =>
         {
+            IconPack.Packs.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
+            var packs = await IconPack.Packs.GetPacks();
+            AllAvailablePack = new(packs.Select(i => new PackDisplay(i)));
+        }).Await(() =>
+        {
+            //Task done!
             //Filters
             ApplyFilter();
             //Monitor settings
             Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterOptionChanged);
-        });
-
-        Task.Delay(5000).Await(() =>
-        {
+            //
             Setting.EnableMessageGateOnSettingChanged();
         });
     }

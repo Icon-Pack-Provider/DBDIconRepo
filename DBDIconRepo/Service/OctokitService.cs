@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using DBDIconRepo.Helper;
+using DBDIconRepo.Model;
 using Octokit;
 
 namespace DBDIconRepo.Service;
@@ -13,19 +14,8 @@ public class OctokitService
     public void InitializeGit()
     {
         GitHubClientInstance = new GitHubClient(new ProductHeaderValue("ballz"));
-        if (string.IsNullOrEmpty(token))
-        {
-            string tokenFile = $"{Environment.CurrentDirectory}\\token.txt";
-            if (File.Exists(tokenFile))
-            {
-                token = File.ReadAllText(tokenFile);
-            }
-        }
-        if (!string.IsNullOrEmpty(token))
-        {
-            var tokenAuth = new Credentials(token);
-            GitHubClientInstance.Credentials = tokenAuth;
-        }
+        var tokenAuth = new Credentials(Setting.Instance.GitHubLoginToken);
+        GitHubClientInstance.Credentials = tokenAuth;
     }
 
     public static OctokitService Instance

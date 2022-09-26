@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
+using static IconInfo.Strings.Terms;
 
 namespace DBDIconRepo.Helper;
 
@@ -25,7 +26,7 @@ public static class CacheOrGit
         string cachedRoot = GetDisplayContentPath(repo.Owner.Login, repo.Name);
 
         //Local pack.json info
-        string packJsonCached = $"{cachedRoot}\\{Terms.PackJson}";
+        string packJsonCached = Path.Join(cachedRoot, Terms.PackJson);
         if (!File.Exists(packJsonCached))
         {
             byte[] jsonRaw = new byte[] { };
@@ -58,7 +59,7 @@ public static class CacheOrGit
             if (packInfo.Repository is null) { packInfo.Repository = new PackRepositoryInfo(repo); }
             if (packInfo.ContentInfo is null)
             {
-                packInfo.ContentInfo = await PackContentInfo.GetContentInfo(client, repo).ConfigureAwait(true);
+                packInfo.ContentInfo = await PackContentInfo.GetContentInfo(repo).ConfigureAwait(true);
             }
 
             //update

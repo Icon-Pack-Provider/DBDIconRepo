@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DBDIconRepo.Strings;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -116,6 +117,20 @@ public class Setting : ObservableObject
     {
         get => iconPreviewDecodeHeight;
         set => Set(ref iconPreviewDecodeHeight, value);
+    }
+
+    string gitToken = "";
+    public string GitHubLoginToken
+    {
+        get => gitToken;
+        set => Set(ref gitToken, value);
+    }
+
+    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
+    public string CacheAndDisplayDirectory
+    {
+        get => path;
+        set => Set(ref path, value);
     }
     
 
