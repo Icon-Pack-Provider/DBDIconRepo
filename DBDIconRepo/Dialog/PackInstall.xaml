@@ -48,8 +48,12 @@
         <ListBox Grid.Row="1" 
                  ItemsSource="{Binding InstallableItems, Mode=TwoWay}" 
                  SelectionMode="Multiple" 
-                 ItemTemplateSelector="{StaticResource selectorDisplay}"
-                 ScrollViewer.CanContentScroll="False">
+                 ItemTemplateSelector="{StaticResource selectorDisplay}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -62,8 +66,8 @@
         <ui:CommandBar Grid.Row="2" DefaultLabelPosition="Bottom">
             <ui:CommandBar.Content>
                 <ui:CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Bottom">
-                    <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAll}"/>
-                    <ui:AppBarButton Label="Select none" Icon="ClearSelection" Command="{Binding UnSelectAll}"/>
+                    <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAllCommand}"/>
+                    <ui:AppBarButton Label="Select none" Icon="ClearSelection" Command="{Binding UnSelectAllCommand}"/>
                     <!-- TODO: Selection helper, with dynamic menu. Loading menu list from git -->
                     <!--<ui:AppBarSeparator/>
                     <ui:AppBarButton Label="Selection..." Icon="List" Click="OpenAttatchedFlyout">
