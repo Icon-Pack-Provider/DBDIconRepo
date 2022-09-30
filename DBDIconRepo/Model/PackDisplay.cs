@@ -8,14 +8,11 @@ using IconPack.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
-using IconFolder = IconInfo.Strings.Terms;
-using System.Text;
-using IconInfo.Icon;
+using IconPack;
+using System.Threading.Tasks;
 
 namespace DBDIconRepo.Model;
 
@@ -25,44 +22,24 @@ public partial class PackDisplay : ObservableObject
     public PackDisplay(Pack _info)
     {
         Info = _info;
-
-        InitializeCommand();
     }
 
-    Pack? _base;
-    public Pack? Info
-    {
-        get => _base;
-        set => SetProperty(ref _base, value);
-    }
+    [ObservableProperty]
+    Pack? info;
 
     //Include images
-    ObservableCollection<IDisplayItem>? _previewSauces;
     //Limit to just 4 items!
-    public ObservableCollection<IDisplayItem>? PreviewSources
-    {
-        get => _previewSauces;
-        set => SetProperty(ref _previewSauces, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<IDisplayItem>? previewSources;
 
-    //
-    public ICommand? SearchForThisAuthor { get; private set; }
-    public ICommand? InstallThisPack { get; private set; }
-    public ICommand? OpenPackDetailWindow { get; private set; }
-
-    private void InitializeCommand()
-    {
-        SearchForThisAuthor = new RelayCommand<RoutedEventArgs>(SearchForThisAuthorAction);
-        InstallThisPack = new RelayCommand<RoutedEventArgs>(InstallThisPackAction);
-        OpenPackDetailWindow = new RelayCommand<RoutedEventArgs>(OpenPackDetailWindowAction);
-    }
-
-    private void OpenPackDetailWindowAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void OpenPackDetailWindow(RoutedEventArgs? obj)
     {
         Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
     }
 
-    private async void InstallThisPackAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private async void InstallThisPack(RoutedEventArgs? obj)
     {
         //Show selection
         PackInstall install = new(Info);
@@ -106,24 +83,17 @@ public partial class PackDisplay : ObservableObject
         }
     }
 
-    private void SearchForThisAuthorAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void SearchForThisAuthor(RoutedEventArgs? obj)
     {
         Messenger.Default.Send(new RequestSearchQueryMessage(Info.Author), MessageToken.REQUESTSEARCHQUERYTOKEN);
     }
 
-    PackState _state = PackState.None;
-    public PackState CurrentPackState
-    {
-        get => _state;
-        set => SetProperty(ref _state, value);
-    }
+    [ObservableProperty]
+    PackState currentPackState = PackState.None;
 
-    double _totalProgress;
-    public double TotalDownloadProgress
-    {
-        get => _totalProgress;
-        set => SetProperty(ref _totalProgress, value);
-    }
+    [ObservableProperty]
+    double totalDownloadProgress;
 
     private void HandleDownloadProgress(PackDisplay recipient, DownloadRepoProgressReportMessage message)
     {
@@ -159,26 +129,15 @@ public partial class PackDisplay : ObservableObject
         }
     }
 
-    int _installProgress = -1;
-    public int CurrentInstallProgress
-    {
-        get => _installProgress;
-        set => SetProperty(ref _installProgress, value);
-    }
+    [ObservableProperty]
+    int currentInstallProgress = -1;
 
-    int _totalInstall = -1;
-    public int TotalInstallProgress
-    {
-        get => _totalInstall;
-        set => SetProperty(ref _totalInstall, value);
-    }
+    [ObservableProperty]
+    int totalInstallProgress = -1;
 
-    string? _latestInstall;
-    public string? LatestInstalledFile
-    {
-        get => _latestInstall;
-        set => SetProperty(ref _latestInstall, value);
-    }
+    [ObservableProperty]
+    string? latestInstalledFile;
+
     private void HandleInstallProgress(PackDisplay recipient, InstallationProgressReportMessage message)
     {
         CurrentPackState = PackState.Installing;
@@ -203,50 +162,25 @@ public partial class PackDisplay : ObservableObject
         }
     }
 
-    public void HandleURLs()
+    public async Task GatherPreview()
     {
         if (PreviewSources is null)
             PreviewSources = new ObservableCollection<IDisplayItem>();
         //Is this pack have banner?
-        string path = CacheOrGit.GetDisplayContentPath(Info.Repository.Owner, Info.Repository.Name);
-        if (File.Exists($"{path}\\.banner.png")) //Banner exist, link to it on github
+        var bannerState = await Packs.IsPackBannerExist(Info);
+        if (bannerState)
         {
-            //Load image
-            PreviewSources.Add(new BannerDisplay(URL.GetGithubRawContent(Info.Repository, ".banner.png")));
+            var bannerURL = await Packs.GetPackBannerURL(Info);
+            PreviewSources.Add(new BannerDisplay(bannerURL));
+            return;
         }
         else //banner not exist, get URLs for perk icons that required to display on setting
         {
             var matchSearch = new List<string>();
             foreach (var item in Setting.Instance.PerkPreviewSelection)
             {
-                StringBuilder matcher = new();
-                if (item is Perk perk)
-                {
-                    matcher.Append(IconFolder.Perk);
-                    if (!string.IsNullOrEmpty(perk.Folder))
-                    {
-                        matcher.Append('/');
-                        matcher.Append(perk.Folder);
-                    }
-                    matcher.Append('/');
-                    matcher.Append(perk.File);
-                    matcher.Append(".png");
-                }
-                //else if (item is Portrait portrait)
-                //{
-                //    matcher.Append(IconFolder.Portrait);
-                //    if (!string.IsNullOrEmpty(portrait.Folder))
-                //    {
-                //        matcher.Append('/');
-                //        matcher.Append(portrait.Folder);
-                //    }
-                //    matcher.Append('/');
-                //    matcher.Append(portrait.File);
-                //    matcher.Append(".png");
-                //}
-                //TODO:Add support for displaying other stuff
-
-                int index = Info.ContentInfo.Files.IndexOf(matcher.ToString());
+                var found = info.ContentInfo.Files.First(f => f.Contains(item.File));
+                var index = info.ContentInfo.Files.IndexOf(found);
                 if (index >= 0)
                     matchSearch.Add(Info.ContentInfo.Files[index]);
             }
@@ -263,6 +197,9 @@ public partial class PackDisplay : ObservableObject
             }
             foreach (var icon in matchSearch)
             {
+                var url = Packs.GetPackItemOnGit(info, icon);
+                if (url is null)
+                    continue;
                 PreviewSources.Add(new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon)));
             }
         }

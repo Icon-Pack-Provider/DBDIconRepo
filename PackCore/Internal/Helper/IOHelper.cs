@@ -76,7 +76,7 @@ internal static class IOHelper
     public static FileInfo GetLocalBanner(string owner, string repoName)
         => GetRepoContentDisplayDirectory(owner, repoName, BannerFile);
     
-    public static bool IsLocalBannerExist(string owner, string repoName)
+    public static bool? IsLocalBannerExist(string owner, string repoName)
     {
         var file = GetRepoContentDisplayDirectory(owner, repoName, BannerFile);
         if (file.Exists)
@@ -84,13 +84,33 @@ internal static class IOHelper
         var nobanner = GetRepoContentDisplayDirectory(owner, repoName, NoBanner);
         if (nobanner.Exists)
             return false;
-        return false;
+        return null;
     }
     public static void SetLocalBanner(string owner, string repoName, bool hasBanner)
     {
         var localBanner = GetRepoContentDisplayDirectory(owner, repoName, hasBanner ? BannerFile : NoBanner);
         if (!localBanner.Exists) localBanner.Create();
     }
+
+    public static void SetLocalReadme(string owner, string repoName, bool hasReadme)
+    {
+        var localReadme = GetRepoContentDisplayDirectory(owner, repoName, hasReadme ? ReadmeFile : NoReadme);
+        if (!localReadme.Exists) localReadme.Create();
+    }
+
+    public static bool? IsLocalReadmeExist(string owner, string repoName)
+    {
+        var file = GetRepoContentDisplayDirectory(owner, repoName, ReadmeFile);
+        if (file.Exists)
+            return true;
+        var nobanner = GetRepoContentDisplayDirectory(owner, repoName, NoBanner);
+        if (nobanner.Exists)
+            return false;
+        return null;
+    }
+
+    public static FileInfo GetLocalReadme(string owner, string repoName)
+        => GetRepoContentDisplayDirectory(owner, repoName, ReadmeFile);
 
     #endregion
     #region Display overload
@@ -119,9 +139,9 @@ internal static class IOHelper
     public static FileInfo GetLocalBanner(Octokit.Repository repository)
         => GetRepoContentDisplayDirectory(repository, BannerFile);
 
-    public static bool IsLocalBannerExist(PackRepositoryInfo repository)
+    public static bool? IsLocalBannerExist(PackRepositoryInfo repository)
         => IsLocalBannerExist(repository.Owner, repository.Name);
-    public static bool IsLocalBannerExist(Octokit.Repository repository)
+    public static bool? IsLocalBannerExist(Octokit.Repository repository)
         => IsLocalBannerExist(repository.Owner.Login, repository.Name);
 
     public static void SetLocalBanner(PackRepositoryInfo repository, bool hasBanner)
@@ -135,5 +155,23 @@ internal static class IOHelper
 
     public static bool IsLocalPackJSONExist(Octokit.Repository repository)
         => IsLocalPackJSONExist(repository.Owner.Login, repository.Name);
+
+    public static bool? IsLocalReadmeExist(PackRepositoryInfo repository)
+        => IsLocalReadmeExist(repository.Owner, repository.Name);
+
+    public static bool? IsLocalReadmeExist(Octokit.Repository repository)
+        => IsLocalReadmeExist(repository.Owner.Login, repository.Name);
+
+    public static void SetLocalReadme(PackRepositoryInfo repository, bool hasReadme)
+        => SetLocalReadme(repository.Owner, repository.Name, hasReadme);
+
+    public static void SetLocalReadme(Octokit.Repository repository, bool hasReadme)
+        => SetLocalReadme(repository.Owner.Login, repository.Name, hasReadme);
+
+    public static FileInfo GetLocalReadme(PackRepositoryInfo repository)
+        => GetLocalReadme(repository.Owner, repository.Name);
+
+    public static FileInfo GetLocalReadme(Octokit.Repository repository)
+        => GetLocalReadme(repository.Owner.Login, repository.Name);
     #endregion
 }

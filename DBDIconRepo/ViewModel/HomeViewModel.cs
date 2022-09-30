@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
+using IconPack;
 using Octokit;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
@@ -32,9 +32,24 @@ public partial class HomeViewModel : ObservableObject
 
         Task.Run(async () =>
         {
-            IconPack.Packs.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
-            var packs = await IconPack.Packs.GetPacks();
-            AllAvailablePack = new(packs.Select(i => new PackDisplay(i)));
+            //
+            AllAvailablePack = new();
+            //
+            Packs.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
+            var packs = await Packs.GetPacks();
+            foreach (var pack in packs)
+            {
+                PackDisplay display = new(pack);
+                if (display is null)
+                    continue;
+                //Check readme
+                await Packs.CheckPackReadme(pack);
+                //Check banner data
+                await Packs.CheckPackBanner(pack);
+                //Get banner or perks URL for pack showcasing/preview samples
+                await display.GatherPreview();
+                AllAvailablePack.Add(display);
+            }
         }).Await(() =>
         {
             //Task done!
@@ -186,29 +201,6 @@ public partial class HomeViewModel : ObservableObject
     }
 
     public Setting? Config => Setting.Instance;
-
-    #region GIT
-    private const string PackTag = "dbd-icon-pack";
-    public async Task FindPack()
-    {
-        //TODO:Somewhere before this, search if all result already cached
-        var request = new SearchRepositoriesRequest($"topic:{PackTag}");
-        var result = await client.Search.SearchRepo(request);
-        foreach (var repo in result.Items)
-        {
-            var packInfo = await CacheOrGit.GetPack(repo);
-            PackDisplay? gatheredPack = new(packInfo);
-            
-            if (gatheredPack is null)
-                continue;
-            //Preview icons
-            await CacheOrGit.GatherPackDisplayData(repo, gatheredPack.Info, Config.PerkPreviewSelection.Select(i => i.File).ToArray());
-            gatheredPack.HandleURLs();
-            AllAvailablePack.Add(gatheredPack);
-        }
-    }
-
-    #endregion
 
     #region Commands
     [RelayCommand]

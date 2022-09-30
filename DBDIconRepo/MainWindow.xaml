@@ -196,7 +196,7 @@
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock HorizontalAlignment="Left">
-                                Author: <Hyperlink Command="{Binding SearchForThisAuthor}"><Run Text="{Binding Info.Author, Converter={StaticResource propertyDisplay}}"/></Hyperlink>
+                                Author: <Hyperlink Command="{Binding SearchForThisAuthorCommand}"><Run Text="{Binding Info.Author, Converter={StaticResource propertyDisplay}}"/></Hyperlink>
                             </TextBlock>
                             <!-- Content availability info info -->
                             <StackPanel Orientation="Horizontal" Margin="0,4">
@@ -237,7 +237,7 @@
                             <!-- Normal state -->
                             <Button ToolTipService.ToolTip="Install" 
                                     Grid.Column="0" HorizontalAlignment="Stretch"
-                                    Command="{Binding InstallThisPack}"
+                                    Command="{Binding InstallThisPackCommand}"
                                     MinWidth="32"
                                     MinHeight="32"
                                     Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
@@ -254,7 +254,7 @@
                                     Grid.Column="2" HorizontalAlignment="Stretch"
                                     MinWidth="32"
                                     MinHeight="32"
-                                    Command="{Binding OpenPackDetailWindow}">
+                                    Command="{Binding OpenPackDetailWindowCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph="" 
                                                  Margin="5,0"

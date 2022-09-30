@@ -9,6 +9,13 @@ namespace IconPack.Internal.Helper;
 /// </summary>
 internal class URL
 {
+    public static async Task<byte[]> GetBytes(string url)
+    {
+        using var client = new HttpClient();
+        using var response = await client.GetAsync(url);
+        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+    }
+
     public static async Task<bool> Exists(string? url)
     {
         url = EnsurePathIsWebURL(url);
@@ -27,26 +34,42 @@ internal class URL
     public static async Task<bool> IsBannerExist(string? owner, string? name, string? defaultBranch)
         => await Exists(GetGithubRawContent(owner, name, defaultBranch, BannerFile));
 
+    public static string GetBannerURL(string? owner, string? name, string? defaultBranch)
+        => GetGithubRawContent(owner, name, defaultBranch, BannerFile);
+
+    public static async Task<bool> IsReadmeExist(string? owner, string? name, string? defaultBranch)
+        => await Exists(GetGithubRawContent(owner, name, defaultBranch, ReadmeFile));
+
+    public static async Task<bool> IsPackJSONExist(string? owner, string? name, string? defaultBranch)
+        => await Exists(GetGithubRawContent(owner, name, defaultBranch, PackJson));
+
+
+    #region Overloads
+
     public static async Task<bool> IsBannerExist(PackRepositoryInfo repository)
         => await Exists(GetGithubRawContent(repository, BannerFile));
     public static async Task<bool> IsBannerExist(Octokit.Repository repository)
         => await Exists(GetGithubRawContent(repository, BannerFile));
 
-    public static async Task<bool> IsReadmeExist(string? owner, string? name, string? defaultBranch)
-        => await Exists(GetGithubRawContent(owner, name, defaultBranch, ReadmeFile));
+    public static string GetBannerURL(PackRepositoryInfo repository)
+        => GetBannerURL(repository.Owner, repository.Name, repository.DefaultBranch);
+
+    public static string GetBannerURL(Octokit.Repository repository)
+        => GetBannerURL(repository.Owner.Login, repository.Name, repository.DefaultBranch);
+
     public static async Task<bool> IsReadmeExist(PackRepositoryInfo repository)
         => await Exists(GetGithubRawContent(repository, ReadmeFile));
     public static async Task<bool> IsReadmeExist(Octokit.Repository repository)
         => await Exists(GetGithubRawContent(repository, ReadmeFile));
 
-    public static async Task<bool> IsPackJSONExist(string? owner, string? name, string? defaultBranch)
-        => await Exists(GetGithubRawContent(owner, name, defaultBranch, PackJson));
     public static async Task<bool> IsPackJSONExist(PackRepositoryInfo repository)
         => await Exists(GetGithubRawContent(repository, PackJson));
     public static async Task<bool> IsPackJSONExist(Octokit.Repository repository)
         => await Exists(GetGithubRawContent(repository, PackJson));
 
 
+    #endregion
+    #region Private helpers
     private static string EnsurePathIsWebURL(string? input)
     {
         input = NullCheck(input);
@@ -62,12 +85,13 @@ internal class URL
         return input;
     }
 
-    private static string GetGithubRawContent(Octokit.Repository repository, string? path)
+    public static string GetGithubRawContent(Octokit.Repository repository, string? path)
         => GetGithubRawContent(repository.Owner.Login, repository.Name, repository.DefaultBranch, path);
 
-    private static string GetGithubRawContent(PackRepositoryInfo repository, string? path)
+    public static string GetGithubRawContent(PackRepositoryInfo repository, string? path)
         => GetGithubRawContent(repository.Owner, repository.Name, repository.DefaultBranch, path);
 
-    private static string GetGithubRawContent(string? owner, string? name, string? defaultBranch, string? path)
+    public static string GetGithubRawContent(string? owner, string? name, string? defaultBranch, string? path)
         => $"https://raw.githubusercontent.com/{owner}/{name}/{defaultBranch}/{EnsurePathIsWebURL(path)}";
+    #endregion
 }
