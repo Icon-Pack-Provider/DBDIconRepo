@@ -18,6 +18,10 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (string.IsNullOrEmpty(SettingManager.Instance.GitHubLoginToken))
+        {
+            needLogin.Visibility = Visibility.Visible;
+        }
         this.Loaded += LoadPacklist;
         this.Unloaded += UnregisterStuff;
         DataContext = ViewModel;

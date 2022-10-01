@@ -37,7 +37,7 @@ public partial class Setting : ObservableObject
     SortOptions sortBy = SortOptions.Name;
 
     [ObservableProperty]
-    bool sortAscending;
+    bool sortAscending = true;
 
     [ObservableProperty]
     bool alwaysClonePackRepo = false;
@@ -100,7 +100,10 @@ public static class SettingManager
         pathBuilder.Append('\\');
 #endif
         pathBuilder.Append(SettingFilename);
-        return new FileInfo(pathBuilder.ToString());
+        var file = new FileInfo(pathBuilder.ToString());
+        if (!file.Directory.Exists)
+            file.Directory.Create();
+        return file;
     }
 
     public static void SaveSettings()

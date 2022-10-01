@@ -22,6 +22,8 @@ public partial class HomeViewModel : ObservableObject
     GitHubClient client => gitService.GitHubClientInstance;
     public void InitializeViewModel()
     {
+        //Monitor settings
+        SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
@@ -51,8 +53,6 @@ public partial class HomeViewModel : ObservableObject
             //Task done!
             //Filters
             ApplyFilter();
-            //Monitor settings
-            SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
         });
     }
 
@@ -69,16 +69,6 @@ public partial class HomeViewModel : ObservableObject
         if (message.Query is null)
             return;
         SearchQuery = message.Query;
-    }
-
-    private void HandleSettingValueChanged(HomeViewModel recipient, SettingChangedMessage message)
-    {
-        SettingManager.SaveSettings();
-    }
-
-    private void HandleFilterOptionChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
-    {
-        OnPropertyChanged(nameof(FilteredList));
     }
 
     public void UnregisterMessages()
@@ -101,7 +91,13 @@ public partial class HomeViewModel : ObservableObject
     bool _isEmpty;
     public bool IsFilteredListEmpty
     {
-        get => _isEmpty;
+        get
+        {
+            if (string.IsNullOrEmpty(SettingManager.Instance.GitHubLoginToken))
+                return false;
+            return _isEmpty;
+        }
+
         set => SetProperty(ref _isEmpty, value);
     }
 

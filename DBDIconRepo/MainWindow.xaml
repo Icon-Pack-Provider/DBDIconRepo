@@ -283,10 +283,19 @@
         <!-- No pack -->
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                    TextAlignment="Center"
+                   x:Name="tooManyFilter"
                    Visibility="{Binding IsFilteredListEmpty, Converter={StaticResource boolToVisibility}, Mode=OneWay}">
             <Run Text="No icon pack found!" FontSize="24" FontWeight="Bold"/>
             <LineBreak/><Run Text="Try remove some filters..."/>
         </TextBlock>
-        
+
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Visibility="Collapsed"
+                   x:Name="needLogin">
+            <Run Text="No icon pack found!" FontSize="24" FontWeight="Bold"/>
+            <LineBreak/><Run Text="Need git login token!..."/>
+        </TextBlock>
+
     </Grid>
 </Window>
