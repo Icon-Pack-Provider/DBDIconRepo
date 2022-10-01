@@ -16,6 +16,7 @@
     </Window.DataContext>
     <Window.Resources>
         <convert:NameOrDisplayNameOnSelectionListing x:Key="listingNameDecide"/>
+        <convert:BoolToVisibility x:Key="boolToVisibility"/>
 
         <DataTemplate x:Key="noInfo" DataType="{x:Type m:IPackSelectionItem}">
             <Grid>
@@ -107,5 +108,21 @@
             <ui:AppBarButton Label="Install" Icon="Accept" Click="ReplyInstall"/>
             <ui:AppBarButton Label="Cancel" Icon="Cancel" Click="ReplyCancel"/>
         </ui:CommandBar>
+
+        <Grid Grid.RowSpan="3" Visibility="{Binding PreparingInstallableItems, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+            <Rectangle Fill="{DynamicResource CommandBarBackground}" Opacity="0.8"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"/>
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <ui:ProgressBar Height="12" Margin="5"
+                                Value="{Binding PrepareProgress, Mode=OneWay}"
+                                Maximum="{Binding PrepareTotal, Mode=OneWay}"/>
+                <TextBlock Margin="5">
+                    <Run Text="Preparing installable items list"/>
+                    (<Run Text="{Binding PrepareProgress, Mode=OneWay}"/>/<Run Text="{Binding PrepareTotal, Mode=OneWay}"/>)
+                </TextBlock>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

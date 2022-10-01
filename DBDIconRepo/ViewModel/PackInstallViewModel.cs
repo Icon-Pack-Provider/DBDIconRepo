@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
 using IconInfo.Icon;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xaml;
@@ -34,13 +36,6 @@ public partial class PackInstallViewModel : ObservableObject
     public PackInstallViewModel(Pack? selected)
     {
         SelectedPack = selected;
-        var selections = selected.ContentInfo.Files
-            .Where(file => file.EndsWith(".png") && !file.StartsWith(".banner"))
-            .Select(path => new PackSelectionFile(path))
-            .OrderBy(i => i, new IconComparer());
-        //Sort
-        InstallableItems = new(selections);
-
         Lists.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
         //Load selection menu helper
         Menu = ListingService.Instance.Listing;
@@ -54,6 +49,37 @@ public partial class PackInstallViewModel : ObservableObject
                 Selections = new() { rejectedMenuItemGUID }
             });
             ListingService.Instance.PropertyChanged += WaitingForListLoaded;
+        }
+        LoadListOfInstallableItems().Await(() =>
+        {
+            PreparingInstallableItems = false;
+        });
+    }
+
+    [ObservableProperty]
+    bool preparingInstallableItems = true;
+    [ObservableProperty]
+    int prepareProgress = 0;
+    [ObservableProperty]
+    int prepareTotal = 1;
+    public async Task LoadListOfInstallableItems()
+    {
+        var selections = SelectedPack.ContentInfo.Files
+            .Where(file => file.EndsWith(".png") && !file.StartsWith(".banner"))
+            .Select(path => new PackSelectionFile(path))
+            .OrderBy(i => i, new IconComparer())
+            .ToList();
+        PrepareProgress = 0;
+        PrepareTotal = selections.Count;
+
+        InstallableItems = new();
+        foreach (var item in selections)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                InstallableItems.Add(item);
+                PrepareProgress = InstallableItems.Count;
+            }, System.Windows.Threading.DispatcherPriority.Background);
         }
     }
 

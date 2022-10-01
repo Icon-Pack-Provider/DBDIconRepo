@@ -3,18 +3,23 @@ using System.Threading.Tasks;
 
 namespace DBDIconRepo.Helper;
 
-	public static class TaskExtensions
+public static class TaskExtensions
+{
+	public async static void Await(this Task task, Action onComplete = null, Action<Exception> onError = null)
 	{
-		public async static void Await(this Task task, Action onComplete = null, Action<Exception> onError = null)
+		Await(task, false, onComplete, onError);
+	}
+
+	public async static void Await(this Task task, bool configAwait = false, Action onComplete = null, Action<Exception> onError = null)
+	{
+		try
 		{
-			try
-			{
-				await task;
-				onComplete?.Invoke();
-			}
-			catch (Exception e)
-			{
-				onError?.Invoke(e);
-			}
+			await task.ConfigureAwait(configAwait);
+			onComplete?.Invoke();
+		}
+		catch (Exception e)
+		{
+			onError?.Invoke(e);
 		}
 	}
+}
