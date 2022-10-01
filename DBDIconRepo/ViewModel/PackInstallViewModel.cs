@@ -1,16 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Model;
+using DBDIconRepo.Service;
 using IconInfo.Icon;
 using IconInfo.Internal;
 using IconPack.Model;
+using SelectionListing;
+using SelectionListing.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Xaml;
+using static System.Windows.Forms.AxHost;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -36,11 +41,32 @@ public partial class PackInstallViewModel : ObservableObject
         //Sort
         InstallableItems = new(selections);
 
+        Lists.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
         //Load selection menu helper
-        Menu = new ObservableCollection<SelectionMenuItem>();
-        //Load from Json somehow
-
+        Menu = ListingService.Instance.Listing;
+        if (Menu.Count < 1)
+        {
+            rejectedMenuItemGUID = Guid.NewGuid().ToString();
+            Menu.Add(new()
+            {
+                Name = rejectedMenuItemGUID,
+                DisplayName = "Loading...",
+                Selections = new() { rejectedMenuItemGUID }
+            });
+            ListingService.Instance.PropertyChanged += WaitingForListLoaded;
+        }
     }
+
+    private string? rejectedMenuItemGUID = null;
+    private void WaitingForListLoaded(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (ListingService.Instance.Listing.Count < 1)
+            return;
+
+        Menu = new(ListingService.Instance.Listing);
+        ListingService.Instance.PropertyChanged -= WaitingForListLoaded;
+    }
+
 
     private void SetAllItems(bool state)
     {
@@ -60,7 +86,34 @@ public partial class PackInstallViewModel : ObservableObject
     private void SelectAll(RoutedEventArgs? obj)
     {
         SetAllItems(true);
-    }    
+    }
+
+    [RelayCommand]
+    private void SelectSpecific(ObservableCollection<string?> args)
+    {
+        if (args is null)
+            return;
+        if (args.Contains(rejectedMenuItemGUID))
+            return;
+        //Press Shift to de-select
+        bool setTo = true;
+        if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+        { setTo = false; }
+
+        foreach (var item in args)
+        {
+            if (item is null)
+                continue;
+            var nameonly = Path.GetFileNameWithoutExtension(item);
+            foreach (var installable in InstallableItems)
+            {
+                if (installable.Info.File == nameonly)
+                {
+                    installable.IsSelected = setTo;
+                }
+            }
+        }
+    }
 }
 
 public class IconComparer : IComparer<IPackSelectionItem>

@@ -8,12 +8,15 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:DBDIconRepo.Dialog"
         xmlns:m="clr-namespace:DBDIconRepo.Model"
+        xmlns:lister="clr-namespace:SelectionListing.Model;assembly=SelectionListing"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d" Height="480" Width="600">
     <Window.DataContext>
         <vm:PackInstallViewModel x:Name="ViewModel"/>
     </Window.DataContext>
     <Window.Resources>
+        <convert:NameOrDisplayNameOnSelectionListing x:Key="listingNameDecide"/>
+
         <DataTemplate x:Key="noInfo" DataType="{x:Type m:IPackSelectionItem}">
             <Grid>
                 <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -51,7 +54,8 @@
                  ItemTemplateSelector="{StaticResource selectorDisplay}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel/>
+                    <StackPanel VirtualizingPanel.VirtualizationMode="Standard"
+                                VirtualizingPanel.IsVirtualizing="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemContainerStyle>
@@ -69,26 +73,35 @@
                     <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAllCommand}"/>
                     <ui:AppBarButton Label="Select none" Icon="ClearSelection" Command="{Binding UnSelectAllCommand}"/>
                     <!-- TODO: Selection helper, with dynamic menu. Loading menu list from git -->
-                    <!--<ui:AppBarSeparator/>
+                    <ui:AppBarSeparator/>
                     <ui:AppBarButton Label="Selection..." Icon="List" Click="OpenAttatchedFlyout">
+                        <ui:AppBarButton.Resources>
+                            <Style TargetType="{x:Type MenuItem}" x:Key="subMenu">
+                                <Setter Property="Padding" Value="{DynamicResource MenuFlyoutItemThemePadding}"/>
+                                <Setter Property="Header" Value="{Binding Path=., Converter={StaticResource listingNameDecide}}"/>
+                                <Setter Property="Command" Value="{Binding Path=DataContext.SelectSpecificCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+                                <Setter Property="CommandParameter" Value="{Binding Selections}"/>
+                                <Setter Property="ItemsSource" Value="{Binding Childs}"/>
+                            </Style>
+                        </ui:AppBarButton.Resources>
                         <ui:FlyoutBase.AttachedFlyout>
-                            <ui:MenuFlyout x:Name="selectMenuFlyout">
+                            <ui:MenuFlyout>
+                                <MenuItem Header="Based on..." ItemsSource="{Binding Menu}" ItemContainerStyle="{StaticResource subMenu}"/>
+                            </ui:MenuFlyout>
+                            <!--<ui:MenuFlyout x:Name="selectMenuFlyout">
                                 <ui:MenuFlyout.MenuFlyoutPresenterStyle>
-                                    <Style TargetType="MenuItem" BasedOn="{StaticResource DefaultMenuItemStyle}">
-                                        <Setter Property="Header" Value="{Binding Name}"/>
-                                        <Setter Property="Icon">
-                                            <Setter.Value>
-                                                <ui:FontIcon Glyph="{Binding Icon}"/>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="CommandParameter" Value="{Binding SelectionRecommended}"/>
+                                    <Style TargetType="MenuItem">
+                                        <Setter Property="Header" Value="{Binding Path=., Converter={StaticResource listingNameDecide}}"/>
+                                        <Setter Property="Command" Value="{Binding Path=DataContext.SelectSpecificCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+                                        <Setter Property="CommandParameter" Value="{Binding Selections}"/>
                                         <Setter Property="ItemsSource" Value="{Binding Childs}"/>
                                     </Style>
                                 </ui:MenuFlyout.MenuFlyoutPresenterStyle>
-                                <MenuItem ItemsSource="{Binding Menu}"/>
-                            </ui:MenuFlyout>
+
+                                --><!--<MenuItem ItemsSource="{Binding Menu}"/>--><!--
+                            </ui:MenuFlyout>-->
                         </ui:FlyoutBase.AttachedFlyout>
-                    </ui:AppBarButton>-->
+                    </ui:AppBarButton>
                 </ui:CommandBar>
             </ui:CommandBar.Content>
             <ui:AppBarButton Label="Install" Icon="Accept" Click="ReplyInstall"/>

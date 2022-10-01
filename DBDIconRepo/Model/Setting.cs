@@ -125,8 +125,11 @@ public class Setting : ObservableObject
         get => gitToken;
         set => Set(ref gitToken, value);
     }
-
+#if DEBUG
+    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");
+#else
     string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
+#endif
     public string CacheAndDisplayDirectory
     {
         get => path;
@@ -134,7 +137,7 @@ public class Setting : ObservableObject
     }
     
 
-    #region Messenger manager
+#region Messenger manager
     [JsonIgnore]
     private static bool ShouldSendMessageOnChange = false;
 
@@ -157,7 +160,7 @@ public class Setting : ObservableObject
             return _instance;
         }
     }
-    #endregion
+#endregion
 }
 
 public static class SettingManager
