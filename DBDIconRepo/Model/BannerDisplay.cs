@@ -2,8 +2,8 @@
 
 public class BannerDisplay : OnlineSourceDisplay
 {
-    public int DecodeWidth => Setting.Instance.BannerDecodeWidth;
-    public int DecodeHeight => Setting.Instance.BannerDecodeHeight;
+    public int DecodeWidth => SettingManager.Instance.BannerDecodeWidth;
+    public int DecodeHeight => SettingManager.Instance.BannerDecodeHeight;
 
     public BannerDisplay() { }
     public BannerDisplay(string url) : base(url) { }

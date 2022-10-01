@@ -15,8 +15,8 @@ public partial class BasePreview : ObservableObject, IBasePreview
     [ObservableProperty]
     string? iconURL;
 
-    public int DecodeWidth => Setting.Instance.IconPreviewDecodeWidth;
-    public int DecodeHeight => Setting.Instance.IconPreviewDecodeHeight;
+    public int DecodeWidth => SettingManager.Instance.IconPreviewDecodeWidth;
+    public int DecodeHeight => SettingManager.Instance.IconPreviewDecodeHeight;
 
     public BasePreview(string path, PackRepositoryInfo repo)
     {

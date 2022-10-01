@@ -44,7 +44,7 @@ public partial class PackDetailViewModel : ObservableObject
         }
 
         //Get any previewable icon
-        foreach (var item in Setting.Instance.PerkPreviewSelection)
+        foreach (var item in SettingManager.Instance.PerkPreviewSelection)
         {
             if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.File.ToLower())) is string match)
             {

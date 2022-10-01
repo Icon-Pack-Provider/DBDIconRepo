@@ -41,7 +41,7 @@ public partial class PackInstallViewModel : ObservableObject
         //Sort
         InstallableItems = new(selections);
 
-        Lists.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
+        Lists.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
         //Load selection menu helper
         Menu = ListingService.Instance.Listing;
         if (Menu.Count < 1)

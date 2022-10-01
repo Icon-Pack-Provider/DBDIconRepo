@@ -22,10 +22,6 @@ public partial class HomeViewModel : ObservableObject
     GitHubClient client => gitService.GitHubClientInstance;
     public void InitializeViewModel()
     {
-        //Monitor settings
-        Messenger.Default.Register<HomeViewModel, SettingChangedMessage, string>(this,
-            MessageToken.SETTINGVALUECHANGETOKEN, HandleSettingValueChanged);
-
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
@@ -35,7 +31,7 @@ public partial class HomeViewModel : ObservableObject
             //
             AllAvailablePack = new();
             //
-            Packs.Initialize(OctokitService.Instance.GitHubClientInstance, Setting.Instance.CacheAndDisplayDirectory);
+            Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
             var packs = await Packs.GetPacks();
             foreach (var pack in packs)
             {
@@ -56,10 +52,16 @@ public partial class HomeViewModel : ObservableObject
             //Filters
             ApplyFilter();
             //Monitor settings
-            Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterOptionChanged);
-            //
-            Setting.EnableMessageGateOnSettingChanged();
+            SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
         });
+    }
+
+    private void MonitorSettingChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        //Save setting
+        SettingManager.SaveSettings();
+        //Also
+        OnPropertyChanged(nameof(FilteredList));
     }
 
     private void HandleRequestedSearchQuery(HomeViewModel recipient, RequestSearchQueryMessage message)
@@ -71,7 +73,7 @@ public partial class HomeViewModel : ObservableObject
 
     private void HandleSettingValueChanged(HomeViewModel recipient, SettingChangedMessage message)
     {
-        Config.SaveSettings();
+        SettingManager.SaveSettings();
     }
 
     private void HandleFilterOptionChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
@@ -200,7 +202,7 @@ public partial class HomeViewModel : ObservableObject
         }
     }
 
-    public Setting? Config => Setting.Instance;
+    public Setting? Config => SettingManager.Instance;
 
     #region Commands
     [RelayCommand]

@@ -10,7 +10,7 @@ public static class DownloadSomeOrAllConsultant
     internal static bool ShouldCloneOrNot(ObservableCollection<IPackSelectionItem>? installPick)
     {
         bool shouldCloneOrDownload = false;
-        if (Setting.Instance.AlwaysClonePackRepo)
+        if (SettingManager.Instance.AlwaysClonePackRepo)
             shouldCloneOrDownload = true;
         if (!shouldCloneOrDownload) //Last time decide
             shouldCloneOrDownload = ShouldIDownloadOrCloneRepo(installPick);
@@ -37,7 +37,7 @@ public static class DownloadSomeOrAllConsultant
 
         double math = totalSelection / total;
 
-        if (math > Setting.Instance.DownloadIfSelectMoreThanMeThreshold)
+        if (math > SettingManager.Instance.DownloadIfSelectMoreThanMeThreshold)
         {
             //Just clone
             return true;

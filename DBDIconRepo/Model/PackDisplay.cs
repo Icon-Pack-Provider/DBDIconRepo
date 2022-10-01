@@ -62,7 +62,7 @@ public partial class PackDisplay : ObservableObject
                 CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info)
                     .Await(() =>
                     {
-                        IconManager.Install(Setting.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
+                        IconManager.Install(SettingManager.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
                     });
             }
             else
@@ -77,7 +77,7 @@ public partial class PackDisplay : ObservableObject
                     HandleInstallProgress);
                 GitAbuse.DownloadIndivisualItems(installPick, Info).Await(() =>
                 {
-                    IconManager.Install(Setting.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
+                    IconManager.Install(SettingManager.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
                 });
             }
         }
@@ -177,7 +177,7 @@ public partial class PackDisplay : ObservableObject
         else //banner not exist, get URLs for perk icons that required to display on setting
         {
             var matchSearch = new List<string>();
-            foreach (var item in Setting.Instance.PerkPreviewSelection)
+            foreach (var item in SettingManager.Instance.PerkPreviewSelection)
             {
                 var found = info.ContentInfo.Files.First(f => f.Contains(item.File));
                 var index = info.ContentInfo.Files.IndexOf(found);

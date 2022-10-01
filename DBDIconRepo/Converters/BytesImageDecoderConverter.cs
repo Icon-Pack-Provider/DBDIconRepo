@@ -15,8 +15,8 @@ public class BytesImageDecoderConverter : IValueConverter
         {
             bool isBanner = parameter is not null && parameter.ToString() == "banner";
             (int w, int h) decode =
-                (isBanner ? Setting.Instance.BannerDecodeWidth : Setting.Instance.IconPreviewDecodeWidth,
-                isBanner ? Setting.Instance.BannerDecodeHeight : Setting.Instance.IconPreviewDecodeHeight);
+                (isBanner ? SettingManager.Instance.BannerDecodeWidth : SettingManager.Instance.IconPreviewDecodeWidth,
+                isBanner ? SettingManager.Instance.BannerDecodeHeight : SettingManager.Instance.IconPreviewDecodeHeight);
 
             var bitmap = new BitmapImage();
             bitmap.BeginInit();

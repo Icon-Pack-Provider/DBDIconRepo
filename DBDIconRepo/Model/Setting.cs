@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DBDIconRepo.Helper;
 using DBDIconRepo.Strings;
 using System;
 using System.Collections.ObjectModel;
@@ -11,210 +12,131 @@ using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Model;
 
-public class Setting : ObservableObject
+public partial class Setting : ObservableObject
 {
-    public bool Set<T>(ref T storage, T value, [CallerMemberName]string? propertyName = null)
-    {
-        if (SetProperty(ref storage, value, propertyName))
-        {
-            if (ShouldSendMessageOnChange)
-                Messenger.Default.Send(new SettingChangedMessage(propertyName, value), MessageToken.SETTINGVALUECHANGETOKEN);
-            return true;
-        }
-        return false;
-    }
+    [ObservableProperty]
+    string dBDInstallationPath = "";
 
-    string _dbdPath = "";
-    public string DBDInstallationPath
-    {
-        get => _dbdPath;
-        set => Set(ref _dbdPath, value);
-    }
-
-    bool _useUncuratedContent = true;
+    [ObservableProperty]
+    bool useUncuratedContent = true;
     //TODO:Eventually load content only from specific repo pointed to other packs if this set to true (which is by default: true)
-    public bool UseUncuratedContent
-    {
-        get => _useUncuratedContent;
-        set => Set(ref _useUncuratedContent, value);
-    }
 
-    ObservableCollection<IconInfo.Icon.Perk> _selectedPreview = new()
+    [ObservableProperty]
+    ObservableCollection<IconInfo.Icon.Perk> perkPreviewSelection = new()
     {
         IconInfo.Icons.Perks.Spine_Chill,
         IconInfo.Icons.Perks.Adrenaline,
         IconInfo.Icons.Perks.Sloppy_Butcher,
         IconInfo.Icons.Perks.Lightborn
     };
-    public ObservableCollection<IconInfo.Icon.Perk> PerkPreviewSelection
-    {
-        get => _selectedPreview;
-        set => Set(ref _selectedPreview, value);
-    }
 
-    FilterOptions _filters = FilterOptions.CompletePack;
-    public FilterOptions FilterOptions
-    {
-        get => _filters;
-        set => Set(ref _filters, value);
-    }
+    [ObservableProperty]
+    FilterOptions filterOptions = FilterOptions.CompletePack;
 
-    SortOptions _sort = SortOptions.Name;
-    public SortOptions SortBy
-    {
-        get => _sort;
-        set => Set(ref _sort, value);
-    }
+    [ObservableProperty]
+    SortOptions sortBy = SortOptions.Name;
 
-    bool _sortAscending;
-    public bool SortAscending
-    {
-        get => _sortAscending;
-        set => Set(ref _sortAscending, value);
-    }
+    [ObservableProperty]
+    bool sortAscending;
 
-    bool _abuseGitOrDont = false;
-    public bool AlwaysClonePackRepo
-    {
-        get => _abuseGitOrDont;
-        set => Set(ref _abuseGitOrDont, value);
-    }
+    [ObservableProperty]
+    bool alwaysClonePackRepo = false;
 
-    double _notDownloadThreshold = 0.2d;
-    public double DownloadIfSelectMoreThanMeThreshold
-    {
-        get => _notDownloadThreshold;
-        set => Set(ref _notDownloadThreshold, value);
-    }
+    [ObservableProperty]
+    double downloadIfSelectMoreThanMeThreshold = 0.2d;
 
     //Banner res
     //1280x300
+    [ObservableProperty]
     int bannerDecodeWidth = 256;
-    public int BannerDecodeWidth
-    {
-        get => bannerDecodeWidth;
-        set => Set(ref bannerDecodeWidth, value);
-    }
 
+    [ObservableProperty]
     int bannerDecodeHeight = 60;
-    public int BannerDecodeHeight
-    {
-        get => bannerDecodeHeight;
-        set => Set(ref bannerDecodeHeight, value);
-    }
 
     //Perk res | Portrait res
     //256x256 | 512x512
+    [ObservableProperty]
     int iconPreviewDecodeWidth = 64;
-    public int IconPreviewDecodeWidth
-    {
-        get => iconPreviewDecodeWidth; 
-        set => Set(ref iconPreviewDecodeWidth, value);
-    }
 
+    [ObservableProperty]
     int iconPreviewDecodeHeight = 64;
-    public int IconPreviewDecodeHeight
-    {
-        get => iconPreviewDecodeHeight;
-        set => Set(ref iconPreviewDecodeHeight, value);
-    }
 
-    string gitToken = "";
-    public string GitHubLoginToken
-    {
-        get => gitToken;
-        set => Set(ref gitToken, value);
-    }
+    [ObservableProperty]
+    string gitHubLoginToken = "";
 #if DEBUG
-    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");
+    [ObservableProperty]
+    string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");
 #else
-    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
+    [ObservableProperty]
+    string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
 #endif
-    public string CacheAndDisplayDirectory
-    {
-        get => path;
-        set => Set(ref path, value);
-    }
-    
-
-#region Messenger manager
-    [JsonIgnore]
-    private static bool ShouldSendMessageOnChange = false;
-
-    public static void EnableMessageGateOnSettingChanged() => ShouldSendMessageOnChange = true;
-    public static void DisableMessageGateOnSettingChanged() => ShouldSendMessageOnChange = false;
-
-    [JsonIgnore]
-    private static Setting? _instance;
-    [JsonIgnore]
-    public static Setting? Instance
-    {
-        get
-        {
-            if (_instance is null)
-            {
-                _instance = SettingManager.LoadSettings();
-                if (_instance is null)
-                    _instance = new Setting();
-            }
-            return _instance;
-        }
-    }
-#endregion
 }
 
 public static class SettingManager
 {
-    [JsonIgnore]
-    private const string SettingFilename = "settings.json";
-    public static void SaveSettings(this Setting instance)
+    private static Setting? _instance = null;
+    public static Setting Instance
     {
-        //Replace existing
-        string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
-        if (File.Exists(settingFilePath))
+        get
         {
-            File.Delete(settingFilePath);
+            _instance ??= LoadSettings();
+            return _instance;
         }
+    }
 
-        string setting = JsonSerializer.Serialize(instance, new JsonSerializerOptions()
+    private const string SettingFilename = "settings.json";
+
+    private static FileInfo GetSettingFile()
+    {
+        StringBuilder pathBuilder = new();
+        pathBuilder.Append(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+        pathBuilder.Append('\\');
+#if DEBUG
+        pathBuilder.Append(Terms.AppDataFolder);
+        pathBuilder.Append("Dev");
+        pathBuilder.Append('\\');
+#else
+        pathBuilder.Append(Terms.AppDataFolder);
+        pathBuilder.Append('\\');
+#endif
+        pathBuilder.Append(SettingFilename);
+        return new FileInfo(pathBuilder.ToString());
+    }
+
+    public static void SaveSettings()
+    {
+        var setfile = GetSettingFile();
+        if (setfile.Exists)
+            setfile.Delete();
+
+        string setting = JsonSerializer.Serialize(Instance, new JsonSerializerOptions()
         {
             WriteIndented = true,
             IncludeFields = false
         });
 
         //Write to file
-        using (StreamWriter writer = new(File.Create(settingFilePath), Encoding.UTF8))
-        {
-            writer.Write(setting);
-        }
+        using StreamWriter writer = new(File.Create(setfile.FullName), Encoding.UTF8);
+        writer.Write(setting);
     }
 
     public static Setting? LoadSettings()
     {
+        var setfile = GetSettingFile();
+        if (!File.Exists(setfile.FullName))
+            return new();
 
-        string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
-
-        if (!File.Exists(settingFilePath))
-        {
-            return null;
-        }
-
-        using (StreamReader reader = File.OpenText(settingFilePath))
-        {
-            Setting.DisableMessageGateOnSettingChanged();
-            var setting = JsonSerializer.Deserialize<Setting>(reader.ReadToEnd());
-            Setting.EnableMessageGateOnSettingChanged();
-            return setting;
-        }
+        using StreamReader reader = File.OpenText(setfile.FullName);
+        var setting = JsonSerializer.Deserialize<Setting>(reader.ReadToEnd());
+        return setting;
     }
 
     public static void DeleteSettings()
     {
-        string settingFilePath = $"{Environment.CurrentDirectory}\\{SettingFilename}";
-        if (File.Exists(settingFilePath))
-        {
-            File.Delete(settingFilePath);
-        }
+        var setfile = GetSettingFile();
+        if (setfile.Exists)
+            setfile.Delete();
+        _instance = new();
     }
 }
 

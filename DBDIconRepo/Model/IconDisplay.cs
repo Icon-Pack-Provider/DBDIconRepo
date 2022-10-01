@@ -2,8 +2,8 @@
 
 public class IconDisplay : OnlineSourceDisplay 
 {
-    public int DecodeWidth => Setting.Instance.IconPreviewDecodeWidth;
-    public int DecodeHeight => Setting.Instance.IconPreviewDecodeHeight;
+    public int DecodeWidth => SettingManager.Instance.IconPreviewDecodeWidth;
+    public int DecodeHeight => SettingManager.Instance.IconPreviewDecodeHeight;
 
     public IconDisplay() { }
     public IconDisplay(string url) : base(url) { }
