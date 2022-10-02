@@ -67,6 +67,9 @@ public partial class HomeViewModel : ObservableObject
             //Filters
             ApplyFilter();
             CheckRateLimit();
+        }, (e) =>
+        {
+
         });
     }
 

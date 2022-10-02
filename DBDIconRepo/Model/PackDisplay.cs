@@ -178,7 +178,9 @@ public partial class PackDisplay : ObservableObject
             var matchSearch = new List<string>();
             foreach (var item in SettingManager.Instance.PerkPreviewSelection)
             {
-                var found = info.ContentInfo.Files.First(f => f.Contains(item.File));
+                var found = info.ContentInfo.Files.FirstOrDefault(f => f.Contains(item.File));
+                if (found is null)
+                    continue;
                 var index = info.ContentInfo.Files.IndexOf(found);
                 if (index >= 0)
                     matchSearch.Add(Info.ContentInfo.Files[index]);
@@ -186,12 +188,20 @@ public partial class PackDisplay : ObservableObject
             if (matchSearch.Count < 4)
             {
                 //Fill the rest with random
-                while (matchSearch.Count < 4)
+                if (Info.ContentInfo.Files.Count <= 4)
                 {
-                    Random r = new();
-                    var randomPick = Info.ContentInfo.Files[r.Next(0, Info.ContentInfo.Files.Count)];
-                    if (!matchSearch.Contains(randomPick))
-                        matchSearch.Add(randomPick);
+                    matchSearch.Clear();
+                    matchSearch.AddRange(Info.ContentInfo.Files);
+                }
+                else
+                {
+                    while (matchSearch.Count < 4)
+                    {
+                        Random r = new();
+                        var randomPick = Info.ContentInfo.Files[r.Next(0, Info.ContentInfo.Files.Count)];
+                        if (!matchSearch.Contains(randomPick))
+                            matchSearch.Add(randomPick);
+                    }
                 }
             }
             foreach (var icon in matchSearch)
