@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IconPack", "PackCore\IconPa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{0A154F20-05CA-46B1-939E-5DBCAB4DB23B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionListing", "SelectionListing\SelectionListing.csproj", "{58C6A59D-EEE3-4EF1-A2C1-096D7E73B9D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SelectionListing", "SelectionListing\SelectionListing.csproj", "{58C6A59D-EEE3-4EF1-A2C1-096D7E73B9D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InternalLibs", "InternalLibs", "{F1AEE111-69EF-4C1A-9A23-C9E97D10D751}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EC62DF2C-7276-4113-A9F6-B697D8300257} = {0A154F20-05CA-46B1-939E-5DBCAB4DB23B}
 		{5B84AD4A-A431-4524-924F-952CB3AB39CA} = {0A154F20-05CA-46B1-939E-5DBCAB4DB23B}
+		{A17F066E-8EBE-46CA-8F81-5356035D6FEE} = {F1AEE111-69EF-4C1A-9A23-C9E97D10D751}
+		{58C6A59D-EEE3-4EF1-A2C1-096D7E73B9D4} = {F1AEE111-69EF-4C1A-9A23-C9E97D10D751}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
