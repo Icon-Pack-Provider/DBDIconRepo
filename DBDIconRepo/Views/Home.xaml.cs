@@ -1,5 +1,9 @@
-﻿using DBDIconRepo.Model;
+﻿using DBDIconRepo.Helper;
+using DBDIconRepo.Model;
+using DBDIconRepo.Model.Preview;
+using IconInfo.Icon;
 using ModernWpf.Controls;
+using System.Threading.Tasks;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
@@ -10,11 +14,34 @@ namespace DBDIconRepo.Views;
 /// </summary>
 public partial class Home : Window
 {
+    private static bool attempt = false;
     public Home()
     {
         InitializeComponent();
         Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChage,
             SwitchPageHandler);
+        //Force inducing a few seconds of eye seizure to fix color issue
+        Task.Run(async () =>
+        {
+            if (attempt)
+                return;
+            attempt = true;
+            await Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
+                await Task.Delay(50);
+                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
+                await Task.Delay(50);
+                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
+                await Task.Delay(50);
+                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
+                await Task.Delay(50);
+                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Default);
+            }, System.Windows.Threading.DispatcherPriority.Send);
+        }).Await(() =>
+        {
+
+        });
     }
 
     private void SwitchPageHandler(Home recipient, SwitchToOtherPageMessage message)
