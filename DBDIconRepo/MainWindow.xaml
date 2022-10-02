@@ -222,10 +222,7 @@
 
             <ui:AppBarButton Label="{Binding Config.GitUsername}"
                              Click="OpenAttatchedFlyout"
-                             Visibility="{Binding GitService.IsAnonymous, Converter={StaticResource invertBoolToVisibility}}">
-                <ui:AppBarButton.Icon>
-                    <ui:FontIcon Glyph="&#xEE57;"/>
-                </ui:AppBarButton.Icon>
+                             Visibility="{Binding GitService.IsAnonymous, Converter={StaticResource invertBoolToVisibility}}" Icon="Contact">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:Flyout Placement="BottomEdgeAlignedRight" x:Name="userLoggedinFlyout">
                         <Grid>

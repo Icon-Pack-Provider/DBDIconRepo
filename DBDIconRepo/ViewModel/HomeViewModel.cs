@@ -24,6 +24,7 @@ public partial class HomeViewModel : ObservableObject
     {
         //Monitor settings
         SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
+        GitService.PropertyChanged += MonitorLoginState;
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
@@ -59,6 +60,22 @@ public partial class HomeViewModel : ObservableObject
             ApplyFilter();
             CheckRateLimit();
         });
+    }
+
+    private void MonitorLoginState(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(OctokitService.IsAnonymous))
+        {
+            //Login and no longer anonymous
+            if (!GitService.IsAnonymous)
+            {
+                GetProfilePic().Await(() =>
+                {
+                    OnPropertyChanged(nameof(profilePicUri));
+                    DestructivelyCheckRateLimit();
+                });
+            }
+        }
     }
 
     private void MonitorSettingChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -324,11 +341,7 @@ public partial class HomeViewModel : ObservableObject
     #region Login stuff
     GitHubClient client => OctokitService.Instance.GitHubClientInstance;
 
-    OctokitService octo => OctokitService.Instance;
-    public OctokitService GitService
-    {
-        get => octo;
-    }
+    public OctokitService GitService => OctokitService.Instance;
 
     [ObservableProperty]
     string? profilePicUri;
