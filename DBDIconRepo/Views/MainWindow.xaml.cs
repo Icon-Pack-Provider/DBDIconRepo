@@ -7,12 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
-namespace DBDIconRepo;
+namespace DBDIconRepo.Views;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow : Page
 {
     public HomeViewModel ViewModel { get; } = new HomeViewModel();
 
@@ -24,17 +24,8 @@ public partial class MainWindow : Window
         DataContext = ViewModel;
         Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
-        Messenger.Default.Register<MainWindow, CloseGitUserPopupMessage, string>(this,
-                MessageToken.REQUESTCLOSEUSERFLYOUT, (sender, msg) =>
-                {
-                    if (OctokitService.Instance.IsAnonymous)
-                        return;
-                    if (userLoggedinFlyout.IsOpen)
-                    {
-                        userLoggedinFlyout.Hide();
-                    }
-                });
     }
+    
 
     private void OpenPackDetailWindow(MainWindow recipient, RequestViewPackDetailMessage message)
     {
@@ -51,12 +42,13 @@ public partial class MainWindow : Window
             }
         }
 
-        PackDetail detail = new PackDetail(message.Selected);
+        PackDetail detail = new(message.Selected);
         detail.Show();
     }
 
     private void UnregisterStuff(object sender, RoutedEventArgs e)
     {
+        Messenger.Default.UnregisterAll(this);
         ViewModel.UnregisterMessages();
     }
 
@@ -69,8 +61,6 @@ public partial class MainWindow : Window
     {
         FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
     }
-
-    
 }
 
 public class IconPreviewTemplateSelector : DataTemplateSelector

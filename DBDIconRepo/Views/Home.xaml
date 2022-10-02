@@ -42,6 +42,9 @@
                                    Icon="Help"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
         </ui:NavigationView.FooterMenuItems>
-        <Frame x:Name="contentFrame"/>
+        <Frame x:Name="contentFrame"
+               NavigationUIVisibility="Hidden"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"/>
     </ui:NavigationView>
 </Window>

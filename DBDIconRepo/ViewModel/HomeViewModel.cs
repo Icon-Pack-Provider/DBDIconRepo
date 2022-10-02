@@ -28,6 +28,9 @@ public partial class HomeViewModel : ObservableObject
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
+        ////Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, 
+            MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterChanged);
 
         Task.Run(async () =>
         {
@@ -70,6 +73,14 @@ public partial class HomeViewModel : ObservableObject
         }, (e) =>
         {
 
+        });
+    }
+
+    private void HandleFilterChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
+    {
+        _queryDebouncer.Debounce(500, () =>
+        {
+            ApplyFilter();
         });
     }
 
@@ -152,7 +163,8 @@ public partial class HomeViewModel : ObservableObject
 
     public void UnregisterMessages()
     {
-        Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        //Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        Messenger.Default.UnregisterAll(this);
     }
 
     private void ApplyFilter()
