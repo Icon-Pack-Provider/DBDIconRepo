@@ -133,7 +133,9 @@
                                 </ui:SplitButton>
                             </StackPanel>
 
-                            <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"/>
+                            <!-- TODO:Planned feature -->
+                            <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
+                                             Visibility="Collapsed"/>
 
                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                 <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
@@ -235,19 +237,6 @@
                                 <ColumnDefinition Width="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.ColumnDefinitions>
                             <!-- Normal state -->
-                            <!--<Button ToolTipService.ToolTip="Install" 
-                                    Grid.Column="0" HorizontalAlignment="Stretch"
-                                    Command="{Binding InstallThisPackCommand}"
-                                    MinWidth="32"
-                                    MinHeight="32"
-                                    Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph=""
-                                                 Margin="5,0"
-                                                 FontFamily="Segoe MDL2 Assets"/>
-                                    <TextBlock Text="Install"/>
-                                </StackPanel>
-                            </Button>-->
                             <ui:SplitButton Grid.Column="0" HorizontalAlignment="Stretch"
                                             Command="{Binding InstallThisPackCommand}"
                                             MinWidth="32" MinHeight="32"
@@ -280,7 +269,8 @@
                                     <ui:FontIcon Glyph="" 
                                                  Margin="5,0"
                                                  FontFamily="Segoe MDL2 Assets"/>
-                                    <TextBlock Text="Detail"/>
+                                    <TextBlock Text="Detail"
+                                               Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}"/>
                                 </StackPanel>
                             </Button>
                             

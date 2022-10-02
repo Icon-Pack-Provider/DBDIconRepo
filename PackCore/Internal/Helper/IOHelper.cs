@@ -23,7 +23,47 @@ internal static class IOHelper
         return new DirectoryInfo(path);
     }
 
+    public static DirectoryInfo GetRepoCloneDirectory(string owner, string repo)
+    {
+        var folder = new DirectoryInfo(Path.Combine(GetCloneDirectory().FullName, owner, repo));
+        if (!folder.Exists)
+            folder.Create();
+        return folder;
+    }
+
+    public static bool IsRepoCloneDirectoryDotGitExist(string owner, string repo)
+    {
+        var folder = GetRepoCloneDirectory(owner, repo);
+        string dotGit = Path.Combine(folder.FullName, ".git");
+        return Directory.Exists(dotGit);
+    }
+
+    public static FileInfo GetRepoFetchHead(string owner, string repo)
+    {
+        var cloneDir = GetRepoCloneDirectory(owner, repo);
+        string path = Path.Combine(cloneDir.FullName, ".git");
+        path = Path.Join(path, Terms.LastFetchFilename);
+        return new(path);
+    }
     #endregion
+    #region Cache overload
+    public static DirectoryInfo GetRepoCloneDirectory(PackRepositoryInfo repository)
+        => GetRepoCloneDirectory(repository.Owner, repository.Name);
+    public static DirectoryInfo GetRepoCloneDirectory(Octokit.Repository repository)
+        => GetRepoCloneDirectory(repository.Owner.Login, repository.Name);
+
+    public static bool IsRepoCloneDirectoryDotGitExist(PackRepositoryInfo repository)
+        => IsRepoCloneDirectoryDotGitExist(repository.Owner, repository.Name);
+    public static bool IsRepoCloneDirectoryDotGitExist(Octokit.Repository repository)
+        => IsRepoCloneDirectoryDotGitExist(repository.Owner.Login, repository.Name);
+
+    public static FileInfo GetRepoFetchHead(PackRepositoryInfo repository)
+        => GetRepoFetchHead(repository.Owner, repository.Name);
+    public static FileInfo GetRepoFetchHead(Octokit.Repository repository)
+        => GetRepoFetchHead(repository.Owner.Login, repository.Name);
+    #endregion
+
+
     #region DISPLAY/(use in UI, temporal, placeholders, thumbnails, nobanner or noreadme marker)
     /// <summary>
     /// Return only the display path

@@ -1,4 +1,5 @@
 ﻿using DBDIconRepo.Model;
+using IconPack;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,16 +61,20 @@ public static class IconManager
             //Report currently install file
             Messenger.Default.Send(new InstallationProgressReportMessage(item.FullPath, selections.Count), $"{MessageToken.REPORTINSTALLPACKTOKEN}{packInfo.Repository.Name}");
 
-            string iconPath = CacheOrGit.GetContentPath(packInfo.Repository.Owner, packInfo.Repository.Name, item.FullPath);
-            string targetPath = $"{dbdPath}\\DeadByDaylight\\Content\\UI\\Icons\\{item.FilePath}";
+            //string iconPath = CacheOrGit.GetContentPath(packInfo.Repository.Owner, packInfo.Repository.Name, item.FullPath);
+            var iconFolder = Packs.GetPackCacheClonedFolder(packInfo);
+            string iconPath = Path.Join(iconFolder.FullName, item.FilePath);
+            string targetPath = dbdPath;
+            string extensionPath = "\\DeadByDaylight\\Content\\UI\\Icons\\";
+            if (!targetPath.Contains(extensionPath))
+                targetPath = Path.Join(targetPath, extensionPath, item.FilePath);
+            else
+                targetPath = Path.Join(targetPath, item.FilePath); //Incase some user manually put in extension path on setting
             FileInfo info = new FileInfo(targetPath);
             if (!Directory.Exists(info.DirectoryName))
                 Directory.CreateDirectory(info.DirectoryName);
-
             if (File.Exists(targetPath))
-            {
                 File.Delete(targetPath);
-            }
             try
             {
                 var stream = await File.ReadAllBytesAsync(iconPath);

@@ -36,4 +36,13 @@ internal class OctokitService
             return Ioc.Default.GetService<OctokitService>();
         }
     }
+
+    internal static LibGit2Sharp.Credentials GetLibGitCredential(string owner)
+    {
+        return new LibGit2Sharp.UsernamePasswordCredentials()
+        {
+            Username = owner,
+            Password = Instance.Client.Credentials.GetToken()
+        };
+    }
 }

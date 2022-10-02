@@ -1,4 +1,5 @@
 ﻿using IconPack.Model;
+using IconPack.Model.Progress;
 using System.Collections.Generic;
 
 namespace DBDIconRepo.Model;
@@ -52,6 +53,29 @@ public class DownloadRepoProgressReportMessage
 {
     public DownloadState CurrentState { get; private set; }
     public double EstimateProgress { get; private set; }
+
+    public DownloadRepoProgressReportMessage(ICloningProgress progress)
+    {
+        switch (progress)
+        {
+            case ACounting a: 
+                CurrentState = DownloadState.Enumerating; 
+                break;
+            case BCompressing b:
+                CurrentState = DownloadState.Compressing;
+                break;
+            case CTransfer c: 
+                CurrentState = DownloadState.Transfering; 
+                break;
+            case DCheckingOut d:
+                CurrentState = DownloadState.CheckingOut; 
+                break;
+            default:
+                CurrentState = DownloadState.Done;
+                break;
+        }
+        EstimateProgress = progress.Percent;
+    }
 
     public DownloadRepoProgressReportMessage(DownloadState currentState, double estimateProgress)
     {

@@ -50,65 +50,39 @@ public partial class PackDisplay : ObservableObject
     [RelayCommand]
     private async void InstallThisPack(RoutedEventArgs? obj)
     {
+        ObservableCollection<IPackSelectionItem>? installationPick = new();
         if (ShouldInstallEverything)
         {
-            var allIcons = Info.ContentInfo.Files
+            installationPick = new(Info.ContentInfo.Files
                 .Where(file => file.EndsWith(".png") && !file.StartsWith(".banner"))
-                .Select(path => new PackSelectionFile(path))
-                .ToList();
-            Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
-                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
-                    HandleDownloadProgress);
-            Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
-                $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
-                HandleInstallProgress);
-            CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info)
-                .Await(() =>
-                {
-                    IconManager.Install(SettingManager.Instance.DBDInstallationPath, (IList<IPackSelectionItem>)allIcons, Info);
-                });
-            return;
+                .Select(path => new PackSelectionFile(path)));
+            goto cloning;
         }
         //Show selection
         PackInstall install = new(Info);
         if (install.ShowDialog() == true)
         {
-            ObservableCollection<IPackSelectionItem>? installPick = (install.DataContext as PackInstallViewModel).InstallableItems;
-
-            bool result = DownloadSomeOrAllConsultant.ShouldCloneOrNot(installPick);
-
-            if (result)
-            {
-                //Clone
-                //Register for download progress
-                Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
-                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
-                    HandleDownloadProgress);
-                Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
-                    $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
-                    HandleInstallProgress);
-                CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info)
-                    .Await(() =>
-                    {
-                        IconManager.Install(SettingManager.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
-                    });
-            }
-            else
-            {
-                //TODO:Properly handle this download method
-                //Register for download progress
-                Messenger.Default.Register<PackDisplay, IndetermineRepoProgressReportMessage, string>(this,
-                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
-                    HandleDownloadProgress);
-                Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
-                    $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
-                    HandleInstallProgress);
-                GitAbuse.DownloadIndivisualItems(installPick, Info).Await(() =>
-                {
-                    IconManager.Install(SettingManager.Instance.DBDInstallationPath, installPick.Where(i => i.IsSelected == true).ToList(), Info);
-                });
-            }
+            installationPick = (install.DataContext as PackInstallViewModel).InstallableItems;
+            goto cloning;
         }
+        else
+        {
+            return;
+        }
+
+        cloning:
+        Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
+            $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
+            HandleDownloadProgress);
+        Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
+            $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
+            HandleInstallProgress);
+        await Packs.ClonePackToCacheFolder(Info, (progress) =>
+        {
+            Messenger.Default.Send(new DownloadRepoProgressReportMessage(progress),
+                $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}");
+        });
+        IconManager.Install(SettingManager.Instance.DBDInstallationPath, installationPick.Where(i => i.IsSelected == true).ToList(), Info);
     }
 
     [RelayCommand]
@@ -184,9 +158,6 @@ public partial class PackDisplay : ObservableObject
             MessageBox.Show($"Pack {Info.Name} installed");
             Messenger.Default.Unregister<InstallationProgressReportMessage, string>(this,
                 $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}");
-            //Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
-            //    $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
-            //    HandleInstallProgress);
         }
     }
 
