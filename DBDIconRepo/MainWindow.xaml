@@ -137,6 +137,9 @@
 
                             <ui:ToggleSwitch Header="Freeze app to speedup Install items list" Margin="0,5"
                                              IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
+
+                            <ui:ToggleSwitch Header="Show Default icon pack" Margin="0,5"
+                                             IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}"/>
                             <!-- TODO:Planned feature -->
                             <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
                                              Visibility="Collapsed"/>

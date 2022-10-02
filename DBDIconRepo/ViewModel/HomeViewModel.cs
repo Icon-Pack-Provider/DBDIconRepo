@@ -42,6 +42,14 @@ public partial class HomeViewModel : ObservableObject
             var packs = await Packs.GetPacks();
             foreach (var pack in packs)
             {
+                if (!Config.ShowDefaultPack)
+                {
+                    if (pack.Name == "Dead-by-daylight-Default-icons" &&
+                        pack.Author == "Icon-Pack-Provider")
+                    {
+                        continue;
+                    }
+                }
                 PackDisplay display = new(pack);
                 if (display is null)
                     continue;
@@ -82,7 +90,53 @@ public partial class HomeViewModel : ObservableObject
     {
         //Save setting
         SettingManager.SaveSettings();
-        //Also
+        //Remove default pack setting
+        if (e.PropertyName == nameof(Setting.ShowDefaultPack))
+        {
+            if (!Config.ShowDefaultPack)
+            {
+                var def = AllAvailablePack.FirstOrDefault(i => i.Info.Author == "Icon-Pack-Provider" && i.Info.Name == "Dead-by-daylight-Default-icons");
+                if (def is not null)
+                {
+                    var index = AllAvailablePack.IndexOf(def);
+                    AllAvailablePack.RemoveAt(index);
+                    OnPropertyChanged(nameof(FilteredList));
+                }
+            }
+            else
+            {
+                Task.Run(async () =>
+                {
+                    if (AllAvailablePack is not null)
+                    {
+                        AllAvailablePack.Clear();
+                    }
+                    else
+                    {
+                        AllAvailablePack = new();
+                    }
+                    var packs = await Packs.GetPacks();
+                    foreach (var pack in packs)
+                    {
+                        PackDisplay display = new(pack);
+                        if (display is null)
+                            continue;
+                        //Check readme
+                        await Packs.CheckPackReadme(pack);
+                        //Check banner data
+                        await Packs.CheckPackBanner(pack);
+                        //Get banner or perks URL for pack showcasing/preview samples
+                        await display.GatherPreview();
+                        AllAvailablePack.Add(display);
+                    }
+                }).Await(() =>
+                {
+                    OnPropertyChanged(nameof(FilteredList));
+                });
+            }
+            return;
+        }
+
         OnPropertyChanged(nameof(FilteredList));
     }
 
@@ -133,6 +187,8 @@ public partial class HomeViewModel : ObservableObject
             if (AllAvailablePack is null)
                 return new ObservableCollection<PackDisplay>();
             var afterQuerySearch = new List<PackDisplay>(AllAvailablePack);
+            
+
             if (!string.IsNullOrEmpty(SearchQuery))
             {
                 afterQuerySearch = AllAvailablePack.Where(pack => 
