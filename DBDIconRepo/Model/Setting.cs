@@ -67,6 +67,14 @@ public partial class Setting : ObservableObject
 
     [ObservableProperty]
     string gitHubLoginToken = "";
+
+    [ObservableProperty]
+    /* Only use on InstallPack page
+     * If turn on it will set icons load async method as Render (Which froze the app, but take less time to load icon)
+     * If turn off it will set icons load async method as Background (Which didn't freeze the app, but take quite sometime to load all icons)
+    */
+    bool sacrificingAppResponsiveness = false;
+
 #if DEBUG
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");

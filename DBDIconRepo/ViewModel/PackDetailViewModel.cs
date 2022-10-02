@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
+using DBDIconRepo.Model.Comparer;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
+using IconPack;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
@@ -36,11 +38,11 @@ public partial class PackDetailViewModel : ObservableObject
 
     public async void PrepareDisplayData()
     {
-        string path = CacheOrGit.GetDisplayContentPath(SelectedPack.Repository.Owner, SelectedPack.Repository.Name);
-        HasBanner = File.Exists($"{path}\\.banner.png");
-        if (HasBanner)
+        //Banner
+        var bannerExist = await Packs.IsPackBannerExist(SelectedPack);
+        if (bannerExist)
         {
-            BannerURL = URL.GetGithubRawContent(SelectedPack.Repository, ".banner.png");
+            BannerURL = await Packs.GetPackBannerURL(SelectedPack);
         }
 
         //Get any previewable icon
@@ -48,18 +50,18 @@ public partial class PackDetailViewModel : ObservableObject
         {
             if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.File.ToLower())) is string match)
             {
-                HeroIconURL = URL.GetIconAsGitRawContent(SelectedPack.Repository, match);
+                HeroIconURL = Packs.GetPackItemOnGit(SelectedPack, match);
                 break;
             }
         }
 
         //Readme.md
-        HasReadmeMD = File.Exists($"{path}\\readme.md");
-        if (HasReadmeMD)
+        var readmeExist = await Packs.IsPackReadmeExist(SelectedPack);
+        if (readmeExist)
         {
-            string md = File.ReadAllText($"{path}\\readme.md");
+            var localReadme = await Packs.GetPackReadme(SelectedPack);
             MdXaml.Markdown translator = new();
-            ReadmeMDContent = translator.Transform(md);
+            ReadmeMDContent = translator.Transform(localReadme);
         }
 
         List<IBasePreview> identifiedItems = new();
@@ -74,13 +76,16 @@ public partial class PackDetailViewModel : ObservableObject
         {
             await Task.Run(async () =>
             {
-                var perks = identifiedItems.Where(i => i.Info is Perk);
+                var perks = identifiedItems.Where(i => i.Info is Perk)
+                .OrderBy(i => i.Info as Perk, new PerkComparer());
                 foreach (var perk in perks)
                 {
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         PerksPreview.Add((PerkPreviewItem)perk);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
             SortingPerkList();
@@ -97,7 +102,9 @@ public partial class PackDetailViewModel : ObservableObject
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         PortraitPreview.Add((PortraitPreviewItem)portrait);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }
@@ -113,7 +120,9 @@ public partial class PackDetailViewModel : ObservableObject
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         PowerPreview.Add((PowerPreviewItem)power);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }
@@ -129,7 +138,9 @@ public partial class PackDetailViewModel : ObservableObject
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         ItemsPreview.Add((ItemPreviewItem)item);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }
@@ -145,7 +156,9 @@ public partial class PackDetailViewModel : ObservableObject
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         StatusEffectsPreview.Add((StatusEffectPreviewItem)st);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }
@@ -163,7 +176,9 @@ public partial class PackDetailViewModel : ObservableObject
                         if (OfferingsPreview is null)
                             OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
                         OfferingsPreview.Add((OfferingPreviewItem)offering);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }
@@ -181,7 +196,9 @@ public partial class PackDetailViewModel : ObservableObject
                         if (AddonsPreview is null)
                             AddonsPreview = new ObservableCollection<AddonPreviewItem>();
                         AddonsPreview.Add((AddonPreviewItem)addon);
-                    }, System.Windows.Threading.DispatcherPriority.Background);
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
                 }
             });
         }

@@ -133,6 +133,8 @@
                                 </ui:SplitButton>
                             </StackPanel>
 
+                            <ui:ToggleSwitch Header="Freeze app to speedup Install items list" Margin="0,5"
+                                             IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
                             <!-- TODO:Planned feature -->
                             <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
                                              Visibility="Collapsed"/>
