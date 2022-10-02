@@ -1,5 +1,6 @@
 ﻿using DBDIconRepo.Dialog;
 using DBDIconRepo.Model;
+using DBDIconRepo.Service;
 using DBDIconRepo.ViewModel;
 using ModernWpf.Controls.Primitives;
 using System.Windows;
@@ -18,15 +19,21 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        if (string.IsNullOrEmpty(SettingManager.Instance.GitHubLoginToken))
-        {
-            needLogin.Visibility = Visibility.Visible;
-        }
         this.Loaded += LoadPacklist;
         this.Unloaded += UnregisterStuff;
         DataContext = ViewModel;
         Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
+        Messenger.Default.Register<MainWindow, CloseGitUserPopupMessage, string>(this,
+                MessageToken.REQUESTCLOSEUSERFLYOUT, (sender, msg) =>
+                {
+                    if (OctokitService.Instance.IsAnonymous)
+                        return;
+                    if (userLoggedinFlyout.IsOpen)
+                    {
+                        userLoggedinFlyout.Hide();
+                    }
+                });
     }
 
     private void OpenPackDetailWindow(MainWindow recipient, RequestViewPackDetailMessage message)

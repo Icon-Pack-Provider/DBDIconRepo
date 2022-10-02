@@ -20,6 +20,9 @@
         <convert:URLtoAbsoluteURI x:Key="url2bitmapuri"/>
         <convert:PackStateToVisibility x:Key="packStateToVisibility"/>
         <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
+        <convert:BytesImageDecoderConverter x:Key="bytesToImage"/>
+        <convert:GitServiceToUsername x:Key="gitServiceToUsername"/>
+
         <system:Boolean x:Key="BTrue">True</system:Boolean>
         <system:Boolean x:Key="BFalse">False</system:Boolean>
         <DataTemplate x:Key="IconPackIconDisplay">
@@ -44,6 +47,10 @@
             x:Key="iconPreviewTemplateSelector"
             IconDisplay="{StaticResource IconPackIconDisplay}"
             BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
+
+        <ui:Flyout x:Key="anonymousUserFlyout">
+            
+        </ui:Flyout>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -110,11 +117,6 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock FontSize="24" FontWeight="Bold" Text="Settings" Margin="0,5"/>
 
-                            <TextBox ui:ControlHelper.PlaceholderText="ghp_ewoiegh3qwighod....."
-                                     Text="{Binding Config.GitHubLoginToken, Mode=TwoWay}"
-                                     ui:ControlHelper.Header="GitHub Login Token" Margin="0,2"
-                                     Width="400"/>
-                            
                             <ui:AutoSuggestBox PlaceholderText="C:\SteamLibrary\common\Dead by Daylight\"
                                                Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
                                                Header="Dead by Daylight installation path" Margin="0,2"
@@ -148,6 +150,144 @@
                     </ui:Flyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </ui:AppBarButton>
+
+            <ui:AppBarSeparator/>
+
+            <ui:AppBarButton Label="Anonymous"
+                             Click="OpenAttatchedFlyout"
+                             Visibility="{Binding GitService.IsAnonymous, Converter={StaticResource boolToVisibility}}">
+                <ui:AppBarButton.Icon>
+                    <ui:FontIcon Glyph="&#xEE57;"/>
+                </ui:AppBarButton.Icon>
+                <ui:FlyoutBase.AttachedFlyout>
+                    <ui:Flyout Placement="BottomEdgeAlignedRight">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <!--User info-->
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="64" Height="64" Margin="5"
+                                       Source="pack://application:,,,/Resources/pfpHolder.ico"/>
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                    <TextBlock Text="Anonymous"/>
+                                    <TextBlock FontSize="12">
+                                        Not logged in, <LineBreak/>lower rate limit
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                            <!--API Limit info-->
+                            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left">
+                                <TextBlock>
+                                    Request per hour: <Run Text="{Binding RequestPerHour, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                    Remaining request: <Run Text="{Binding RequestRemain, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                    Refill in: <Run Text="{Binding ResetIn, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        Grid.Row="2">
+                                <Button HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Margin="0,5"
+                                        Command="{Binding CheckRateLimitCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Help" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Check rate limit" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button HorizontalAlignment="Stretch"
+                                        Command="{Binding DestructivelyCheckRateLimitCommand}"
+                                        HorizontalContentAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Important" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Check rate limit (Destructive)" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <Button Grid.Row="3" Margin="0,5,0,0"
+                                    Content="Login to GitHub" FontWeight="Bold"
+                                    Command="{Binding LoginToGithubCommand}"
+                                    HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </ui:Flyout>
+                </ui:FlyoutBase.AttachedFlyout>
+            </ui:AppBarButton>
+
+            <ui:AppBarButton Label="{Binding Config.GitUsername}"
+                             Click="OpenAttatchedFlyout"
+                             Visibility="{Binding GitService.IsAnonymous, Converter={StaticResource invertBoolToVisibility}}">
+                <ui:AppBarButton.Icon>
+                    <ui:FontIcon Glyph="&#xEE57;"/>
+                </ui:AppBarButton.Icon>
+                <ui:FlyoutBase.AttachedFlyout>
+                    <ui:Flyout Placement="BottomEdgeAlignedRight" x:Name="userLoggedinFlyout">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <!--User info-->
+                            <StackPanel Orientation="Horizontal">
+                                <ui:PersonPicture Width="64" Height="64" Margin="0,0,5,0"
+                                                  ProfilePicture="{Binding ProfilePicUri}"/>
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding Config.GitUsername}"
+                                               FontSize="18" FontWeight="Bold"/>
+                                    <TextBlock FontSize="12">
+                                        Logged in
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                            <!--API Limit info-->
+                            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left">
+                                <TextBlock>
+                                    Request per hour: <Run Text="{Binding RequestPerHour, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                    Remaining request: <Run Text="{Binding RequestRemain, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                    Refill in: <Run Text="{Binding ResetIn, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Stretch"
+                                        Grid.Row="2">
+                                <Button HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Margin="0,5"
+                                        Command="{Binding CheckRateLimitCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Help" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Check rate limit" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button HorizontalAlignment="Stretch"
+                                        Command="{Binding DestructivelyCheckRateLimitCommand}"
+                                        HorizontalContentAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Important" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Check rate limit (Destructive)" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <Button Grid.Row="3" Margin="0,5,0,0" 
+                                    Command="{Binding LogoutOfGithubCommand}"
+                                    Content="Logout" FontWeight="Bold"
+                                    HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </ui:Flyout>
+                </ui:FlyoutBase.AttachedFlyout>
+            </ui:AppBarButton>
+            <ui:AppBarSeparator Foreground="Transparent" Margin="-2"/>
         </ui:CommandBar>
 
         <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
@@ -309,6 +449,5 @@
             <Run Text="No icon pack found!" FontSize="24" FontWeight="Bold"/>
             <LineBreak/><Run Text="Need git login token!..."/>
         </TextBlock>
-
     </Grid>
 </Window>

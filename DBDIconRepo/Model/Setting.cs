@@ -66,7 +66,7 @@ public partial class Setting : ObservableObject
     bool installEverythingInPack = false;
 
     [ObservableProperty]
-    string gitHubLoginToken = "";
+    string gitUsername = "";
 
     [ObservableProperty]
     /* Only use on InstallPack page

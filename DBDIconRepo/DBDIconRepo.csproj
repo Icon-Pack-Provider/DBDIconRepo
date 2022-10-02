@@ -16,11 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Images\profile-placeholder.png" />
+    <None Remove="Resources\pfpHolder.ico" />
+    <None Remove="Resources\pfpHolder.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Images\profile-placeholder.png" />
+    <Resource Include="Resources\pfpHolder.ico" />
   </ItemGroup>
 
   <ItemGroup>

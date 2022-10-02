@@ -1,30 +1,82 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using Octokit;
 
 namespace DBDIconRepo.Service;
 
-public class OctokitService
+public partial class OctokitService : ObservableObject
 {
-    public GitHubClient? GitHubClientInstance;
-    private string token = "";
+    public GitHubClient? GitHubClientInstance { get; private set; }
+
+    [ObservableProperty]
+    private bool isAnonymous;
+
+    [ObservableProperty]
+    private string loginUsername;
 
     public void InitializeGit()
     {
         GitHubClientInstance = new GitHubClient(new ProductHeaderValue("ballz"));
-        var tokenAuth = new Credentials(SettingManager.Instance.GitHubLoginToken);
+        var username = SettingManager.Instance.GitUsername;
+        SecureSettingService userToken = new();
+        var passOrToken = userToken.GetSecurePassword();
+        if (passOrToken is null)
+        {
+            IsAnonymous = true;
+            LoginUsername = string.Empty;
+            return;
+        }
+
+        Credentials? tokenAuth = null;
+        if (string.IsNullOrEmpty(username))
+        {
+            tokenAuth = new Credentials(passOrToken);
+            try
+            {
+                Task.Run(async () =>
+                {
+                    var user = await GitHubClientInstance.User.Current();
+                    SettingManager.Instance.GitUsername = user.Login;
+                }).Await(() => { });
+            }
+            catch { /*Probably not enough permission on token scope?*/ }
+        }
+        else
+        {
+            tokenAuth = new Credentials(username, passOrToken);
+            LoginUsername = username;
+        }
         GitHubClientInstance.Credentials = tokenAuth;
+        IsAnonymous = false;
     }
 
-    public static OctokitService Instance
+    public async Task CacheProfilePic()
     {
-        get
-        {
-            if (!Singleton<OctokitService>.HasInitialize)
-                Singleton<OctokitService>.Instance.InitializeGit();
-            return Singleton<OctokitService>.Instance;
-        }
+        var pfpFile = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, $"{LoginUsername}.png");
+        var pfpFileInfo = new FileInfo(pfpFile);
+        if (pfpFileInfo.Exists)
+            return;
+
+        var loggedin = await GitHubClientInstance.User.Current();
+        byte[] pfp = await URL.LoadImageAsBytesFromOnline(loggedin.AvatarUrl);
+        File.WriteAllBytes(pfpFile, pfp);        
     }
+
+    public byte[] GetLoggedInUserAvatar()
+    {
+        var pfpFile = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, $"{LoginUsername}.png");
+        var pfpFileInfo = new FileInfo(pfpFile);
+        if (pfpFileInfo.Exists)
+        {
+            return File.ReadAllBytes(pfpFile);
+        }
+        return Array.Empty<byte>();
+    }
+
+    public static OctokitService Instance 
+        => Singleton<OctokitService>.Instance;
 }

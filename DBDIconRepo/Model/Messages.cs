@@ -125,6 +125,8 @@ public class InstallationProgressReportMessage
     }
 }
 
+public class CloseGitUserPopupMessage { }
+
 public enum DownloadState
 {
     Enumerating,

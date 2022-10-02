@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using DBDIconRepo.Model;
+using DBDIconRepo.Service;
+using IconPack;
+using SelectionListing;
+using System.Windows;
 
 namespace DBDIconRepo;
 
@@ -7,4 +11,11 @@ namespace DBDIconRepo;
 /// </summary>
 public partial class App : Application
 {
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        OctokitService.Instance.InitializeGit();
+        Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
+        Lists.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
+        base.OnStartup(e);
+    }
 }

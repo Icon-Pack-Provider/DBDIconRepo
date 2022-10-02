@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
@@ -13,13 +14,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
+using MUI = ModernWpf.Controls;
 
 namespace DBDIconRepo.ViewModel;
 
 public partial class HomeViewModel : ObservableObject
 {
-    OctokitService gitService => OctokitService.Instance;
-    GitHubClient client => gitService.GitHubClientInstance;
     public void InitializeViewModel()
     {
         //Monitor settings
@@ -28,6 +28,10 @@ public partial class HomeViewModel : ObservableObject
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
 
+        Task.Run(async () =>
+        {
+            await GetProfilePic();
+        }).Await(() => { });
         Task.Run(async () =>
         {
             //
@@ -53,6 +57,7 @@ public partial class HomeViewModel : ObservableObject
             //Task done!
             //Filters
             ApplyFilter();
+            CheckRateLimit();
         });
     }
 
@@ -84,18 +89,8 @@ public partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     ObservableCollection<PackDisplay>? allAvailablePack;
 
-    bool _isEmpty;
-    public bool IsFilteredListEmpty
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(SettingManager.Instance.GitHubLoginToken))
-                return false;
-            return _isEmpty;
-        }
-
-        set => SetProperty(ref _isEmpty, value);
-    }
+    [ObservableProperty]
+    bool isFilteredListEmpty;
 
     private Debouncer _queryDebouncer { get; } = new Debouncer();
     string _query;
@@ -326,4 +321,115 @@ public partial class HomeViewModel : ObservableObject
 
     #endregion
 
+    #region Login stuff
+    GitHubClient client => OctokitService.Instance.GitHubClientInstance;
+
+    OctokitService octo => OctokitService.Instance;
+    public OctokitService GitService
+    {
+        get => octo;
+    }
+
+    [ObservableProperty]
+    string? profilePicUri;
+
+    [ObservableProperty]
+    byte[] profilePicIcon;
+    public async Task GetProfilePic()
+    {
+        if (GitService.IsAnonymous)
+        {
+            SetPlaceholderProfilePic();
+        }
+        else
+        {
+            await GitService.CacheProfilePic();
+            var loggedin = await client.User.Current();
+            ProfilePicUri = loggedin.AvatarUrl;
+
+            var image = GitService.GetLoggedInUserAvatar();
+            if (image.Length == 0)
+            {
+                SetPlaceholderProfilePic();
+                return;
+            }
+            ProfilePicIcon = image;
+        }
+    }
+
+    private void SetPlaceholderProfilePic()
+    {
+        var stream = System.Windows.Application.GetResourceStream(new Uri("/Images/pfpHolder.png", UriKind.Relative));
+        var imageStream = stream.Stream;
+        var buffer = new byte[imageStream.Length];
+        using (imageStream)
+        {
+            imageStream.Read(buffer, 0, buffer.Length);
+        }
+        ProfilePicIcon = buffer;
+    }
+
+    [ObservableProperty]
+    int? requestPerHour;
+
+    [ObservableProperty]
+    int? requestRemain;
+
+    [ObservableProperty]
+    string? resetIn;
+
+    [RelayCommand]
+    private void CheckRateLimit()
+    {
+        var apiInfo = client.GetLastApiInfo();
+        if (apiInfo?.RateLimit is null)
+        {
+            requestPerHour = null;
+            requestRemain = null;
+            resetIn = null;
+            return;
+        }
+
+        var rateLimit = apiInfo.RateLimit;
+
+        RequestPerHour = rateLimit.Limit;
+        RequestRemain = rateLimit.Remaining;
+        var reset = rateLimit.Reset.UtcDateTime;
+        var now = DateTime.UtcNow;
+        var resetts = reset - now;
+        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
+    }
+
+    [RelayCommand]
+    private async void DestructivelyCheckRateLimit()
+    {
+        var rateLimit = await client.Miscellaneous.GetRateLimits();
+
+        RequestPerHour = rateLimit.Resources.Core.Limit;
+        RequestRemain = rateLimit.Resources.Core.Remaining;
+        var reset = rateLimit.Resources.Core.Reset.UtcDateTime;
+        var now = DateTime.UtcNow;
+        var resetts = reset - now;
+        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
+    }
+
+    [RelayCommand]
+    private void LoginToGithub()
+    {
+        Login login = new()
+        {
+            WindowStartupLocation = WindowStartupLocation.CenterScreen
+        };
+        login.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void LogoutOfGithub()
+    {
+        Messenger.Default.Send(new CloseGitUserPopupMessage(), MessageToken.REQUESTCLOSEUSERFLYOUT);
+        SecureSettingService svc = new();
+        svc.Logout();
+        OctokitService.Instance.InitializeGit();
+    }
+    #endregion
 }
