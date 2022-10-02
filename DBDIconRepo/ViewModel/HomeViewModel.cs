@@ -81,12 +81,8 @@ public partial class HomeViewModel : ObservableObject
         OnPropertyChanged(nameof(FilteredList));
     }
 
-    ObservableCollection<PackDisplay>? _packs;
-    public ObservableCollection<PackDisplay> AllAvailablePack
-    {
-        get => _packs;
-        set => SetProperty(ref _packs, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<PackDisplay>? allAvailablePack;
 
     bool _isEmpty;
     public bool IsFilteredListEmpty

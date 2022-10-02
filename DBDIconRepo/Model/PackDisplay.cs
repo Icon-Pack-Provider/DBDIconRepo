@@ -22,6 +22,15 @@ public partial class PackDisplay : ObservableObject
     public PackDisplay(Pack _info)
     {
         Info = _info;
+        SettingManager.Instance.PropertyChanged += MonitorSetting;
+    }
+
+    private void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(Setting.InstallEverythingInPack))
+            return;
+        installPackOption = SettingManager.Instance.InstallEverythingInPack;
+        OnPropertyChanged(nameof(ShouldInstallEverything));
     }
 
     [ObservableProperty]
@@ -41,6 +50,25 @@ public partial class PackDisplay : ObservableObject
     [RelayCommand]
     private async void InstallThisPack(RoutedEventArgs? obj)
     {
+        if (ShouldInstallEverything)
+        {
+            var allIcons = Info.ContentInfo.Files
+                .Where(file => file.EndsWith(".png") && !file.StartsWith(".banner"))
+                .Select(path => new PackSelectionFile(path))
+                .ToList();
+            Messenger.Default.Register<PackDisplay, DownloadRepoProgressReportMessage, string>(this,
+                    $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}",
+                    HandleDownloadProgress);
+            Messenger.Default.Register<PackDisplay, InstallationProgressReportMessage, string>(this,
+                $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}",
+                HandleInstallProgress);
+            CacheOrGit.DownloadPack(await OctokitService.Instance.GitHubClientInstance.Repository.Get(Info.Repository.ID), Info)
+                .Await(() =>
+                {
+                    IconManager.Install(SettingManager.Instance.DBDInstallationPath, (IList<IPackSelectionItem>)allIcons, Info);
+                });
+            return;
+        }
         //Show selection
         PackInstall install = new(Info);
         if (install.ShowDialog() == true)
@@ -203,5 +231,35 @@ public partial class PackDisplay : ObservableObject
                 PreviewSources.Add(new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon)));
             }
         }
+    }
+
+    bool? installPackOption = null;
+    public bool ShouldInstallEverything
+    {
+        get
+        {
+            if (installPackOption is null)
+                installPackOption = SettingManager.Instance.InstallEverythingInPack;
+            return installPackOption.Value;
+        }
+        set
+        {
+            if (SetProperty(ref installPackOption, value))
+            {
+                SettingManager.Instance.InstallEverythingInPack = value;
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void SetInstallAll()
+    {
+        ShouldInstallEverything = true;
+    }
+
+    [RelayCommand]
+    private void SetNotInstallAll()
+    {
+        ShouldInstallEverything = false;
     }
 }

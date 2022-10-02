@@ -62,6 +62,10 @@ public partial class Setting : ObservableObject
     int iconPreviewDecodeHeight = 64;
 
     [ObservableProperty]
+    //True: Install everything, False: Open pack install window
+    bool installEverythingInPack = false;
+
+    [ObservableProperty]
     string gitHubLoginToken = "";
 #if DEBUG
     [ObservableProperty]

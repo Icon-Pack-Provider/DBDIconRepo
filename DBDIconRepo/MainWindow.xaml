@@ -235,7 +235,7 @@
                                 <ColumnDefinition Width="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.ColumnDefinitions>
                             <!-- Normal state -->
-                            <Button ToolTipService.ToolTip="Install" 
+                            <!--<Button ToolTipService.ToolTip="Install" 
                                     Grid.Column="0" HorizontalAlignment="Stretch"
                                     Command="{Binding InstallThisPackCommand}"
                                     MinWidth="32"
@@ -247,7 +247,28 @@
                                                  FontFamily="Segoe MDL2 Assets"/>
                                     <TextBlock Text="Install"/>
                                 </StackPanel>
-                            </Button>
+                            </Button>-->
+                            <ui:SplitButton Grid.Column="0" HorizontalAlignment="Stretch"
+                                            Command="{Binding InstallThisPackCommand}"
+                                            MinWidth="32" MinHeight="32"
+                                            Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
+                                <ui:SplitButton.Flyout>
+                                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
+                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay}" 
+                                                  Command="{Binding SetInstallAllCommand}"
+                                                  Header="Install all"/>
+                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay, Converter={StaticResource invertBool}}" 
+                                                  Command="{Binding SetNotInstallAllCommand}"
+                                                  Header="Install specific"/>
+                                    </ui:MenuFlyout>
+                                </ui:SplitButton.Flyout>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph=""
+                                                 Margin="5,0"
+                                                 FontFamily="Segoe MDL2 Assets"/>
+                                    <TextBlock Text="Install"/>
+                                </StackPanel>
+                            </ui:SplitButton>
                             
                             <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"
