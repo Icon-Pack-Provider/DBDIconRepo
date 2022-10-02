@@ -189,11 +189,27 @@ public partial class HomeViewModel : ObservableObject
             {
                 _queryDebouncer.Debounce(value.Length == 0 ? 100 : 500, () =>
                 {
+                    if (QueryResults is null)
+                        QueryResults = new();
+                    else
+                        QueryResults.Clear();
+                    //Pack name search
+                    var allFoundName = AllAvailablePack
+                    .Where(i => i.Info.Name.Contains(value))
+                    .Select(i => i.Info.Name).Distinct();
+                    var allFoundAuthor = AllAvailablePack
+                    .Where(i => i.Info.Repository.Owner.Contains(value))
+                    .Select(i => i.Info.Repository.Owner).Distinct();
+                    QueryResults = new(allFoundName.Concat(allFoundAuthor));
+                    
                     OnPropertyChanged(nameof(FilteredList));
                 });
             }
         }
     }
+
+    [ObservableProperty]
+    ObservableCollection<string> queryResults;
 
     public ObservableCollection<PackDisplay> FilteredList
     {
@@ -208,7 +224,7 @@ public partial class HomeViewModel : ObservableObject
             {
                 afterQuerySearch = AllAvailablePack.Where(pack => 
                 pack.Info.Name.ToLower().Contains(SearchQuery.ToLower()) || 
-                pack.Info.Author.ToLower().Contains(SearchQuery.ToLower())).ToList();
+                pack.Info.Repository.Owner.ToLower().Contains(SearchQuery.ToLower())).ToList();
             }
             var newList = new List<PackDisplay>();
 

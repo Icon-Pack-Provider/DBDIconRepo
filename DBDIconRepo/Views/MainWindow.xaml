@@ -6,6 +6,8 @@
       xmlns:local="clr-namespace:DBDIconRepo.Views"
       xmlns:convert="clr-namespace:DBDIconRepo.Converters"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+      xmlns:m="clr-namespace:DBDIconRepo.Model"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d" 
       Title="Dead by daylight: Icon repo">
@@ -22,7 +24,6 @@
         <convert:BytesImageDecoderConverter x:Key="bytesToImage"/>
         <convert:GitServiceToUsername x:Key="gitServiceToUsername"/>
         <convert:AnonymousIconRandomizer x:Key="anonIconRandomizer"/>
-        <convert:HexToColorBrush x:Key="hexToColor"/>
 
         <system:Boolean x:Key="BTrue">True</system:Boolean>
         <system:Boolean x:Key="BFalse">False</system:Boolean>
@@ -48,11 +49,10 @@
             x:Key="iconPreviewTemplateSelector"
             IconDisplay="{StaticResource IconPackIconDisplay}"
             BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
-
-        <ui:Flyout x:Key="anonymousUserFlyout">
-            
-        </ui:Flyout>
     </Page.Resources>
+    <Page.DataContext>
+        <vm:HomeViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -62,9 +62,8 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal"
                     HorizontalAlignment="Center">
             <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" 
-                               VerticalAlignment="Center"
-                               PlaceholderText="Enter keyword to search.."
-                               Width="350"/>
+                               VerticalAlignment="Center" ItemsSource="{Binding QueryResults, Mode=OneWay}"
+                               PlaceholderText="Enter keyword to search.." Width="350"/>
             <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
                 <ui:SymbolIcon Symbol="Sort"/>
                 <ui:FlyoutBase.AttachedFlyout>

@@ -14,14 +14,13 @@ namespace DBDIconRepo.Views;
 /// </summary>
 public partial class MainWindow : Page
 {
-    public HomeViewModel ViewModel { get; } = new HomeViewModel();
+    //public HomeViewModel ViewModel { get; } = new HomeViewModel();
 
     public MainWindow()
     {
         InitializeComponent();
         this.Loaded += LoadPacklist;
         this.Unloaded += UnregisterStuff;
-        DataContext = ViewModel;
         Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
     }
