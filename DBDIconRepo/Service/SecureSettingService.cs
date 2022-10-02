@@ -51,6 +51,7 @@ public class SecureSettingService
         var bytes = Encoding.UTF8.GetBytes(password);
 
         var generatedSalt = new byte[69];
+        //FFS, this is not cryto miner!
         using RNGCryptoServiceProvider rng = new();
         rng.GetBytes(generatedSalt);
         SaveToFile(salt, generatedSalt);

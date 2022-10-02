@@ -22,6 +22,7 @@
         <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
         <convert:BytesImageDecoderConverter x:Key="bytesToImage"/>
         <convert:GitServiceToUsername x:Key="gitServiceToUsername"/>
+        <convert:AnonymousIconRandomizer x:Key="anonIconRandomizer"/>
 
         <system:Boolean x:Key="BTrue">True</system:Boolean>
         <system:Boolean x:Key="BFalse">False</system:Boolean>
@@ -160,7 +161,8 @@
                              Click="OpenAttatchedFlyout"
                              Visibility="{Binding GitService.IsAnonymous, Converter={StaticResource boolToVisibility}}">
                 <ui:AppBarButton.Icon>
-                    <ui:FontIcon Glyph="&#xEE57;"/>
+                    <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"
+                                 FontFamily="Segoe MDL2 Assets"/>
                 </ui:AppBarButton.Icon>
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:Flyout Placement="BottomEdgeAlignedRight">
