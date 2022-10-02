@@ -16,7 +16,7 @@
         <convert:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
     </Page.Resources>
 
-    <Grid Margin="12">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

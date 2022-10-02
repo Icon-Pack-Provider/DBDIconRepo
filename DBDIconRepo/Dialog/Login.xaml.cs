@@ -3,7 +3,6 @@ using DBDIconRepo.Model;
 using DBDIconRepo.Service;
 using System;
 using System.Windows;
-using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Dialog;
 

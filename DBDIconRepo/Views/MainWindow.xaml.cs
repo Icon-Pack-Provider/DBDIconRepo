@@ -1,7 +1,5 @@
 ﻿using DBDIconRepo.Dialog;
 using DBDIconRepo.Model;
-using DBDIconRepo.Service;
-using DBDIconRepo.ViewModel;
 using ModernWpf.Controls.Primitives;
 using System.Windows;
 using System.Windows.Controls;

@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
-using DBDIconRepo.Service;
 using DBDIconRepo.ViewModel;
 using IconPack.Model;
 using System;

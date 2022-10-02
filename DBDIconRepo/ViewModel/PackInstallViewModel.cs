@@ -4,7 +4,6 @@ using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Comparer;
 using DBDIconRepo.Service;
-using IconInfo.Internal;
 using IconPack.Model;
 using SelectionListing;
 using SelectionListing.Model;
@@ -15,8 +14,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Xaml;
-using static System.Windows.Forms.AxHost;
 
 namespace DBDIconRepo.ViewModel;
 
