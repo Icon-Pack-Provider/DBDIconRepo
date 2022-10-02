@@ -14,10 +14,6 @@ public class OctokitService
     public void InitializeGit()
     {
         GitHubClientInstance = new GitHubClient(new ProductHeaderValue("ballz"));
-        if (string.IsNullOrEmpty(SettingManager.Instance.GitHubLoginToken))
-        {
-            GitHubClientInstance.Credentials = new()
-        }
         var tokenAuth = new Credentials(SettingManager.Instance.GitHubLoginToken);
         GitHubClientInstance.Credentials = tokenAuth;
     }

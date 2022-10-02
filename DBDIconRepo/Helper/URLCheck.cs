@@ -58,4 +58,11 @@ public static class URL
         var pif = new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true };
         System.Diagnostics.Process.Start(pif);
     }
+
+    public static async Task<byte[]> LoadImageAsBytesFromOnline(string url)
+    {
+        using var client = new HttpClient();
+        using var response = await client.GetAsync(url);
+        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+    }
 }

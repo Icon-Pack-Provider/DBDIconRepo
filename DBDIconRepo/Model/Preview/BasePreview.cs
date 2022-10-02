@@ -39,7 +39,7 @@ public partial class BasePreview : ObservableObject, IBasePreview
                 OnPropertyChanged(nameof(LoadedImage));
             };
 
-            CacheOrGit.LoadImage(IconURL)
+            URL.LoadImageAsBytesFromOnline(IconURL)
                 .ContinueWith(loading,
                 TaskContinuationOptions.OnlyOnRanToCompletion)
                 .ContinueWith(_ => _loadingImage = false)
