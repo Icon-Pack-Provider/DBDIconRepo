@@ -1,0 +1,47 @@
+﻿<Window x:Class="DBDIconRepo.Views.Home"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DBDIconRepo.Views"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+        xmlns:c="clr-namespace:DBDIconRepo.Converters"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        mc:Ignorable="d"
+        Title="Dead by daylight: Icon repo" Height="720" Width="1024">
+    <Window.DataContext>
+        <vm:MainViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
+    <Window.Resources>
+        <c:BoolToVisibility x:Key="boolToVisibility"/>
+        <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
+    </Window.Resources>
+    
+    <ui:NavigationView PaneDisplayMode="Left" 
+                       IsBackEnabled="False"
+                       SelectionChanged="SwitchPage"
+                       Loaded="StartupAction"
+                       PaneTitle="{Binding CurrentPageName, Mode=OneWay}"
+                       IsBackButtonVisible="Collapsed">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Content="Home" Tag="home"
+                                   Icon="Home" x:Name="homeSelection"/>
+            <ui:NavigationViewItem Content="Single icon" Tag="single"
+                                   Icon="ViewAll"/>
+            <ui:NavigationViewItem Content="Favorite" Tag="favorite"
+                                   Icon="Favorite"/>
+        </ui:NavigationView.MenuItems>
+        <ui:NavigationView.FooterMenuItems>
+            <ui:NavigationViewItem Content="Upload pack" Tag="upload"
+                                   Icon="Upload"/>
+            <ui:NavigationViewItem Content="LoginName" Tag="loggedIn"
+                                   Icon="Contact" 
+                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
+            <ui:NavigationViewItem Content="Anonymous" Tag="login"
+                                   Icon="Help"
+                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
+        </ui:NavigationView.FooterMenuItems>
+        <Frame x:Name="contentFrame"/>
+    </ui:NavigationView>
+</Window>
