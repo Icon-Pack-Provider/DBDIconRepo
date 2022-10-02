@@ -34,7 +34,8 @@
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="Upload pack" Tag="upload"
-                                   Icon="Upload"/>
+                                   Icon="Upload"
+                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
             <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
                                    Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
@@ -43,6 +44,7 @@
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
         </ui:NavigationView.FooterMenuItems>
         <Frame x:Name="contentFrame"
+               Margin="12"
                NavigationUIVisibility="Hidden"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch"/>

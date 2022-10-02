@@ -1,6 +1,5 @@
 ﻿using DBDIconRepo.Model;
 using ModernWpf.Controls;
-using System;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
@@ -28,10 +27,15 @@ namespace DBDIconRepo.Views
             homeSelection.IsSelected = true;
         }
 
-        private void SwitchPage(ModernWpf.Controls.NavigationView sender, ModernWpf.Controls.NavigationViewSelectionChangedEventArgs args)
+        private void SwitchPage(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItem is null)
                 return;
+            if (args.IsSettingsSelected)
+            {
+                SwitchPage("setting");
+                return;
+            }
             string page = (args.SelectedItem as NavigationViewItemBase).Tag.ToString();
             SwitchPage(page);
         }
@@ -51,6 +55,10 @@ namespace DBDIconRepo.Views
                 case "loggedIn":
                     contentFrame.Navigate(new LetMeOut());
                     ViewModel.CurrentPageName = SettingManager.Instance.GitUsername;
+                    break;
+                case "setting":
+                    contentFrame.Navigate(new SettingPage());
+                    ViewModel.CurrentPageName = "Settings";
                     break;
             }
         }

@@ -1,0 +1,51 @@
+﻿<Page x:Class="DBDIconRepo.Views.SettingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DBDIconRepo.Views" 
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+    <Page.DataContext>
+        <vm:SettingViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+    <StackPanel Orientation="Vertical">
+        <TextBlock FontSize="24" FontWeight="Bold" Text="Settings" Margin="0,5"/>
+
+        <ui:AutoSuggestBox PlaceholderText="D:\SteamLibrary\common\Dead by Daylight\"
+                           HorizontalAlignment="Left"
+                           Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
+                           Header="Dead by Daylight installation path" Margin="0,2"
+                           Width="400"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,4">
+            <Button Content="Browse..." Command="{Binding BrowseForDBDCommand}"/>
+            <ui:SplitButton Content="Detect" Margin="2,0">
+                <ui:SplitButton.Flyout>
+                    <ui:MenuFlyout>
+                        <MenuItem Header="Steam" Command="{Binding LocateDBDCommand}"/>
+                        <MenuItem Header="Xbox game pass PC"/>
+                        <MenuItem Header="Epic Games"/>
+                    </ui:MenuFlyout>
+                </ui:SplitButton.Flyout>
+            </ui:SplitButton>
+        </StackPanel>
+
+        <ui:ToggleSwitch Header="Freeze app to speedup Install items list" Margin="0,5"
+                                             IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
+
+        <ui:ToggleSwitch Header="Show Default icon pack" Margin="0,5"
+                                             IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}"/>
+        <!-- TODO:Planned feature -->
+        <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
+                                             Visibility="Collapsed"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
+            <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPackCommand}"/>
+        </StackPanel>
+
+    </StackPanel>
+</Page>
