@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
 using IconPack;
-using Octokit;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
-using MUI = ModernWpf.Controls;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -24,15 +21,13 @@ public partial class HomeViewModel : ObservableObject
     {
         //Monitor settings
         SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
-        GitService.PropertyChanged += MonitorLoginState;
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
+        ////Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, 
+            MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterChanged);
 
-        Task.Run(async () =>
-        {
-            await GetProfilePic();
-        }).Await(() => { });
         Task.Run(async () =>
         {
             //
@@ -66,27 +61,18 @@ public partial class HomeViewModel : ObservableObject
             //Task done!
             //Filters
             ApplyFilter();
-            CheckRateLimit();
         }, (e) =>
         {
 
         });
     }
 
-    private void MonitorLoginState(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void HandleFilterChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
     {
-        if (e.PropertyName == nameof(OctokitService.IsAnonymous))
+        _queryDebouncer.Debounce(500, () =>
         {
-            //Login and no longer anonymous
-            if (!GitService.IsAnonymous)
-            {
-                GetProfilePic().Await(() =>
-                {
-                    OnPropertyChanged(nameof(profilePicUri));
-                    DestructivelyCheckRateLimit();
-                });
-            }
-        }
+            ApplyFilter();
+        });
     }
 
     private void MonitorSettingChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -152,7 +138,8 @@ public partial class HomeViewModel : ObservableObject
 
     public void UnregisterMessages()
     {
-        Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        //Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        Messenger.Default.UnregisterAll(this);
     }
 
     private void ApplyFilter()
@@ -177,11 +164,27 @@ public partial class HomeViewModel : ObservableObject
             {
                 _queryDebouncer.Debounce(value.Length == 0 ? 100 : 500, () =>
                 {
+                    if (QueryResults is null)
+                        QueryResults = new();
+                    else
+                        QueryResults.Clear();
+                    //Pack name search
+                    var allFoundName = AllAvailablePack
+                    .Where(i => i.Info.Name.Contains(value))
+                    .Select(i => i.Info.Name).Distinct();
+                    var allFoundAuthor = AllAvailablePack
+                    .Where(i => i.Info.Repository.Owner.Contains(value))
+                    .Select(i => i.Info.Repository.Owner).Distinct();
+                    QueryResults = new(allFoundName.Concat(allFoundAuthor));
+                    
                     OnPropertyChanged(nameof(FilteredList));
                 });
             }
         }
     }
+
+    [ObservableProperty]
+    ObservableCollection<string> queryResults;
 
     public ObservableCollection<PackDisplay> FilteredList
     {
@@ -196,7 +199,7 @@ public partial class HomeViewModel : ObservableObject
             {
                 afterQuerySearch = AllAvailablePack.Where(pack => 
                 pack.Info.Name.ToLower().Contains(SearchQuery.ToLower()) || 
-                pack.Info.Author.ToLower().Contains(SearchQuery.ToLower())).ToList();
+                pack.Info.Repository.Owner.ToLower().Contains(SearchQuery.ToLower())).ToList();
             }
             var newList = new List<PackDisplay>();
 
@@ -393,115 +396,6 @@ public partial class HomeViewModel : ObservableObject
         {
             MessageBox.Show($"Icon pack uninstall succesfully!");
         }
-    }
-
-    #endregion
-
-    #region Login stuff
-    GitHubClient client => OctokitService.Instance.GitHubClientInstance;
-
-    public OctokitService GitService => OctokitService.Instance;
-
-    [ObservableProperty]
-    string? profilePicUri;
-
-    [ObservableProperty]
-    byte[] profilePicIcon;
-    public async Task GetProfilePic()
-    {
-        if (GitService.IsAnonymous)
-        {
-            SetPlaceholderProfilePic();
-        }
-        else
-        {
-            await GitService.CacheProfilePic();
-            var loggedin = await client.User.Current();
-            ProfilePicUri = loggedin.AvatarUrl;
-
-            var image = GitService.GetLoggedInUserAvatar();
-            if (image.Length == 0)
-            {
-                SetPlaceholderProfilePic();
-                return;
-            }
-            ProfilePicIcon = image;
-        }
-    }
-
-    private void SetPlaceholderProfilePic()
-    {
-        var stream = System.Windows.Application.GetResourceStream(new Uri("/Images/pfpHolder.png", UriKind.Relative));
-        var imageStream = stream.Stream;
-        var buffer = new byte[imageStream.Length];
-        using (imageStream)
-        {
-            imageStream.Read(buffer, 0, buffer.Length);
-        }
-        ProfilePicIcon = buffer;
-    }
-
-    [ObservableProperty]
-    int? requestPerHour;
-
-    [ObservableProperty]
-    int? requestRemain;
-
-    [ObservableProperty]
-    string? resetIn;
-
-    [RelayCommand]
-    private void CheckRateLimit()
-    {
-        var apiInfo = client.GetLastApiInfo();
-        if (apiInfo?.RateLimit is null)
-        {
-            requestPerHour = null;
-            requestRemain = null;
-            resetIn = null;
-            return;
-        }
-
-        var rateLimit = apiInfo.RateLimit;
-
-        RequestPerHour = rateLimit.Limit;
-        RequestRemain = rateLimit.Remaining;
-        var reset = rateLimit.Reset.UtcDateTime;
-        var now = DateTime.UtcNow;
-        var resetts = reset - now;
-        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
-    }
-
-    [RelayCommand]
-    private async void DestructivelyCheckRateLimit()
-    {
-        var rateLimit = await client.Miscellaneous.GetRateLimits();
-
-        RequestPerHour = rateLimit.Resources.Core.Limit;
-        RequestRemain = rateLimit.Resources.Core.Remaining;
-        var reset = rateLimit.Resources.Core.Reset.UtcDateTime;
-        var now = DateTime.UtcNow;
-        var resetts = reset - now;
-        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
-    }
-
-    [RelayCommand]
-    private void LoginToGithub()
-    {
-        Login login = new()
-        {
-            WindowStartupLocation = WindowStartupLocation.CenterScreen
-        };
-        login.ShowDialog();
-    }
-
-    [RelayCommand]
-    private void LogoutOfGithub()
-    {
-        Messenger.Default.Send(new CloseGitUserPopupMessage(), MessageToken.REQUESTCLOSEUSERFLYOUT);
-        SecureSettingService svc = new();
-        svc.Logout();
-        OctokitService.Instance.InitializeGit();
     }
     #endregion
 }

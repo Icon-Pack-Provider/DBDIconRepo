@@ -1,6 +1,5 @@
 ﻿using IconInfo.Icon;
 using IconInfo.Internal;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace DBDIconRepo.Model.Comparer;

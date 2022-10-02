@@ -11,5 +11,5 @@ public class MessageToken
     public const string REPOWAITFORINSTALLTOKEN = "REPOWAITINGFORINSTALL";
     public const string REPORTINSTALLPACKTOKEN = "REPORTINSTALLINGPACK";
 
-    public const string REQUESTCLOSEUSERFLYOUT = "PLEASECLOSEUSERPOPUP";
+    public const string RequestMainPageChage = "PLEASEGOTOOTHERPAGE";
 }

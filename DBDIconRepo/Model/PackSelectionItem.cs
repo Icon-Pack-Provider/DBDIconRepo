@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
 using IconInfo.Internal;
-using IconPack.Model;
-using System.Linq;
 
 namespace DBDIconRepo.Model;
 
