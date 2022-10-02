@@ -35,8 +35,8 @@
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="Upload pack" Tag="upload"
                                    Icon="Upload"/>
-            <ui:NavigationViewItem Content="LoginName" Tag="loggedIn"
-                                   Icon="Contact" 
+            <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
+                                   Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
             <ui:NavigationViewItem Content="Anonymous" Tag="login"
                                    Icon="Help"

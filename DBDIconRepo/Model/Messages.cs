@@ -125,8 +125,6 @@ public class InstallationProgressReportMessage
     }
 }
 
-public class CloseGitUserPopupMessage { }
-
 public enum DownloadState
 {
     Enumerating,
@@ -134,4 +132,13 @@ public enum DownloadState
     Transfering,
     CheckingOut,
     Done
+}
+
+public class SwitchToOtherPageMessage
+{
+    public string Page { get; private set; }
+    public SwitchToOtherPageMessage(string page)
+    {
+        Page = page;
+    }
 }

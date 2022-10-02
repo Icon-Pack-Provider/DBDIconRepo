@@ -1,0 +1,75 @@
+﻿<Page x:Class="DBDIconRepo.Views.PleaseLogin"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DBDIconRepo.Views"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel" 
+      xmlns:convert="clr-namespace:DBDIconRepo.Converters" 
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800">
+    <Page.DataContext>
+        <vm:AnonymousUserViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+    <Page.Resources>
+        <convert:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
+    </Page.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Rectangle Fill="DimGray" Grid.RowSpan="2" Margin="-12,-12,-12,0"/>
+        <!--User info-->
+        <StackPanel Orientation="Horizontal">
+            <Image Width="64" Height="64" Margin="5"
+                   Source="pack://application:,,,/Resources/pfpHolder.ico"/>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Text="Anonymous"/>
+                <TextBlock FontSize="12">
+                    Not logged in, <LineBreak/>lower rate limit
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+        <!-- API Limit info -->
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left">
+            <TextBlock>
+                Request per hour: <Run Text="{Binding RequestPerHour, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+            </TextBlock>
+            <TextBlock>
+                Remaining request: <Run Text="{Binding RequestRemain, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+            </TextBlock>
+            <TextBlock>
+                Refill in: <Run Text="{Binding ResetIn, Mode=OneWay, Converter={StaticResource propertyDisplay}}"/>
+            </TextBlock>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Stretch"
+                    Grid.Row="2">
+            <Button HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Margin="0,5"
+                    Command="{Binding CheckRateLimitCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="Help" Margin="0,0,5,0"/>
+                    <TextBlock Text="Check rate limit" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Stretch"
+                    Command="{Binding DestructivelyCheckRateLimitCommand}"
+                    HorizontalContentAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="Important" Margin="0,0,5,0"/>
+                    <TextBlock Text="Check rate limit (Destructive)" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Button Grid.Row="3" Margin="0,5,0,0"
+                Content="Login to GitHub" FontWeight="Bold"
+                Command="{Binding LoginToGithubCommand}"
+                HorizontalAlignment="Stretch"/>
+    </Grid>
+</Page>

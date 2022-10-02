@@ -1,17 +1,8 @@
-﻿using ModernWpf.Controls;
+﻿using DBDIconRepo.Model;
+using ModernWpf.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Views
 {
@@ -23,6 +14,13 @@ namespace DBDIconRepo.Views
         public Home()
         {
             InitializeComponent();
+            Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChage,
+                SwitchPageHandler);
+        }
+
+        private void SwitchPageHandler(Home recipient, SwitchToOtherPageMessage message)
+        {
+            SwitchPage(message.Page);
         }
 
         private void StartupAction(object sender, RoutedEventArgs e)
@@ -34,14 +32,27 @@ namespace DBDIconRepo.Views
         {
             if (args.SelectedItem is null)
                 return;
-            switch ((args.SelectedItem as NavigationViewItemBase).Tag.ToString())
+            string page = (args.SelectedItem as NavigationViewItemBase).Tag.ToString();
+            SwitchPage(page);
+        }
+
+        public void SwitchPage(string page)
+        {
+            switch (page)
             {
                 case "home":
                     contentFrame.Navigate(new MainWindow());
+                    ViewModel.CurrentPageName = "Home";
+                    break;
+                case "login":
+                    contentFrame.Navigate(new PleaseLogin());
+                    ViewModel.CurrentPageName = "Anonymous";
+                    break;
+                case "loggedIn":
+                    contentFrame.Navigate(new LetMeOut());
+                    ViewModel.CurrentPageName = SettingManager.Instance.GitUsername;
                     break;
             }
-            ViewModel.CurrentPageName = (args.SelectedItem as NavigationViewItemBase).Content.ToString();
         }
-
     }
 }

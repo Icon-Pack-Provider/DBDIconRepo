@@ -24,7 +24,6 @@ public partial class HomeViewModel : ObservableObject
     {
         //Monitor settings
         SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
-        GitService.PropertyChanged += MonitorLoginState;
         //Register messages
         Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
             MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
@@ -32,10 +31,6 @@ public partial class HomeViewModel : ObservableObject
         Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, 
             MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterChanged);
 
-        Task.Run(async () =>
-        {
-            await GetProfilePic();
-        }).Await(() => { });
         Task.Run(async () =>
         {
             //
@@ -69,7 +64,6 @@ public partial class HomeViewModel : ObservableObject
             //Task done!
             //Filters
             ApplyFilter();
-            CheckRateLimit();
         }, (e) =>
         {
 
@@ -82,22 +76,6 @@ public partial class HomeViewModel : ObservableObject
         {
             ApplyFilter();
         });
-    }
-
-    private void MonitorLoginState(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(OctokitService.IsAnonymous))
-        {
-            //Login and no longer anonymous
-            if (!GitService.IsAnonymous)
-            {
-                GetProfilePic().Await(() =>
-                {
-                    OnPropertyChanged(nameof(profilePicUri));
-                    DestructivelyCheckRateLimit();
-                });
-            }
-        }
     }
 
     private void MonitorSettingChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -421,115 +399,6 @@ public partial class HomeViewModel : ObservableObject
         {
             MessageBox.Show($"Icon pack uninstall succesfully!");
         }
-    }
-
-    #endregion
-
-    #region Login stuff
-    GitHubClient client => OctokitService.Instance.GitHubClientInstance;
-
-    public OctokitService GitService => OctokitService.Instance;
-
-    [ObservableProperty]
-    string? profilePicUri;
-
-    [ObservableProperty]
-    byte[] profilePicIcon;
-    public async Task GetProfilePic()
-    {
-        if (GitService.IsAnonymous)
-        {
-            SetPlaceholderProfilePic();
-        }
-        else
-        {
-            await GitService.CacheProfilePic();
-            var loggedin = await client.User.Current();
-            ProfilePicUri = loggedin.AvatarUrl;
-
-            var image = GitService.GetLoggedInUserAvatar();
-            if (image.Length == 0)
-            {
-                SetPlaceholderProfilePic();
-                return;
-            }
-            ProfilePicIcon = image;
-        }
-    }
-
-    private void SetPlaceholderProfilePic()
-    {
-        var stream = System.Windows.Application.GetResourceStream(new Uri("/Images/pfpHolder.png", UriKind.Relative));
-        var imageStream = stream.Stream;
-        var buffer = new byte[imageStream.Length];
-        using (imageStream)
-        {
-            imageStream.Read(buffer, 0, buffer.Length);
-        }
-        ProfilePicIcon = buffer;
-    }
-
-    [ObservableProperty]
-    int? requestPerHour;
-
-    [ObservableProperty]
-    int? requestRemain;
-
-    [ObservableProperty]
-    string? resetIn;
-
-    [RelayCommand]
-    private void CheckRateLimit()
-    {
-        var apiInfo = client.GetLastApiInfo();
-        if (apiInfo?.RateLimit is null)
-        {
-            requestPerHour = null;
-            requestRemain = null;
-            resetIn = null;
-            return;
-        }
-
-        var rateLimit = apiInfo.RateLimit;
-
-        RequestPerHour = rateLimit.Limit;
-        RequestRemain = rateLimit.Remaining;
-        var reset = rateLimit.Reset.UtcDateTime;
-        var now = DateTime.UtcNow;
-        var resetts = reset - now;
-        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
-    }
-
-    [RelayCommand]
-    private async void DestructivelyCheckRateLimit()
-    {
-        var rateLimit = await client.Miscellaneous.GetRateLimits();
-
-        RequestPerHour = rateLimit.Resources.Core.Limit;
-        RequestRemain = rateLimit.Resources.Core.Remaining;
-        var reset = rateLimit.Resources.Core.Reset.UtcDateTime;
-        var now = DateTime.UtcNow;
-        var resetts = reset - now;
-        ResetIn = $"{resetts.TotalHours:00}:{resetts.Minutes:00}:{resetts.Seconds:00}";
-    }
-
-    [RelayCommand]
-    private void LoginToGithub()
-    {
-        Login login = new()
-        {
-            WindowStartupLocation = WindowStartupLocation.CenterScreen
-        };
-        login.ShowDialog();
-    }
-
-    [RelayCommand]
-    private void LogoutOfGithub()
-    {
-        Messenger.Default.Send(new CloseGitUserPopupMessage(), MessageToken.REQUESTCLOSEUSERFLYOUT);
-        SecureSettingService svc = new();
-        svc.Logout();
-        OctokitService.Instance.InitializeGit();
     }
     #endregion
 }
