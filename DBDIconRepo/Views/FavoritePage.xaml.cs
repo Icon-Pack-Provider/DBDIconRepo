@@ -9,21 +9,19 @@ using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 namespace DBDIconRepo.Views;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+/// Interaction logic for FavoritePage.xaml
 /// </summary>
-public partial class MainWindow : Page
+public partial class FavoritePage : Page
 {
-    //public HomeViewModel ViewModel { get; } = new HomeViewModel();
-
-    public MainWindow()
+    public FavoritePage()
     {
         InitializeComponent();
         this.Unloaded += UnregisterStuff;
-        Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
+        Messenger.Default.Register<FavoritePage, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
     }
 
-    private void OpenPackDetailWindow(MainWindow recipient, RequestViewPackDetailMessage message)
+    private void OpenPackDetailWindow(FavoritePage recipient, RequestViewPackDetailMessage message)
     {
         foreach (var window in Application.Current.Windows)
         {
@@ -51,18 +49,5 @@ public partial class MainWindow : Page
     private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
     {
         FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-    }
-}
-
-public class IconPreviewTemplateSelector : DataTemplateSelector
-{
-    public DataTemplate IconDisplay { get; set; }
-    public DataTemplate BannerDisplay { get; set; }
-    public override DataTemplate SelectTemplate(object item, DependencyObject container)
-    {
-        if (item is Model.IconDisplay)
-            return IconDisplay;
-        else
-            return BannerDisplay;
     }
 }
