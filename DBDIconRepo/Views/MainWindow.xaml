@@ -62,26 +62,24 @@
                 <ui:SymbolIcon Symbol="Sort"/>
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="Bottom">
-                        <MenuItem Header="Name" IsCheckable="True"
-                                  Command="{Binding SortByNameCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Name'}"/>
-                        <MenuItem Header="Author" IsCheckable="True"
-                                  Command="{Binding SortByAuthorCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Author'}"/>
-                        <MenuItem Header="Last update" IsCheckable="True"
-                                  Command="{Binding SortByLastUpdateCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='LastUpdate'}"/>
+                        <ui:RadioMenuItem Header="Name" GroupName="sortby"
+                                          Command="{Binding SortByNameCommand}"
+                                          IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Name'}"/>
+                        <ui:RadioMenuItem Header="Author" GroupName="sortby"
+                                          Command="{Binding SortByAuthorCommand}"
+                                          IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Author'}"/>
+                        <ui:RadioMenuItem Header="Last update" GroupName="sortby"
+                                          Command="{Binding SortByLastUpdateCommand}"
+                                          IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='LastUpdate'}"/>
 
                         <Separator/>
 
-                        <MenuItem Header="Ascending" 
-                                  IsCheckable="True"
-                                  Command="{Binding SortByAscendingCommand}"
-                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay}"/>
-                        <MenuItem Header="Descending"  
-                                  IsCheckable="True"
-                                  Command="{Binding SortByDescendingCommand}"
-                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay, Converter={StaticResource invertBool}}"/>
+                        <ui:RadioMenuItem Header="Ascending" GroupName="ascend"
+                                          Command="{Binding SortByAscendingCommand}"
+                                          IsChecked="{Binding Config.SortAscending, Mode=OneWay}"/>
+                        <ui:RadioMenuItem Header="Descending" GroupName="ascend"
+                                          Command="{Binding SortByDescendingCommand}"
+                                          IsChecked="{Binding Config.SortAscending, Mode=OneWay, Converter={StaticResource invertBool}}"/>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </Button>
