@@ -16,6 +16,7 @@ public partial class App : Application
         OctokitService.Instance.InitializeGit();
         Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
         Lists.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
+        StarService.Instance.InitializeStarService();
         base.OnStartup(e);
     }
 }

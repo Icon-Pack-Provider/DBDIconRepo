@@ -12,4 +12,6 @@ public class MessageToken
     public const string REPORTINSTALLPACKTOKEN = "REPORTINSTALLINGPACK";
 
     public const string RequestMainPageChage = "PLEASEGOTOOTHERPAGE";
+
+    public const string MassRepoStarChangedToken = "MassRepoStarChanged";
 }

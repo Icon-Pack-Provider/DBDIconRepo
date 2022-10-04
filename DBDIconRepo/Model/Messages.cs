@@ -1,6 +1,8 @@
 ﻿using IconPack.Model;
 using IconPack.Model.Progress;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DBDIconRepo.Model;
 
@@ -140,5 +142,19 @@ public class SwitchToOtherPageMessage
     public SwitchToOtherPageMessage(string page)
     {
         Page = page;
+    }
+}
+
+public class MassRepoStarChanged
+{
+    public PackRepositoryInfo[] Starred { get; private set; }
+    public PackRepositoryInfo[] UnStarred { get; private set; }
+    public MassRepoStarChanged(List<PackRepositoryInfo> preChanged, List<PackRepositoryInfo> postChanged)
+    {
+        var same = preChanged.Intersect(postChanged);
+        preChanged.RemoveAll(i => same.Contains(i));
+        postChanged.RemoveAll(i => same.Contains(i));
+        Starred = postChanged.ToArray();
+        UnStarred = preChanged.ToArray();
     }
 }

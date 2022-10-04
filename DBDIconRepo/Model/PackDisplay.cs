@@ -12,6 +12,7 @@ using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using IconPack;
 using System.Threading.Tasks;
+using DBDIconRepo.Service;
 
 namespace DBDIconRepo.Model;
 
@@ -242,4 +243,52 @@ public partial class PackDisplay : ObservableObject
     {
         ShouldInstallEverything = false;
     }
+
+    #region Favorite/Starred
+    bool isInitialized = false;
+    bool? isFav = null;
+    public bool? IsFavorited
+    {
+        get
+        {
+            if (isFav is not null || isInitialized)
+            {
+                return isFav.Value;
+            }
+            Action<Task<bool>> loading = async task =>
+            {
+                isFav = await task;
+                OnPropertyChanged(nameof(IsFavorited));
+                OnPropertyChanged(nameof(IsFavorited));
+            };
+            StarService.Instance.BaseService.IsRepoStarred(Info.Repository)
+                .ContinueWith(loading,
+                TaskContinuationOptions.OnlyOnRanToCompletion)
+                .ContinueWith(_ => isInitialized = false)
+                .ConfigureAwait(false);
+            return null;
+        }
+    }
+
+    public bool CanFavorite => IsFavorited is not null;
+    StarService star = StarService.Instance;
+
+    [RelayCommand]
+    private async Task FavoriteThisPack()
+    {
+        await star.BaseService.Star(Info.Repository);
+        isFav = true;
+        OnPropertyChanged(nameof(IsFavorited));
+    }
+
+    [RelayCommand]
+    private async Task UnFavoriteThisPack()
+    {
+        await star.BaseService.UnStar(Info.Repository);
+        isFav = false;
+        OnPropertyChanged(nameof(IsFavorited));
+    }
+
+    
+    #endregion
 }

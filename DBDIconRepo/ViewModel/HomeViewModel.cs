@@ -17,7 +17,7 @@ namespace DBDIconRepo.ViewModel;
 
 public partial class HomeViewModel : ObservableObject
 {
-    public void InitializeViewModel()
+    public HomeViewModel()
     {
         //Monitor settings
         SettingManager.Instance.PropertyChanged += MonitorSettingChanged;

@@ -17,7 +17,6 @@ public partial class MainWindow : Page
     public MainWindow()
     {
         InitializeComponent();
-        this.Loaded += LoadPacklist;
         this.Unloaded += UnregisterStuff;
         Messenger.Default.Register<MainWindow, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
@@ -47,11 +46,6 @@ public partial class MainWindow : Page
     {
         Messenger.Default.UnregisterAll(this);
         ViewModel.UnregisterMessages();
-    }
-
-    private void LoadPacklist(object sender, RoutedEventArgs e)
-    {
-        ViewModel.InitializeViewModel();
     }
 
     private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
