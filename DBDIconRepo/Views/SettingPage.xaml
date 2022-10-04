@@ -12,8 +12,6 @@
         <vm:SettingViewModel x:Name="ViewModel"/>
     </Page.DataContext>
     <StackPanel Orientation="Vertical">
-        <TextBlock FontSize="24" FontWeight="Bold" Text="Settings" Margin="0,5"/>
-
         <ui:AutoSuggestBox PlaceholderText="D:\SteamLibrary\common\Dead by Daylight\"
                            HorizontalAlignment="Left"
                            Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
@@ -33,7 +31,7 @@
             </ui:SplitButton>
         </StackPanel>
 
-        <ui:ToggleSwitch Header="Freeze app to speedup Install items list" Margin="0,5"
+        <ui:ToggleSwitch Header="Freeze app to load icon selection list on select component window faster" Margin="0,5"
                                              IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
 
         <ui:ToggleSwitch Header="Show Default icon pack" Margin="0,5"
