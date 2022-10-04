@@ -279,6 +279,8 @@ public partial class PackDisplay : ObservableObject
         await star.BaseService.Star(Info.Repository);
         isFav = true;
         OnPropertyChanged(nameof(IsFavorited));
+        Messenger.Default.Send(new RepoStarChangedMessage(Info.Repository, true),
+            MessageToken.RepoStarChangedToken);
     }
 
     [RelayCommand]
@@ -287,6 +289,8 @@ public partial class PackDisplay : ObservableObject
         await star.BaseService.UnStar(Info.Repository);
         isFav = false;
         OnPropertyChanged(nameof(IsFavorited));
+        Messenger.Default.Send(new RepoStarChangedMessage(Info.Repository, false),
+            MessageToken.RepoStarChangedToken);
     }
 
     

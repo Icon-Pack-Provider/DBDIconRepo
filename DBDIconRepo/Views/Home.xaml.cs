@@ -87,6 +87,13 @@ public partial class Home : Window
                 contentFrame.Navigate(new SettingPage());
                 ViewModel.CurrentPageName = "Settings";
                 break;
+            case "favorite":
+                contentFrame.Navigate(new FavoritePage());
+                if (ViewModel.GitService.IsAnonymous)
+                    ViewModel.CurrentPageName = "Local favorites";
+                if (!ViewModel.GitService.IsAnonymous)
+                    ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
+                break;
         }
     }
 }

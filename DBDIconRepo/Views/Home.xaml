@@ -29,8 +29,11 @@
                                    Icon="Home" x:Name="homeSelection"/>
             <ui:NavigationViewItem Content="Single icon" Tag="single"
                                    Icon="ViewAll"/>
-            <ui:NavigationViewItem Content="Favorite" Tag="favorite"
-                                   Icon="Favorite"/>
+            <ui:NavigationViewItem Content="Favorite" Tag="favorite">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE1CE;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="Upload pack" Tag="upload"

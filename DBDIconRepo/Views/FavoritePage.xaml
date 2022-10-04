@@ -1,16 +1,13 @@
-﻿<Page x:Class="DBDIconRepo.Views.MainWindow"
+﻿<Page x:Class="DBDIconRepo.Views.FavoritePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:DBDIconRepo.Views"
-      xmlns:convert="clr-namespace:DBDIconRepo.Converters"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:convert="clr-namespace:DBDIconRepo.Converters"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
-      xmlns:m="clr-namespace:DBDIconRepo.Model"
-      xmlns:system="clr-namespace:System;assembly=mscorlib"
-      mc:Ignorable="d" 
-      Title="Dead by daylight: Icon repo">
+      xmlns:local="clr-namespace:DBDIconRepo.Views"
+      mc:Ignorable="d" >
     <Page.Resources>
         <convert:InvertBool x:Key="invertBool"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
@@ -45,66 +42,26 @@
             BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
     </Page.Resources>
     <Page.DataContext>
-        <vm:HomeViewModel x:Name="ViewModel"/>
+        <vm:FavoriteViewModel x:Name="ViewModel"/>
     </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <StackPanel Visibility="{Binding Config.DismissedTheFavoritePageHeaderPrompt, Converter={StaticResource invertBoolToVisibility}}" Orientation="Horizontal">
+            <Button Content="&#xE106;" FontFamily="Segoe MDL2 Assets" Margin="5"
+                    Command="{Binding IDGAFCommand}"/>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal"
-                    HorizontalAlignment="Center">
-            <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" 
-                               VerticalAlignment="Center" ItemsSource="{Binding QueryResults, Mode=OneWay}"
-                               PlaceholderText="Enter keyword to search.." Width="350"/>
-            <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="Sort"/>
-                <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout Placement="Bottom">
-                        <MenuItem Header="Name" IsCheckable="True"
-                                  Command="{Binding SortByNameCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Name'}"/>
-                        <MenuItem Header="Author" IsCheckable="True"
-                                  Command="{Binding SortByAuthorCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Author'}"/>
-                        <MenuItem Header="Last update" IsCheckable="True"
-                                  Command="{Binding SortByLastUpdateCommand}"
-                                  IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='LastUpdate'}"/>
-
-                        <Separator/>
-
-                        <MenuItem Header="Ascending" 
-                                  IsCheckable="True"
-                                  Command="{Binding SortByAscendingCommand}"
-                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay}"/>
-                        <MenuItem Header="Descending"  
-                                  IsCheckable="True"
-                                  Command="{Binding SortByDescendingCommand}"
-                                  IsChecked="{Binding Config.SortAscending, Mode=OneWay, Converter={StaticResource invertBool}}"/>
-                    </ui:MenuFlyout>
-                </ui:FlyoutBase.AttachedFlyout>
-            </Button>
-            <Button Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="Filter"/>
-                <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout Placement="Bottom">
-                        <MenuItem Header="Perks only" Command="{Binding OnlyPerkFilterCommand}"/>
-                        <MenuItem Header="Portraits only" Command="{Binding OnlyPortraitFilterCommand}"/>
-                        <MenuItem Header="Complete pack" Command="{Binding ClearFilterCommand}"/>
-                        <Separator/>
-                        <MenuItem Header="Perks" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasPerks, Mode=TwoWay}"/>
-                        <MenuItem Header="Portraits" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasPortraits, Mode=TwoWay}"/>
-                        <MenuItem Header="Status effects" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasStatus, Mode=TwoWay}"/>
-                        <MenuItem Header="Powers" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasPowers, Mode=TwoWay}"/>
-                        <MenuItem Header="Offerings" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasOfferings, Mode=TwoWay}"/>
-                        <MenuItem Header="Items" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasItems, Mode=TwoWay}"/>
-                        <MenuItem Header="Add-Ons" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasAddons, Mode=TwoWay}"/>
-                    </ui:MenuFlyout>
-                </ui:FlyoutBase.AttachedFlyout>
-            </Button>
-
-
+            <TextBlock Visibility="{Binding Git.IsAnonymous, Converter={StaticResource boolToVisibility}}"
+                       VerticalAlignment="Center">
+            You are currently view local Favorites pack
+            </TextBlock>
+            
+            <TextBlock Visibility="{Binding Git.IsAnonymous, Converter={StaticResource invertBoolToVisibility}}"
+                       VerticalAlignment="Center">
+            You are currently view Favorite pack of <Run Text="{Binding Config.GitUsername}"/>
+            </TextBlock>
         </StackPanel>
         <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
                      IsSelectionEnabled="False"
@@ -277,8 +234,8 @@
                    TextAlignment="Center" Foreground="Gray"
                    x:Name="tooManyFilter"
                    Visibility="{Binding IsFilteredListEmpty, Converter={StaticResource boolToVisibility}, Mode=OneWay}">
-            <Run Text="No icon pack found!" FontSize="24" FontWeight="Bold"/>
-            <LineBreak/><Run Text="Try remove some filters..."/>
+            <Run Text="No pack has been favorited, so far." FontSize="24" FontWeight="Bold"/>
+            <LineBreak/><Run Text="Go click those little star and comeback here again later..."/>
         </TextBlock>
     </Grid>
 </Page>

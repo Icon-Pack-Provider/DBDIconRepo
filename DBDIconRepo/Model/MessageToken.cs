@@ -14,4 +14,5 @@ public class MessageToken
     public const string RequestMainPageChage = "PLEASEGOTOOTHERPAGE";
 
     public const string MassRepoStarChangedToken = "MassRepoStarChanged";
+    public const string RepoStarChangedToken = "RepoStarChanged";
 }

@@ -39,6 +39,12 @@
     <ProjectReference Include="..\SelectionListing\SelectionListing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\FavoritePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
   <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
   <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
     <ItemGroup>

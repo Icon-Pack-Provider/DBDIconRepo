@@ -75,6 +75,9 @@ public partial class Setting : ObservableObject
     */
     bool sacrificingAppResponsiveness = false;
 
+    [ObservableProperty]
+    bool dismissedTheFavoritePageHeaderPrompt = false;
+
 #if DEBUG
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");

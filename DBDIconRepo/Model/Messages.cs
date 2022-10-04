@@ -158,3 +158,15 @@ public class MassRepoStarChanged
         UnStarred = preChanged.ToArray();
     }
 }
+
+public class RepoStarChangedMessage
+{
+    public PackRepositoryInfo Changed { get; private set; }
+    public bool IsStarred { get; private set; }
+
+    public RepoStarChangedMessage(PackRepositoryInfo changed, bool isStarred)
+    {
+        Changed = changed;
+        IsStarred = isStarred;
+    }
+}
