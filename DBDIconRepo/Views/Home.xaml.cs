@@ -94,6 +94,21 @@ public partial class Home : Window
                 if (!ViewModel.GitService.IsAnonymous)
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
+            case "upload":
+                if (ViewModel.GitService.IsAnonymous)
+                {
+                    homeSelection.IsSelected = true;
+                    MessageBox.Show("I am not letting you in without login to GitHub!",
+                        "I don't know how did you manage to do this, but", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    if (contentFrame.Content.GetType().Name != nameof(MainWindow))
+                        contentFrame.Navigate(new MainWindow());
+                    ViewModel.CurrentPageName = "Home";
+                    return;
+                }
+                contentFrame.Navigate(new UploadPack());
+                ViewModel.CurrentPageName = "Upload new pack";
+                break;
         }
     }
 }
