@@ -30,8 +30,45 @@ public partial class SettingViewModel : ObservableObject
         }
     }
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FindDBDForSteam))]
+    [NotifyPropertyChangedFor(nameof(FindDBDForXbox))]
+    [NotifyPropertyChangedFor(nameof(FindDBDForEpig))]
+    FindDBDFor platformLocatorTarget;
+
     [RelayCommand]
-    private void LocateDBD(RoutedEventArgs? obj)
+    private void SetDBDLocatorToSteam() => PlatformLocatorTarget = FindDBDFor.Steam;
+    [RelayCommand]
+    private void SetDBDLocatorToXbox() => PlatformLocatorTarget = FindDBDFor.Xbox;
+    [RelayCommand]
+    private void SetDBDLocatorToEpig() => PlatformLocatorTarget = FindDBDFor.Epig;
+
+    public bool FindDBDForSteam => PlatformLocatorTarget == FindDBDFor.Steam;
+    public bool FindDBDForXbox => PlatformLocatorTarget == FindDBDFor.Xbox;
+    public bool FindDBDForEpig => PlatformLocatorTarget == FindDBDFor.Epig;
+    
+    [RelayCommand]
+    private void LocateDBD()
+    {
+        switch (PlatformLocatorTarget)
+        {
+            case FindDBDFor.Steam:
+                LocateDBDForSteam();
+                break;
+            case FindDBDFor.Xbox:
+                LocateDBDForXbox();
+                break;
+            case FindDBDFor.Epig:
+                LocateDBDForEpig();
+                break;
+            default:
+                //TODO:Adding support for Locating DBD on Toaster or something
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void LocateDBDForSteam()
     {
         //Locate steam installation folder
         string? steamPath = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", "").ToString();
@@ -47,14 +84,16 @@ public partial class SettingViewModel : ObservableObject
         }
     }
 
-    private void FindDBDXboxAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void LocateDBDForXbox()
     {
-        throw new NotImplementedException();
+
     }
 
-    private void FindDBDEpicAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void LocateDBDForEpig()
     {
-        throw new NotImplementedException();
+
     }
 
     [RelayCommand]
@@ -74,4 +113,11 @@ public partial class SettingViewModel : ObservableObject
             MessageBox.Show($"Icon pack uninstall succesfully!");
         }
     }
+}
+
+public enum FindDBDFor
+{
+    Steam,
+    Xbox,
+    Epig
 }

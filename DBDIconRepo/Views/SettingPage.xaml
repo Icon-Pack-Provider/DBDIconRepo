@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:DBDIconRepo.Views" 
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       mc:Ignorable="d" 
@@ -20,27 +19,48 @@
 
         <StackPanel Orientation="Horizontal" Margin="0,4">
             <Button Content="Browse..." Command="{Binding BrowseForDBDCommand}"/>
-            <ui:SplitButton Content="Detect" Margin="2,0">
+            <ui:SplitButton Content="Detect" Command="{Binding LocateDBDCommand}" Margin="2,0">
                 <ui:SplitButton.Flyout>
                     <ui:MenuFlyout>
-                        <MenuItem Header="Steam" Command="{Binding LocateDBDCommand}"/>
-                        <MenuItem Header="Xbox game pass PC"/>
-                        <MenuItem Header="Epic Games"/>
+                        <ui:RadioMenuItem Header="Steam" GroupName="locator" IsChecked="{Binding FindDBDForSteam, Mode=OneWay}" Command="{Binding SetDBDLocatorToSteamCommand}"/>
+                        <ui:RadioMenuItem GroupName="locator" IsChecked="{Binding FindDBDForXbox, Mode=OneWay}" Command="{Binding SetDBDLocatorToXboxCommand}"
+                                          Header="Xbox Game pass for PC"/>
+                        <ui:RadioMenuItem Header="Epic Games" GroupName="locator" IsChecked="{Binding FindDBDForEpig, Mode=OneWay}" Command="{Binding SetDBDLocatorToEpigCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Steam" Command="{Binding LocateDBDForSteamCommand}"/>
+                        <MenuItem Header="Xbox game pass for PC" Command="{Binding LocateDBDForXboxCommand}"/>
+                        <MenuItem Header="Epic Games" Command="{Binding LocateDBDForEpigCommand}"/>
                     </ui:MenuFlyout>
                 </ui:SplitButton.Flyout>
             </ui:SplitButton>
         </StackPanel>
 
-        <ui:ToggleSwitch Header="Freeze app to load icon selection list on select component window faster" Margin="0,5"
-                                             IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
+        <ui:ToggleSwitch Header="Freeze app to load icon selection list on select component window faster" 
+                         Margin="0,5"
+                         IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
 
-        <ui:ToggleSwitch Header="Show Default icon pack" Margin="0,5"
-                                             IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}"/>
-        <ui:ToggleSwitch Header="Show Developer test icon pack" Margin="0,5"
-                                             IsOn="{Binding Config.ShowDevTestPack, Mode=TwoWay}"/>
+        <ui:ToggleSwitch Header="Show Default icon pack" 
+                         Margin="0,5"
+                         IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}">
+            <ui:ToggleSwitch.OnContent>
+                Default icon pack will now show on list
+            </ui:ToggleSwitch.OnContent>
+            <ui:ToggleSwitch.OffContent>
+                Default icon pack will be hidden
+            </ui:ToggleSwitch.OffContent>
+        </ui:ToggleSwitch>
+        <ui:ToggleSwitch Header="Show test icon pack" Margin="0,5"
+                         IsOn="{Binding Config.ShowDevTestPack, Mode=TwoWay}">
+            <ui:ToggleSwitch.OnContent>
+                All test icon packs (that made by Icon-Pack-Provider) will all be on the list
+            </ui:ToggleSwitch.OnContent>
+            <ui:ToggleSwitch.OffContent>
+                All test icon packs (that made by Icon-Pack-Provider) will not be on the list
+            </ui:ToggleSwitch.OffContent>
+        </ui:ToggleSwitch>
         <!-- TODO:Planned feature -->
         <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
-                                             Visibility="Collapsed"/>
+                         Visibility="Collapsed"/>
 
         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
             <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
