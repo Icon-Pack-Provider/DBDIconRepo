@@ -36,14 +36,28 @@ public partial class HomeViewModel : ObservableObject
             var packs = await Packs.GetPacks();
             foreach (var pack in packs)
             {
-                if (!Config.ShowDefaultPack)
+                if (pack.Author == "Icon-Pack-Provider")
                 {
-                    if (pack.Name == "Dead-by-daylight-Default-icons" &&
-                        pack.Author == "Icon-Pack-Provider")
+                    if (pack.Name == "Dead-by-daylight-Default-icons")
                     {
-                        continue;
+                        if (!Config.ShowDefaultPack)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+#if DEBUG
+                        if (!Config.ShowDevTestPack)
+                        {
+                            continue;
+                        }
+#else
+                        continue; //Hide all pack (except default icon) on Release build
+#endif
                     }
                 }
+
                 PackDisplay display = new(pack);
                 if (display is null)
                     continue;
@@ -269,7 +283,7 @@ public partial class HomeViewModel : ObservableObject
 
     public Setting? Config => SettingManager.Instance;
 
-    #region Commands
+#region Commands
     [RelayCommand]
     private void OnlyPerkFilter(RoutedEventArgs? obj)
     {
@@ -333,5 +347,5 @@ public partial class HomeViewModel : ObservableObject
         Config.SortBy = option;
         OnPropertyChanged(nameof(FilteredList));
     }
-    #endregion
+#endregion
 }
