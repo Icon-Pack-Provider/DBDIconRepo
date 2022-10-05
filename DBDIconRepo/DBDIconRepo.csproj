@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<ApplicationIcon>Resources\app.ico</ApplicationIcon>
-	<Platforms>AnyCPU;ARM32;ARM64;x64</Platforms>
+	<Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
 	<DebugSymbols>False</DebugSymbols>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
 
-	<ItemGroup>
+  <ItemGroup>
     <Compile Remove="SortAllIconsIntoFolder\**" />
     <EmbeddedResource Remove="SortAllIconsIntoFolder\**" />
     <None Remove="SortAllIconsIntoFolder\**" />
@@ -30,10 +30,8 @@
 
   <ItemGroup>
     <Resource Include="Resources\app.ico"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\pfpHolder.ico" />
+	<Resource Include="Resources\bannerHolder.png"/>
+	<Resource Include="Resources\pfpHolder.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +42,7 @@
     <PackageReference Include="IconInfo" Version="6.6.0.3" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="MdXaml" Version="1.17.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1343.22" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="Octokit" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
@@ -64,7 +63,6 @@
 	<ItemGroup>
 		<Page Remove="Properties\DesignTimeResources.xaml" />
 		<None Remove="Properties\DesignTimeResources.xaml" />
-		<Resource Include="Resources\bannerHolder.png"/>
 		<Page Include="Properties\DesignTimeResources.xaml">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>

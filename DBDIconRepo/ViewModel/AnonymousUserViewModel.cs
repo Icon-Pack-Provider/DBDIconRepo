@@ -7,6 +7,7 @@ using System.Windows;
 using System;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using DBDIconRepo.Model;
+using Dialog;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -63,7 +64,7 @@ public partial class AnonymousUserViewModel : ObservableObject
     [RelayCommand]
     private void LoginToGithub()
     {
-        Login login = new()
+        LoginOAuth login = new()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
