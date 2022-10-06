@@ -23,13 +23,13 @@ public partial class Login : Window
 
     private async void LoginToGit(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(usernameBox.Text) && string.IsNullOrEmpty(passwordBox.Password))
+        if (string.IsNullOrEmpty(passwordBox.Password))
         {
             MessageBox.Show("No login information", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
-        if (string.IsNullOrEmpty(usernameBox.Text) && !string.IsNullOrEmpty(passwordBox.Password))
+        if (!string.IsNullOrEmpty(passwordBox.Password))
         {
             //Token login
             //Check if valid
@@ -52,15 +52,6 @@ public partial class Login : Window
                 MessageBox.Show("Either token has no user query access, or invalid token!",
                     "Bad credentials error:", MessageBoxButton.OK, MessageBoxImage.Error);
             }            
-        }
-
-        else if (!string.IsNullOrEmpty(usernameBox.Text) && !string.IsNullOrEmpty(passwordBox.Password))
-        {
-            try
-            {
-
-            }
-            catch { }
         }
 
         //Finalize

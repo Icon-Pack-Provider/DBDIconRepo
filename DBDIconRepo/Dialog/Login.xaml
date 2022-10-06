@@ -7,7 +7,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Login" Width="340" Height="300">
+        Title="Login" Width="340" Height="180">
     <StackPanel Orientation="Vertical"
                 Margin="12"
                 HorizontalAlignment="Center"
@@ -17,16 +17,11 @@
                    MaxWidth="320"
                    TextAlignment="Center">
             Login to Favorite repo, <LineBreak/>and download packs without getting rate-limit by GitHub
-            <LineBreak/>Using 2FA on GitHub account? Please read: <Hyperlink Click="Open2FAInstruction">Here</Hyperlink>
         </TextBlock>
-        <TextBox Text="" Margin="5"
-                 x:Name="usernameBox"
-                 ui:ControlHelper.Header="Username"
-                 ui:ControlHelper.PlaceholderText="GitHub username"/>
         <PasswordBox Margin="5"
                      x:Name="passwordBox"
-                     ui:ControlHelper.Header="Password"
-                     ui:ControlHelper.PlaceholderText="GitHub password"/>
+                     ui:ControlHelper.Header="Token"
+                     ui:ControlHelper.PlaceholderText="GitHub personal access token"/>
         <Button Content="Login" 
                 FontSize="18"
                 FontWeight="Bold"
