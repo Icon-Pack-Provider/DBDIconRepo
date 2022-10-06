@@ -7,7 +7,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Login" Width="340" Height="180">
+        Title="Login" Width="340" Height="200">
     <StackPanel Orientation="Vertical"
                 Margin="12"
                 HorizontalAlignment="Center"
