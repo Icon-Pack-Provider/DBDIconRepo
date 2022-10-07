@@ -113,6 +113,24 @@ public partial class SettingViewModel : ObservableObject
             MessageBox.Show($"Icon pack uninstall succesfully!");
         }
     }
+
+    [RelayCommand]
+    private void SetAllResMinimal()
+    {
+        Config.Resolution.SetAll(0.1);
+    }
+
+    [RelayCommand]
+    private void SetAllResHalf()
+    {
+        Config.Resolution.SetAll(0.5);
+    }
+
+    [RelayCommand]
+    private void SetAllResFull()
+    {
+        Config.Resolution.SetAll(1);
+    }
 }
 
 public enum FindDBDFor

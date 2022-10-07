@@ -5,12 +5,20 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
-      mc:Ignorable="d" 
+      xmlns:c="clr-namespace:DBDIconRepo.Converters"
+      mc:Ignorable="d" ui:Design.RequestedTheme="Dark"
       d:DesignHeight="450" d:DesignWidth="800">
     <Page.DataContext>
         <vm:SettingViewModel x:Name="ViewModel"/>
     </Page.DataContext>
-    <StackPanel Orientation="Vertical">
+    <Page.Resources>
+        <c:TextSwitchConverter x:Key="textSelector"/>
+        <c:BoolToVisibility x:Key="boolToVisibility"/>
+        <c:ResolutionFromScaleTextConverter x:Key="resFromScale"/>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical" Margin="5">
         <ui:AutoSuggestBox PlaceholderText="D:\SteamLibrary\common\Dead by Daylight\"
                            HorizontalAlignment="Left"
                            Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
@@ -58,14 +66,134 @@
                 All test icon packs (that made by Icon-Pack-Provider) will not be on the list
             </ui:ToggleSwitch.OffContent>
         </ui:ToggleSwitch>
-        <!-- TODO:Planned feature -->
+
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <ToggleButton x:Name="iconsScale">
+                        <ToggleButton.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon Glyph="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource textSelector}, ConverterParameter=';'}"/>
+                                <TextBlock Text="Icon preview scale" Margin="5,0"/>
+                            </StackPanel>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <Button Padding="4" Margin="5">
+                        <ui:FontIcon Glyph="&#xE11B;" FontSize="14"/>
+                        <ui:FlyoutService.Flyout>
+                            <ui:Flyout>
+                                <TextBlock TextWrapping="Wrap" MaxWidth="220">
+                                Change the resolution of all the icons display in the app
+                                <LineBreak/><Bold>Higher</Bold> for clearer images, but higher ram usage
+                                <LineBreak/><Bold>Lower</Bold> for quick images load time and lower bandwidth usage, but blurrer images
+                                </TextBlock>
+                            </ui:Flyout>
+                        </ui:FlyoutService.Flyout>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="5,12" MinWidth="420" HorizontalAlignment="Left"
+                        Visibility="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource boolToVisibility}}">
+                    <!--Set all-->
+                    <TextBlock Text="Quick resolution set"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                        <Button Content="Full" Command="{Binding SetAllResFullCommand}"/>
+                        <Button Content="Half" Command="{Binding SetAllResHalfCommand}" Margin="5,0"/>
+                        <Button Content="Lowest" Command="{Binding SetAllResMinimalCommand}"/>
+                    </StackPanel>
+                    
+                    <Slider x:Name="bannerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.BannerScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Banner (<Run Text="{Binding Config.Resolution.BannerScale, Converter={StaticResource resFromScale}, ConverterParameter='banner'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="portraitRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PortraitScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Portrait (<Run Text="{Binding Config.Resolution.PortraitScale, Converter={StaticResource resFromScale}, ConverterParameter='portrait'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="perkRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PerkScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Perk (<Run Text="{Binding Config.Resolution.PerkScale, Converter={StaticResource resFromScale}, ConverterParameter='perk'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="powerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PowerScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Power (<Run Text="{Binding Config.Resolution.PowerScale, Converter={StaticResource resFromScale}, ConverterParameter='power'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="itemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.ItemScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Item (<Run Text="{Binding Config.Resolution.ItemScale, Converter={StaticResource resFromScale}, ConverterParameter='item'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="addonRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.AddonScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Addon (<Run Text="{Binding Config.Resolution.AddonScale, Converter={StaticResource resFromScale}, ConverterParameter='addon'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="emblemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.EmblemScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Emblem (<Run Text="{Binding Config.Resolution.EmblemScale, Converter={StaticResource resFromScale}, ConverterParameter='emblem'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="offeringRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.OfferingScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Offering (<Run Text="{Binding Config.Resolution.OfferingScale, Converter={StaticResource resFromScale}, ConverterParameter='offering'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="statusRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.StatusEffectScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Status Effect (<Run Text="{Binding Config.Resolution.StatusEffectScale, Converter={StaticResource resFromScale}, ConverterParameter='status'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                    <Slider x:Name="dailyRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.DailyRitualScale, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <TextBlock>
+                            Daily ritual (<Run Text="{Binding Config.Resolution.DailyRitualScale, Converter={StaticResource resFromScale}, ConverterParameter='daily'}"/>)
+                            </TextBlock>
+                        </ui:ControlHelper.Header>
+                    </Slider>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- TODO:Planned feature -->
         <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
                          Visibility="Collapsed"/>
 
-        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
             <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
             <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPackCommand}"/>
         </StackPanel>
 
     </StackPanel>
+    </ScrollViewer>
+    
 </Page>

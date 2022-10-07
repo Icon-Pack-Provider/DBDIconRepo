@@ -1,10 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DBDIconRepo.Helper;
 using DBDIconRepo.Strings;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Model;
@@ -57,6 +60,9 @@ public partial class Setting : ObservableObject
 
     [ObservableProperty]
     int iconPreviewDecodeHeight = 64;
+
+    [ObservableProperty]
+    IconsResolution resolution = new();
 
     [ObservableProperty]
     //True: Install everything, False: Open pack install window
@@ -275,6 +281,146 @@ public class FilterOptions : ObservableObject
             {
                 Messenger.Default.Send(new FilterOptionChangedMessage(nameof(HasAddons), this), MessageToken.FILTEROPTIONSCHANGETOKEN);
             }
+        }
+    }
+}
+
+public partial class IconsResolution : ObservableObject
+{
+    [ObservableProperty]
+    private double bannerScale = 0.5;
+
+    [ObservableProperty]
+    private double addonScale = 0.5;
+
+    [ObservableProperty]
+    private double dailyRitualScale = 0.5;
+
+    [ObservableProperty]
+    private double emblemScale = 0.5;
+
+    [ObservableProperty]
+    private double itemScale = 0.5;
+
+    [ObservableProperty]
+    private double offeringScale = 0.5;
+
+    [ObservableProperty]
+    private double perkScale = 0.5;
+
+    [ObservableProperty]
+    private double portraitScale = 0.5;
+
+    [ObservableProperty]
+    private double powerScale = 0.5;
+
+    [ObservableProperty]
+    private double statusEffectScale = 0.5;
+
+    public IconsResolution()
+    {
+        BannerScale =
+        AddonScale =
+        DailyRitualScale =
+        EmblemScale =
+        ItemScale =
+        OfferingScale =
+        PerkScale =
+        PowerScale =
+        PortraitScale =
+        StatusEffectScale = 0.5;
+        PropertyChanged += SaveConfigs;
+    }
+
+    [JsonIgnore]
+    private Debouncer _debounce = new();
+    private void SaveConfigs(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        _debounce.Debounce(500, () =>
+        {
+            SettingManager.SaveSettings();
+        });
+    }
+
+    public void SetAll(double all)
+    {
+        BannerScale =
+        AddonScale =
+        DailyRitualScale =
+        EmblemScale =
+        ItemScale =
+        OfferingScale =
+        PerkScale =
+        PowerScale =
+        PortraitScale =
+        StatusEffectScale = all;
+    }
+}
+
+public static class IconResolutionScale
+{
+    /// <summary>
+    /// 1280x300
+    /// </summary>
+    public static Size Banner => new(1280 * SettingManager.Instance.Resolution.BannerScale,
+                300 * SettingManager.Instance.Resolution.BannerScale);
+
+    /// <summary>
+    /// 512x512
+    /// </summary>
+    public static Size Portrait => new(512 * SettingManager.Instance.Resolution.PortraitScale,
+        512 * SettingManager.Instance.Resolution.PortraitScale);
+
+    public static Size Addon => new(256 * SettingManager.Instance.Resolution.AddonScale,
+        256 * SettingManager.Instance.Resolution.AddonScale);
+
+    public static Size Emblem => new(256 * SettingManager.Instance.Resolution.EmblemScale,
+        256 * SettingManager.Instance.Resolution.EmblemScale);
+
+    public static Size Item => new(256 * SettingManager.Instance.Resolution.ItemScale,
+        256 * SettingManager.Instance.Resolution.ItemScale);
+
+    public static Size Offering => new(256 * SettingManager.Instance.Resolution.OfferingScale,
+        256 * SettingManager.Instance.Resolution.OfferingScale);
+
+    public static Size Perk => new(256 * SettingManager.Instance.Resolution.PerkScale,
+        256 * SettingManager.Instance.Resolution.PerkScale);
+
+    public static Size Power => new(256 * SettingManager.Instance.Resolution.PowerScale,
+        256 * SettingManager.Instance.Resolution.PowerScale);
+
+    public static Size DailyRitual = new(128 * SettingManager.Instance.Resolution.DailyRitualScale,
+        128 * SettingManager.Instance.Resolution.DailyRitualScale);
+
+    public static Size StatusEffect = new(128 * SettingManager.Instance.Resolution.StatusEffectScale,
+        128 * SettingManager.Instance.Resolution.StatusEffectScale);
+
+    public static Size GetResolutionScale(string type)
+    {
+        switch (type)
+        {
+            case "banner": //1280x300
+                return Banner;
+            case "portrait":
+                return Portrait;
+            case "addon": //256x256
+                return Addon;
+            case "emblem":
+                return Emblem;
+            case "item":
+                return Item;
+            case "offering":
+                return Offering;
+            case "perk":
+                return Perk;
+            case "power":
+                return Power;
+            case "daily": //128x128
+                return DailyRitual;
+            case "status":
+                return StatusEffect;
+            default:
+                return Perk;
         }
     }
 }

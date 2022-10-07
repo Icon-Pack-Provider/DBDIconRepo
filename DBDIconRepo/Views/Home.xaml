@@ -28,6 +28,7 @@
             <ui:NavigationViewItem Content="Home" Tag="home"
                                    Icon="Home" x:Name="homeSelection"/>
             <ui:NavigationViewItem Content="Single icon" Tag="single"
+                                   Visibility="Collapsed"
                                    Icon="ViewAll"/>
             <ui:NavigationViewItem Content="Favorite" Tag="favorite">
                 <ui:NavigationViewItem.Icon>
@@ -37,8 +38,8 @@
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="Upload pack" Tag="upload"
-                                   Icon="Upload"
-                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
+                                   Icon="Upload" Visibility="Collapsed"/>
+            <!-- ="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/> -->
             <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
                                    Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
