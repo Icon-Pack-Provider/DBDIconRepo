@@ -45,22 +45,6 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     double downloadIfSelectMoreThanMeThreshold = 0.2d;
 
-    //Banner res
-    //1280x300
-    [ObservableProperty]
-    int bannerDecodeWidth = 256;
-
-    [ObservableProperty]
-    int bannerDecodeHeight = 60;
-
-    //Perk res | Portrait res
-    //256x256 | 512x512
-    [ObservableProperty]
-    int iconPreviewDecodeWidth = 64;
-
-    [ObservableProperty]
-    int iconPreviewDecodeHeight = 64;
-
     [ObservableProperty]
     IconsResolution resolution = new();
 
@@ -416,8 +400,10 @@ public static class IconResolutionScale
             case "power":
                 return Power;
             case "daily": //128x128
+            case "dailyritual":
                 return DailyRitual;
             case "status":
+            case "statuseffect":
                 return StatusEffect;
             default:
                 return Perk;

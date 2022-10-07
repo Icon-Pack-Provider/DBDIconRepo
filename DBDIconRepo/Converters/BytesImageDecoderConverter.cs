@@ -11,17 +11,14 @@ public class BytesImageDecoderConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is byte[] image)
+        if (value is byte[] image && parameter is string type)
         {
-            bool isBanner = parameter is not null && parameter.ToString() == "banner";
-            (int w, int h) decode =
-                (isBanner ? SettingManager.Instance.BannerDecodeWidth : SettingManager.Instance.IconPreviewDecodeWidth,
-                isBanner ? SettingManager.Instance.BannerDecodeHeight : SettingManager.Instance.IconPreviewDecodeHeight);
+            var toDecode = IconResolutionScale.GetResolutionScale(type);
 
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.DecodePixelWidth = decode.w;
-            bitmap.DecodePixelHeight = decode.h;
+            bitmap.DecodePixelWidth = System.Convert.ToInt32(toDecode.Width);
+            bitmap.DecodePixelHeight = System.Convert.ToInt32(toDecode.Height);
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.StreamSource = new MemoryStream(image);
             bitmap.EndInit();

@@ -31,7 +31,7 @@
         <DataTemplate x:Key="survivorAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64" VerticalAlignment="Center"
-                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='addon'}"/>
                 <TextBlock TextAlignment="Center" Margin="4">
                     <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
                     <LineBreak/><Run Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Black"/>
@@ -41,7 +41,7 @@
         <DataTemplate x:Key="killerAddonTemplate" DataType="{x:Type pv:AddonPreviewItem}">
             <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                 <Image Width="64" Height="64"
-                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                       Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='addon'}"/>
                 <TextBlock TextAlignment="Center" Margin="4">
                     <Run FontSize="12" Text="{Binding Info.Owner}"/>
                     <LineBreak/><Run FontSize="12" Text="{Binding Info.For}"/>
@@ -339,7 +339,7 @@
                             <DataTemplate DataType="{x:Type pv:PerkPreviewItem}">
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='perk'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run FontSize="12" Text="{Binding Info.Owner}"/>
                                         <LineBreak/><Run Text="{Binding Info.Name}" FontWeight="Black"/>
@@ -382,7 +382,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="192" Height="192"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='portrait'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
@@ -424,7 +424,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="72" Height="72"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='power'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run FontSize="12" Text="{Binding Info.Owner}"/>
                                         <LineBreak/><Run Text="{Binding Info.Name}" FontWeight="Black"/>
@@ -467,7 +467,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="128" Height="128"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='item'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
@@ -543,7 +543,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="64" Height="64"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='status'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
@@ -585,7 +585,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="DimGray" Margin="1">
                                     <Image Width="96" Height="96"
-                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter={Binding Info}}"/>
+                                           Source="{Binding LoadedImage, Converter={StaticResource imageDecode}, ConverterParameter='offering'}"/>
                                     <TextBlock TextAlignment="Center" Margin="4">
                                         <Run Text="{Binding Info.Name}" FontWeight="Black"/>
                                     </TextBlock>
