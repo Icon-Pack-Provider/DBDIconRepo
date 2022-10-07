@@ -10,14 +10,44 @@ namespace IconPack.Model;
 
 public partial class Pack : ObservableObject
 {
-    [ObservableProperty]
     string? name;
+    public string? Name
+    {
+        get
+        {
+            if (Overrides is not null)
+                return Overrides.Name;
+            return name;
+        }
+        set => SetProperty(ref name, value);
+    }
 
-    [ObservableProperty]
     string? description;
+    public string? Description
+    {
+        get
+        {
+            if (Overrides is not null)
+                return Overrides.Description;
+            return description;
+        }
+        set
+        {
+            SetProperty(ref description, value);
+        }
+    }
 
-    [ObservableProperty]
     string? author;
+    public string? Author
+    {
+        get
+        {
+            if (author is null && Repository is not null)
+                return Repository.Owner;
+            return author;
+        }
+        set => SetProperty(ref author, value);
+    }
 
     [ObservableProperty]
     string? uRL;
@@ -35,6 +65,34 @@ public partial class Pack : ObservableObject
 
     [ObservableProperty]
     PackContentInfo? contentInfo;
+
+    [ObservableProperty]
+    OverrideProperties overrides;
+}
+
+public partial class OverrideProperties : ObservableObject
+{
+    [ObservableProperty]
+    string? name;
+
+    [ObservableProperty]
+    string? description;
+
+    [ObservableProperty]
+    AuthorDisplayType authorMode = AuthorDisplayType.OnlyOwner;
+
+    [ObservableProperty]
+    ObservableCollection<string>? authors = new();
+
+    [ObservableProperty]
+    ObservableCollection<string>? displayFiles = new();
+}
+
+public enum AuthorDisplayType
+{
+    OnlyOwner,
+    OwnerAndTop3Contributor,
+    OwnerAndAllContributor
 }
 
 public partial class PackRepositoryInfo : ObservableObject
