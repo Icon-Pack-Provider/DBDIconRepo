@@ -67,7 +67,7 @@ public partial class Pack : ObservableObject
     PackContentInfo? contentInfo;
 
     [ObservableProperty]
-    OverrideProperties overrides;
+    OverrideProperties? overrides = null;
 }
 
 public partial class OverrideProperties : ObservableObject

@@ -1,13 +1,18 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconInfo.Internal;
+using System;
 
 namespace DBDIconRepo.Model;
 
-public class IconDisplay : OnlineSourceDisplay 
+public partial class IconDisplay : OnlineSourceDisplay 
 {
     public int DecodeWidth => Convert.ToInt32(IconResolutionScale.GetResolutionScale(type).Width);
     public int DecodeHeight => Convert.ToInt32(IconResolutionScale.GetResolutionScale(type).Height);
 
     private string type = "perk";
+
+    [ObservableProperty]
+    public IBasic? tooltip = null;
 
     public IconDisplay() { }
     public IconDisplay(string url) : base(url) 

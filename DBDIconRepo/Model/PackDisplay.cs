@@ -13,6 +13,7 @@ using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using IconPack;
 using System.Threading.Tasks;
 using DBDIconRepo.Service;
+using IconInfo.Internal;
 
 namespace DBDIconRepo.Model;
 
@@ -165,6 +166,30 @@ public partial class PackDisplay : ObservableObject
     {
         if (PreviewSources is null)
             PreviewSources = new ObservableCollection<IDisplayItem>();
+        //Does this pack has override preview?
+        if (Info.Overrides is not null && Info.Overrides.DisplayFiles is not null)
+        {
+            //Check if it has icons override
+            if (Info.Overrides.DisplayFiles.Count == 1 && Info.Overrides.DisplayFiles[0] == ".banner.png")
+            {
+                //Only banner
+                var bannerURL = await Packs.GetPackBannerURL(Info);
+                PreviewSources.Add(new BannerDisplay(bannerURL));
+                return;
+            }
+            foreach (var icon in Info.Overrides.DisplayFiles)
+            {
+                var url = Packs.GetPackItemOnGit(info, icon);
+                if (url is null)
+                    continue;
+                var newIcon = new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon));
+                IBasic? iconInfo = IconTypeIdentify.FromPath(icon);
+                if (iconInfo is not null || iconInfo is not UnknownIcon)
+                    newIcon.Tooltip = iconInfo;
+                PreviewSources.Add(newIcon);
+            }
+            return;
+        }
         //Is this pack have banner?
         var bannerState = await Packs.IsPackBannerExist(Info);
         if (bannerState)
@@ -209,7 +234,11 @@ public partial class PackDisplay : ObservableObject
                 var url = Packs.GetPackItemOnGit(info, icon);
                 if (url is null)
                     continue;
-                PreviewSources.Add(new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon)));
+                var newIcon = new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon));
+                IBasic? iconInfo = IconTypeIdentify.FromPath(icon);
+                if (iconInfo is not null || iconInfo is not UnknownIcon)
+                    newIcon.Tooltip = iconInfo;
+                PreviewSources.Add(newIcon);
             }
         }
     }

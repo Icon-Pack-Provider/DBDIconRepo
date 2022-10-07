@@ -28,6 +28,9 @@
                                  DecodePixelWidth="{Binding DecodeWidth}"
                                  DecodePixelHeight="{Binding DecodeHeight}"/>
                 </Image.Source>
+                <ToolTipService.ToolTip>
+                    <TextBlock Text="{Binding Tooltip.Name}"/>
+                </ToolTipService.ToolTip>
             </Image>
         </DataTemplate>
         <DataTemplate x:Key="IconPackBannerDisplay">
@@ -118,27 +121,27 @@
                         </Grid.RowDefinitions>
                         <!-- Background -->
                         <Rectangle Fill="DimGray" Grid.RowSpan="4" Opacity="0.5"/>
-                        <!-- Preview/Banner -->
-                        <ListView IsHitTestVisible="False" ScrollViewer.CanContentScroll="False"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                  HorizontalContentAlignment="Center"
-                                  ItemTemplateSelector="{StaticResource iconPreviewTemplateSelector}"
-                                  ItemsSource="{Binding PreviewSources, Mode=OneWay}">
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
+                        <!-- Preview/Banner -->                        
+                        <ui:ListView ScrollViewer.CanContentScroll="False"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     HorizontalContentAlignment="Center"
+                                     IsSelectionEnabled="False" IsHitTestVisible="False"
+                                     ItemTemplateSelector="{StaticResource iconPreviewTemplateSelector}"
+                                     ItemsSource="{Binding PreviewSources, Mode=OneWay}">
+                            <ui:ListView.ItemContainerStyle>
+                                <Style TargetType="ui:ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                     <Setter Property="Padding" Value="0"/>
                                     <Setter Property="Margin" Value="6"/>
                                 </Style>
-                            </ListView.ItemContainerStyle>
-                            <ListView.ItemsPanel>
+                            </ui:ListView.ItemContainerStyle>
+                            <ui:ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Rows="1"/>
-                                    <!--<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>-->
                                 </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
+                            </ui:ListView.ItemsPanel>
+                        </ui:ListView>
                         
                         <!-- Name display -->                        
                         <TextBlock HorizontalAlignment="Center" 

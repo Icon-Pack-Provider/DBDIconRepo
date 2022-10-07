@@ -45,12 +45,19 @@ public partial class PackDetailViewModel : ObservableObject
         }
 
         //Get any previewable icon
-        foreach (var item in SettingManager.Instance.PerkPreviewSelection)
+        if (SelectedPack.Overrides is not null && SelectedPack.Overrides.DisplayFiles is not null)
         {
-            if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.File.ToLower())) is string match)
+            HeroIconURL = Packs.GetPackItemOnGit(SelectedPack, SelectedPack.Overrides.DisplayFiles[0]);
+        }
+        else
+        {
+            foreach (var item in SettingManager.Instance.PerkPreviewSelection)
             {
-                HeroIconURL = Packs.GetPackItemOnGit(SelectedPack, match);
-                break;
+                if (SelectedPack.ContentInfo.Files.FirstOrDefault(icon => icon.ToLower().Contains(item.File.ToLower())) is string match)
+                {
+                    HeroIconURL = Packs.GetPackItemOnGit(SelectedPack, match);
+                    break;
+                }
             }
         }
 
