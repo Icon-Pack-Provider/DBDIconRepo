@@ -34,7 +34,7 @@
             </Image>
         </DataTemplate>
         <DataTemplate x:Key="IconPackBannerDisplay">
-            <Image Height="96" Margin="14">
+            <Image Height="112" Margin="-2">
                 <Image.Source>
                     <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
                                  DecodePixelWidth="{Binding DecodeWidth}"
