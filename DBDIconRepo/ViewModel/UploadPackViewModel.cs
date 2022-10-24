@@ -249,13 +249,21 @@ public partial class UploadPackViewModel : ObservableObject
     string uploadProgresses = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsUploadingPackRightNow))]
+    [NotifyPropertyChangedFor(nameof(IsNotUploadingPackRightNow))]
     bool uploadingPack = false;
+
+    public Visibility IsUploadingPackRightNow
+        => UploadingPack ? Visibility.Visible : Visibility.Collapsed;
+
+    public Visibility IsNotUploadingPackRightNow
+        => UploadingPack ? Visibility.Collapsed : Visibility.Visible;
 
     [RelayCommand]
     private async Task UploadNewIconPack()
     {
         UploadingPack = true;
-        UploadProgresses += "\r\nMoving files";
+        UploadProgresses.Insert(0, "\r\nMoving files");
         var work = new DirectoryInfo(WorkingDirectory);
         //Move everything out of working directory
         var actualWorkFolder = new DirectoryInfo(WorkingDirectory);
@@ -269,12 +277,12 @@ public partial class UploadPackViewModel : ObservableObject
             foreach (var folder in originalFolders)
             {
                 folder.MoveTo(Path.Combine(temporalMove.FullName, folder.Name));
-                UploadProgresses += $"\r\nMoving folder {folder.Name} out of working directory";
+                UploadProgresses.Insert(0, $"\r\nMoving folder {folder.Name} out of working directory");
             }
             foreach (var file in originalFiles)
             {
                 file.MoveTo(Path.Join(temporalMove.FullName, file.Name));
-                UploadProgresses += $"\r\nMoving file {file.Name} out of working directory";
+                UploadProgresses.Insert(0, $"\r\nMoving file {file.Name} out of working directory");
             }
         });
         
@@ -289,7 +297,7 @@ public partial class UploadPackViewModel : ObservableObject
          * git remote add origin 
          * git push -u origin main */
         //Create local repo
-        UploadProgresses += $"Creating local repository at {toGit.FullName}";
+        UploadProgresses.Insert(0, $"\r\nCreating local repository at {toGit.FullName}");
         Repository.Init(toGit.FullName);
         using Repository localRepo = new(toGit.FullName);
         //Move everything into initalized repo
@@ -302,13 +310,13 @@ public partial class UploadPackViewModel : ObservableObject
             {
                 folder.MoveTo(Path.Combine(toGit.FullName, folder.Name));
                 allStages.AddRange(folder.GetFiles().Select(file => file.FullName));
-                UploadProgresses += $"Moving folder {folder.Name} to {Path.Combine(toGit.FullName, folder.Name)}";
+                UploadProgresses.Insert(0, $"\r\nMoving folder {folder.Name} to {Path.Combine(toGit.FullName, folder.Name)}");
             }
             var rootFiles = temporalMove.GetFiles("*.*", SearchOption.TopDirectoryOnly);
             foreach (var file in rootFiles)
             {
                 file.MoveTo(Path.Join(toGit.FullName, file.Name));
-                UploadProgresses += $"Moving file {file.Name} to {Path.Combine(toGit.FullName, file.Name)}";
+                UploadProgresses.Insert(0, $"\r\nMoving file {file.Name} to {Path.Combine(toGit.FullName, file.Name)}");
                 if (file.Name.Contains(".banner")
                     || file.Name.Contains("pack.json"))
                     continue;
@@ -318,7 +326,7 @@ public partial class UploadPackViewModel : ObservableObject
         //Staging icons only
         await Task.Run(() =>
         {
-            UploadProgresses += "Staging all icons as change made";
+            UploadProgresses.Insert(0, "\r\nStaging all icons as change made");
             Commands.Stage(localRepo, allStages);
         });
         //Commit
@@ -328,14 +336,14 @@ public partial class UploadPackViewModel : ObservableObject
         var author = new Signature(Config.GitUsername, first.Email, DateTimeOffset.Now);
         await Task.Run(() =>
         {
-            UploadProgresses += "Commit changes with message \"Initial icons upload\"";
+            UploadProgresses.Insert(0, "\r\nCommit changes with message \"Initial icons upload\"");
             localRepo.Commit("Initial icons upload", author, author);
         });
         //
         //Remote add
 
         //For remote add
-        UploadProgresses += "Creating new repository";
+        UploadProgresses.Insert(0, "\r\nCreating new repository");
         //create empty remote repo
         var remoteRepo = await Git.GitHubClientInstance.Repository.Create(new(RepositoryOnGitName)
         {
@@ -343,7 +351,7 @@ public partial class UploadPackViewModel : ObservableObject
             Private = false,
             Visibility = Octokit.RepositoryVisibility.Public
         });
-        UploadProgresses += $"Repository {RepositoryOnGitName} created";
+        UploadProgresses.Insert(0, $"\r\nRepository {RepositoryOnGitName} created");
         //set topic
         await Git.GitHubClientInstance.Repository.ReplaceAllTopics(remoteRepo.Id, new Octokit.RepositoryTopics(names: getPackTopic()));
 
@@ -354,13 +362,13 @@ public partial class UploadPackViewModel : ObservableObject
             localBranch => localBranch.UpstreamBranch = localRepo.Head.CanonicalName);
 
         //Online branch
-        UploadProgresses += $"Pushing (Uploading) icons to newly created repository";
+        UploadProgresses.Insert(0, $"\r\nPushing (Uploading) icons to newly created repository");
         var pushOption = new PushOptions()
         {
             CredentialsProvider = (a,b,c) => GetLibGit2SharpCredential(),
             OnPushTransferProgress = (current, total, bytes) =>
             {
-                UploadProgresses += $"Pushing (Uploading) {current}/{total} {((float)current / (float)total):00.00}%";
+                UploadProgresses.Insert(0, $"\r\nPushing (Uploading) {current}/{total} {((float)current / (float)total):00.00}%");
                 return true;
             }
         };
@@ -371,20 +379,28 @@ public partial class UploadPackViewModel : ObservableObject
 
         if (!AllowPackMetadata)
         {
-            UploadProgresses += "Upload icons finished, switching to mainpage";
+            UploadProgresses.Insert(0, "\r\nUpload icons finished, switching to mainpage");
             await Task.Delay(1000);
             Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
             return;
         }
 
-        UploadProgresses += "Upload icons finished, gathering pack metadata";
+        UploadProgresses.Insert(0, "\r\nUpload icons finished, gathering pack metadata");
         //Upload pack banner and metadata
         var packMetaData = await IconPack.Packs.GetPack(remoteRepo);
         packMetaData.Name = RepoDisplayName;
+        packMetaData.Overrides = new()
+        {
+            Name = RepoDisplayName,
+            Description = RepoDescription
+        };
         string packJsonPath = Path.Join(toGit.FullName, "pack.json");
         var writer = File.CreateText(packJsonPath);
-        UploadProgresses += "Writing pack metadata to file";
-        await writer.WriteAsync(JsonSerializer.Serialize(packMetaData));
+        UploadProgresses.Insert(0, "\r\nWriting pack metadata to file");
+        await writer.WriteAsync(JsonSerializer.Serialize(packMetaData, new JsonSerializerOptions()
+        {
+            WriteIndented = true
+        }));
         //Commit 
         List<string> allMetaData = new();
         allMetaData.Add(packJsonPath);
@@ -394,32 +410,16 @@ public partial class UploadPackViewModel : ObservableObject
         //Commit
         localRepo.Commit("Additional pack meta data", author, author);
         //Push
-        UploadProgresses += "Push (Upload) all metadata into repository";
+        UploadProgresses.Insert(0, "\r\nPush (Upload) all metadata into repository");
         await Task.Run(() =>
         {
             localRepo.Network.Push(remote: onlineRemote, "HEAD", @"refs/heads/master", pushOption);
         });
         //Kick user to other page
-        UploadProgresses += "Finished upload pack and all metadata, switching to mainpage";
+        UploadProgresses.Insert(0, "\r\nFinished upload pack and all metadata, switching to mainpage");
         await Task.Delay(1000);
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
     }
-
-    /*
-public void PushChanges() {
-    try {
-        var remote = repo.Network.Remotes["origin"];
-        var options = new PushOptions();
-        var credentials = new UsernamePasswordCredentials { Username = username, Password = password };
-        options.Credentials = credentials;
-        var pushRefSpec = @"refs/heads/master";
-        repo.Network.Push(remote, pushRefSpec, options, new Signature(username, email, DateTimeOffset.Now),
-            "pushed changes");
-    }
-    catch (Exception e) {
-        Console.WriteLine("Exception:RepoActions:PushChanges " + e.Message);
-    }
-}*/
     #endregion
     private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
     {

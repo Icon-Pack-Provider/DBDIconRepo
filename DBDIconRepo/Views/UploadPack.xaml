@@ -111,11 +111,25 @@
                             Content="Browse folder"/>
                 </StackPanel>
 
-                <Button Grid.Row="4" Content="Upload"
-                        Padding="16,8"
-                        VerticalContentAlignment="Center"
-                        Command="{Binding UploadNewIconPackCommand}"
-                        Margin="0,12"/>
+                <StackPanel Orientation="Vertical" 
+                            Grid.Row="4"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,12">
+                    <Button Content="Upload"
+                            Padding="16,8"
+                            VerticalContentAlignment="Center"
+                            Visibility="{Binding IsNotUploadingPackRightNow}"
+                            Command="{Binding UploadNewIconPackCommand}"/>
+                    <StackPanel Orientation="Horizontal" 
+                                Visibility="{Binding IsUploadingPackRightNow}">
+                        <ui:ProgressRing Width="32" Height="32"/>
+                        <TextBlock Text="Uplading..." VerticalAlignment="Center" Margin="4,0"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Disabled"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock Text="{Binding UploadProgresses}"/>
+                    </ScrollViewer>
+                </StackPanel>
             </Grid>
         </ScrollViewer>
     </Grid>
