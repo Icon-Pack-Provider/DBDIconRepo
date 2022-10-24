@@ -76,6 +76,6 @@ public partial class UserViewModel : ObservableObject
         SecureSettingService svc = new();
         svc.Logout();
         OctokitService.Instance.InitializeGit();
-        Messenger.Default.Send(new SwitchToOtherPageMessage("login"), MessageToken.RequestMainPageChage);
+        Messenger.Default.Send(new SwitchToOtherPageMessage("login"), MessageToken.RequestMainPageChange);
     }
 }

@@ -70,7 +70,7 @@ public partial class AnonymousUserViewModel : ObservableObject
         if (login.ShowDialog() == true)
         {
             //Force switch to other page?
-            Messenger.Default.Send(new SwitchToOtherPageMessage("loggedIn"), MessageToken.RequestMainPageChage);
+            Messenger.Default.Send(new SwitchToOtherPageMessage("loggedIn"), MessageToken.RequestMainPageChange);
         }
     }
 }

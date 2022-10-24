@@ -18,7 +18,7 @@ public partial class Home : Window
     public Home()
     {
         InitializeComponent();
-        Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChage,
+        Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
         //Force inducing a few seconds of eye seizure to fix color issue
         Task.Run(async () =>
