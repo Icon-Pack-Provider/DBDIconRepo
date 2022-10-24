@@ -4,11 +4,119 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DBDIconRepo.Views"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UploadPack">
+    <Page.DataContext>
+        <vm:UploadPackViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
 
-    <Grid>
+    <Grid Margin="12">
+        <!-- First page -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding ShowOnSetWorkDirectoryAndInvalidWorkDirectory}">
+            <Button Width="128" Height="128" HorizontalAlignment="Center"
+                    Command="{Binding SetWorkingDirectoryCommand}"
+                    Margin="12">
+                <ui:FontIcon Glyph="&#xE197;" FontSize="64"/>
+            </Button>
+            <TextBlock Text="Select folder to upload" HorizontalAlignment="Center"
+                       FontSize="24"
+                       Visibility="{Binding ShowOnSetWorkDirectory}"/>
+            <TextBlock HorizontalAlignment="Center"
+                       FontSize="24" 
+                       TextAlignment="Center"
+                       Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}">
+                No icons found on directory
+                <LineBreak/>Try other folder?
+            </TextBlock>
+        </StackPanel>
+
+        <Grid Visibility="{Binding ShowOnPreparingPack}">
+            <!--Step 1: Ask to sort folder-->
+            <StackPanel Orientation="Vertical"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Visibility="{Binding IsWaitingForPermissionToMoveResponse}">
+                <!--Ask for permission to sort folder-->
+                <TextBlock TextAlignment="Center"
+                           FontSize="18">
+                    Do you want to sort all icons to correct folder
+                    <LineBreak/>and move unrelated files to other folder
+                    <LineBreak/>waiting for reponse<Run Text="{Binding TextDisplayWhileWaitingForPermissionToMoveResponse}"/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="12">
+                    <Button Content="Yes" Command="{Binding ResponseAllowToMoveCommand}" Padding="32,8"/>
+                    <Button Content="No" Command="{Binding ResponseAllowNotToMoveCommand}" Padding="32,8" Margin="5"/>
+                </StackPanel>
+            </StackPanel>
+            <!--Add other steps that seem fit-->
+        </Grid>
         
+        
+        <ScrollViewer HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Visibility="{Binding ShowOnFillDetail}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Fill in the detail of the pack:" 
+                               FontSize="32" FontWeight="Bold" Margin="0,4,0,12"/>
+
+                    <TextBox ui:ControlHelper.Header="Pack name"
+                             ui:ControlHelper.PlaceholderText="enter pack name here"
+                             Text="{Binding RepoDisplayName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <TextBlock>
+                        The pack will be upload to:
+                        <LineBreak/><Hyperlink>https://www.github.com/<Run Text="{Binding Config.GitUsername}"/>/<Run Text="{Binding RepositoryOnGitName, Mode=OneWay}"/></Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+
+                <TextBox ui:ControlHelper.Header="Pack description"
+                         Grid.Row="1" Margin="0,5"
+                         Text="{Binding RepoDescription, Mode=TwoWay}"
+                         ui:ControlHelper.PlaceholderText="enter a short description about this pack here"/>
+
+                <StackPanel Grid.Row="2" Orientation="Vertical"
+                            Margin="0,4">
+                    <CheckBox Content="Allow pack addtional infos"
+                              IsChecked="{Binding AllowPackMetadata, Mode=TwoWay}"/>
+                    <TextBlock>
+                        Allow app to put other files beside icons onto repo
+                        <LineBreak/>such as pack.json, .banner.png
+                    </TextBlock>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Grid.Row="3">
+                    <ComboBox ui:ControlHelper.Header="Pack preview"
+                              IsSynchronizedWithCurrentItem="True"
+                              IsEnabled="{Binding CanSelectPreviewOption}"
+                              SelectedIndex="{Binding PreviewOption, Mode=TwoWay}">
+                        <ComboBoxItem Selector.IsSelected="True" Content="User defined set of icons"/>
+                        <ComboBoxItem Content="Fixed set of icons"/>
+                        <ComboBoxItem Content="Banner"/>
+                    </ComboBox>
+                    <TextBlock Text="{Binding PreviewOptionExplainer}"/>
+                    <Button Command="{Binding OpenWorkFolderCommand}" 
+                            Visibility="{Binding ShowIfBannerStillNotExist}"
+                            Content="Browse folder"/>
+                </StackPanel>
+
+                <Button Grid.Row="4" Content="Upload"
+                        Padding="16,8"
+                        VerticalContentAlignment="Center"
+                        Command="{Binding UploadNewIconPackCommand}"
+                        Margin="0,12"/>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>

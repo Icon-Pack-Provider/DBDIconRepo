@@ -15,4 +15,7 @@ public class MessageToken
 
     public const string MassRepoStarChangedToken = "MassRepoStarChanged";
     public const string RepoStarChangedToken = "RepoStarChanged";
+
+    public const string RequestSubToAppActivateEvent = "PleaseMonitorAppActivateDeactivate";
+    public const string RequestUnSubToAppActivateEvent = "PleaseStopMonitorAppActivateDeactivate";
 }

@@ -3,6 +3,7 @@ using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
 using ModernWpf.Controls;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
@@ -20,6 +21,9 @@ public partial class Home : Window
         InitializeComponent();
         Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
+        Messenger.Default.Register<Home, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
+        this.Activated += ActivationEvent;
+        this.Deactivated += DeactivatedEvent;
         //Force inducing a few seconds of eye seizure to fix color issue
         Task.Run(async () =>
         {
@@ -42,6 +46,22 @@ public partial class Home : Window
         {
 
         });
+    }
+
+    Action? callOnActivated = null;
+    Action? callOnDeactivated = null;
+    private void SubToAppActivate(Home recipient, MonitorForAppFocusMessage message)
+    {
+        if (message.Subscribe)
+        {
+            callOnActivated = message.CallOnActivate;
+            callOnDeactivated = message.CallOnDeactivated;
+        }
+        else
+        {
+            callOnActivated = null;
+            callOnDeactivated= null;
+        }
     }
 
     private void SwitchPageHandler(Home recipient, SwitchToOtherPageMessage message)
@@ -111,4 +131,14 @@ public partial class Home : Window
                 break;
         }
     }
+    private void DeactivatedEvent(object? sender, System.EventArgs e)
+    {
+        callOnDeactivated?.Invoke();
+    }
+
+    private void ActivationEvent(object? sender, System.EventArgs e)
+    {
+        callOnActivated?.Invoke();
+    }
+
 }

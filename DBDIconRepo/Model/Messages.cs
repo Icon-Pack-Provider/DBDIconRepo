@@ -1,5 +1,6 @@
 ﻿using IconPack.Model;
 using IconPack.Model.Progress;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -169,4 +170,21 @@ public class RepoStarChangedMessage
         Changed = changed;
         IsStarred = isStarred;
     }
+}
+
+public class MonitorForAppFocusMessage
+{
+    public bool Subscribe { get; private set; }
+    public Action? CallOnActivate { get; private set; }
+    public Action? CallOnDeactivated { get; private set; }
+
+    public MonitorForAppFocusMessage(Action? callOnActivate = null, Action? callOnDeactivated = null)
+    {
+        Subscribe = true;
+        CallOnActivate = callOnActivate;
+        CallOnDeactivated = callOnDeactivated;
+    }
+
+    public MonitorForAppFocusMessage(bool sub)
+        => Subscribe = sub;
 }
