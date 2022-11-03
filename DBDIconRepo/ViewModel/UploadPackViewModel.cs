@@ -298,7 +298,7 @@ public partial class UploadPackViewModel : ObservableObject
 
     public void CheckForBannerExistance()
     {
-        FileInfo banner = new(Path.Join(WorkingDirectory, ".banner.png"));
+        FileInfo banner = new(Path.Join(Path.Combine(WorkingDirectory, "Temp"), ".banner.png"));
         IsBannerNowExist = banner.Exists;
         if (IsBannerNowExist == false)
             IsWaitingForReturn = false;
@@ -362,27 +362,9 @@ public partial class UploadPackViewModel : ObservableObject
         UploadProgresses.Insert(0, "\r\nMoving files");
         var work = new DirectoryInfo(WorkingDirectory);
         //Move everything out of working directory
-        var actualWorkFolder = new DirectoryInfo(WorkingDirectory);
-        var originalFolders = actualWorkFolder.GetDirectories();
-        var originalFiles = actualWorkFolder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-
+        var actualWorkFolder = new DirectoryInfo(WorkingDirectory);        
         var temporalMove = new DirectoryInfo(Path.Combine(WorkingDirectory, "Temp"));
-        temporalMove.Create();
-        await Task.Run(() =>
-        {
-            foreach (var folder in originalFolders)
-            {
-                folder.MoveTo(Path.Combine(temporalMove.FullName, folder.Name));
-                UploadProgresses.Insert(0, $"\r\nMoving folder {folder.Name} out of working directory");
-            }
-            foreach (var file in originalFiles)
-            {
-                file.MoveTo(Path.Join(temporalMove.FullName, file.Name));
-                UploadProgresses.Insert(0, $"\r\nMoving file {file.Name} out of working directory");
-            }
-        });
         
-
         var toGit = new DirectoryInfo(Path.Combine(WorkingDirectory, "Git"));
         toGit.Create();
         //Local repo
