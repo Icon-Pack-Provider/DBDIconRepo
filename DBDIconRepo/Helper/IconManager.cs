@@ -1,9 +1,11 @@
 ﻿using DBDIconRepo.Model;
+using IconInfo.Internal;
 using IconPack;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Helper;
@@ -93,6 +95,83 @@ public static class IconManager
         }
     }
 
+    public static async Task<bool> OrganizeIcon(string rootDirectory, string iconPath)
+    {
+        var info = new FileInfo(iconPath);
+        if (info.Extension != ".png")
+            return false;
+        if (iconPath.Contains("iconAction_carriedBody"))
+        {
+            //Move to actions
+            if (info?.Directory?.Name == "Actions") //Already sorted
+                return true;
+            //Create "Actions" on rootDirectory
+            DirectoryInfo actionsFolder = new(Path.Combine(rootDirectory, "Actions"));
+            if (!actionsFolder.Exists)
+                actionsFolder.Create();
+            await Task.Run(() =>
+            {
+                info?.MoveTo(Path.Join(actionsFolder.FullName, info.Name));
+            });
+        }
+        //Move
+        var name = Path.GetFileNameWithoutExtension(iconPath);
+        IBasic? iconInfo = default;
+        IFolder? iconFolder = default;
+        try { iconInfo = IconTypeIdentify.FromPath(iconPath); }
+        catch { }
+        if (iconInfo is null || iconInfo is not IBasic)
+        {
+            try { iconInfo = IconTypeIdentify.FromFile(iconPath); }
+            catch { }
+        }
+        if (iconInfo is UnknownIcon)
+            return false;
+        if (iconInfo is IFolder subFolder)
+        {
+            iconFolder = subFolder;
+        }
+
+        //Type
+        Type typeKey = iconInfo?.GetType() ?? typeof(UnknownIcon);
+        bool haveKey = TypeToFolder.ContainsKey(typeKey);
+        if (!haveKey)
+            return false;
+        string typeText = haveKey ? TypeToFolder[typeKey] : string.Empty;
+
+        //SubFolder
+        string subFolderText = iconFolder?.Folder ?? string.Empty;
+        string finalPath = Path.Join(rootDirectory, typeText, subFolderText, info?.Name);
+
+        FileInfo finalFile = new(finalPath);
+        DirectoryInfo finalDirectory = new(finalFile?.Directory?.FullName ?? string.Empty);
+        if (!finalDirectory.Exists)
+            finalDirectory.Create();
+
+        await Task.Run(() =>
+        {
+            info?.MoveTo(finalPath);
+        });
+        return true;
+    }
+
+    public static Dictionary<Type, string> TypeToFolder => new()
+    {
+        { typeof(IconInfo.Icon.Addon), "ItemAddons" },
+        { typeof(IconInfo.Icon.DailyRitual), "DailyRituals" },
+        { typeof(IconInfo.Icon.Portrait), "CharPortraits" },
+        { typeof(IconInfo.Icon.Emblem), "Emblems" },
+        { typeof(IconInfo.Icon.Offering), "Favors" },
+        { typeof(IconInfo.Icon.Item), "items" },
+        { typeof(IconInfo.Icon.Perk), "Perks" },
+        { typeof(IconInfo.Icon.Power), "Powers" },
+        { typeof(IconInfo.Icon.StatusEffect), "StatusEffects" },
+        { typeof(IconInfo.Icon.Archive), "Archive" },
+        { typeof(IconInfo.Icon.AuricCellPack), "Packs" },
+        { typeof(IconInfo.Icon.Help), "Help" },
+        { typeof(IconInfo.Icon.HelpLoading), "HelpLoading" },
+        { typeof(IconInfo.Icon.StoreBackground), "StoreBackgrounds" }
+    };
 }
 
 /// <summary>

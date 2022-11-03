@@ -43,15 +43,16 @@
                 <!--Ask for permission to sort folder-->
                 <TextBlock TextAlignment="Center"
                            FontSize="18">
-                    Do you want to sort all icons to correct folder
-                    <LineBreak/>and move unrelated files to other folder
-                    <LineBreak/>waiting for reponse<Run Text="{Binding TextDisplayWhileWaitingForPermissionToMoveResponse}"/>
+                    Application require to move and organize all the files within this selected folder
+                    <LineBreak/>Do you wish to proceed?<LineBreak/>
+                    <LineBreak/>Waiting for reponse<Run Text="{Binding TextDisplayWhileWaitingForPermissionToMoveResponse}"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="12">
                     <Button Content="Yes" Command="{Binding ResponseAllowToMoveCommand}" Padding="32,8"/>
                     <Button Content="No" Command="{Binding ResponseAllowNotToMoveCommand}" Padding="32,8" Margin="5"/>
                 </StackPanel>
             </StackPanel>
+            <!--Moving progress-->
             <!--Add other steps that seem fit-->
         </Grid>
         
@@ -92,7 +93,7 @@
                               IsChecked="{Binding AllowPackMetadata, Mode=TwoWay}"/>
                     <TextBlock>
                         Allow app to put other files beside icons onto repo
-                        <LineBreak/>such as pack.json, .banner.png
+                        <LineBreak/>such as pack.json and .banner.png
                     </TextBlock>
                 </StackPanel>
 

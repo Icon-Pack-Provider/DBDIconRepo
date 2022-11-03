@@ -69,7 +69,20 @@ public partial class UploadPackViewModel : ObservableObject
                     break;
                 }
             }
-            catch { continue; }
+            catch { }
+            try
+            {
+                var identify2 = IconTypeIdentify.FromFile(file.Name);
+                if (identify2 is UnknownIcon)
+                    continue;
+                if (identify2 is not UnknownIcon)
+                {
+                    validFolder = true;
+                    break;
+                }
+            }
+            catch {  }
+            continue;
         }
         if (!validFolder)
         {
@@ -99,16 +112,82 @@ public partial class UploadPackViewModel : ObservableObject
             await Task.Delay(750);
         }
         while (PermissionToSort == SortFolderPermissionResponse.Waiting);
-        if (PermissionToSort != SortFolderPermissionResponse.Allow)
-            return;
-
-        //Sort folder
+        IsWaitingForPermissionToMoveResponse = false;
+        if (PermissionToSort == SortFolderPermissionResponse.Allow)
+        {
+            IsSorting = true;
+            SortWorkingFolder().Await(() =>
+            {
+                IsSorting = false;
+            });
+        }
     }
 
-    private void SortWorkingFolder()
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowWhileSorting))]
+    bool isSorting = false;
+
+    [ObservableProperty]
+    int sortMaxProgress = 1;
+
+    [ObservableProperty]
+    int sortCurrentProgress;
+
+    public Visibility ShowWhileSorting => IsSorting == true ? Visibility.Visible : Visibility.Collapsed;
+
+    [ObservableProperty]
+    string sortingProgress = "";
+
+    [RelayCommand]
+    private async Task SortWorkingFolder()
     {
-        //TODO:Add function to sort folder
         //Move files into a new folder inside workingfolder name "NotIcons"
+        //Sort folder
+        await Task.Run(async () =>
+        {
+            var allFiles = Directory.GetFiles(WorkingDirectory, "*.*", SearchOption.AllDirectories);
+            var allDirs = Directory.GetDirectories(WorkingDirectory);
+            var tempIcons = new DirectoryInfo(Path.Combine(WorkingDirectory, "Temp"));
+            var notIcons = new DirectoryInfo(Path.Combine(WorkingDirectory, "NotIcon"));
+            if (!tempIcons.Exists)
+                tempIcons.Create();
+            if (!notIcons.Exists)
+                notIcons.Create();
+            SortMaxProgress = allFiles.Length;
+            for (int i = 0; i < allFiles.Length; i++)
+            {
+                SortCurrentProgress = i;
+                string? file = allFiles[i];
+                SortingProgress = $"Sorting files {i}/{allFiles.Length}\r\n{file}";
+                var info = new FileInfo(file);
+                var name = Path.GetFileNameWithoutExtension(file);
+                if (info.Extension != ".png")
+                {
+                    string newPath = file.Replace(WorkingDirectory, notIcons.FullName);
+                    await Task.Run(() =>
+                    {
+                        SortingProgress = $"Moving {file} to\r\n{newPath}";
+                        File.Move(file, newPath);
+                    });
+                    continue;
+                }
+                var moved = await IconManager.OrganizeIcon(tempIcons.FullName, file);
+                if (!moved)
+                {
+                    string newPath = file.Replace(WorkingDirectory, notIcons.FullName);
+                    await Task.Run(() =>
+                    {
+                        SortingProgress = $"Moving {file} to\r\n{newPath}";
+                        File.Move(file, newPath);
+                    });
+                }
+            }
+            //Delete empty directories
+            for (int i = 0; i < allDirs.Length; i++)
+            {
+                Directory.Delete(allDirs[i], true);
+            }
+        });
     }
 
     [ObservableProperty]
@@ -126,7 +205,10 @@ public partial class UploadPackViewModel : ObservableObject
     [RelayCommand]
     private void ResponseAllowToMove() => PermissionToSort = SortFolderPermissionResponse.Allow;
     [RelayCommand]
-    private void ResponseAllowNotToMove() => PermissionToSort = SortFolderPermissionResponse.Disallow;
+    private void ResponseAllowNotToMove()
+    {
+        Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
+    }
 
     #endregion
 

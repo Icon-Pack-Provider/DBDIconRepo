@@ -19,6 +19,26 @@ public static class IconTypeIdentify
         return UnknownIcon(path);
     }
 
+    public static IBasic? FromFile(string name)
+    {
+        name = name.Contains(".png") ? Path.GetFileNameWithoutExtension(name) : name;
+
+        return Info.Portraits.ContainsKey(name) ? Info.Portraits[name] :
+            Info.DailyRituals.ContainsKey(name) ? Info.DailyRituals[name] :
+            Info.Emblems.ContainsKey(name) ? Info.Emblems[name] :
+            Info.StatusEffects.ContainsKey(name) ? Info.StatusEffects[name] :
+            Info.Offerings.ContainsKey(name) ? Info.Offerings[name] :
+            Info.Items.ContainsKey(name) ? Info.Items[name] :
+            Info.Powers.ContainsKey(name) ? Info.Powers[name] :
+            Info.Perks.ContainsKey(name) ? Info.Perks[name] :
+            Info.Archives.ContainsKey(name) ? Info.Archives[name] :
+            Info.Helps.ContainsKey(name) ? Info.Helps[name] :
+            Info.HelpLoadings.ContainsKey(name) ? Info.HelpLoadings[name] :
+            Info.StoreBackgrounds.ContainsKey(name) ? Info.StoreBackgrounds[name] :
+            Info.Packs.ContainsKey(name) ? Info.Packs[name] 
+            : new UnknownIcon(name);
+    }
+
     public static BasePreview FromBasicInfo(string path, PackRepositoryInfo repo)
     {
         try
