@@ -171,6 +171,16 @@ public partial class UploadPackViewModel : ObservableObject
                     });
                     continue;
                 }
+                if (info.Name.StartsWith(".banner"))
+                {
+                    string newPath = file.Replace(workingDirectory, tempIcons.FullName);
+                    await Task.Run(() =>
+                    {
+                        SortingProgress = $"Moving {file} to\r\n{newPath}";
+                        File.Move(file, newPath);
+                    });
+                    continue;
+                }
                 var moved = await IconManager.OrganizeIcon(tempIcons.FullName, file);
                 if (!moved)
                 {
@@ -185,6 +195,10 @@ public partial class UploadPackViewModel : ObservableObject
             //Delete empty directories
             for (int i = 0; i < allDirs.Length; i++)
             {
+                if (allDirs[i].EndsWith("Temp"))
+                    continue;
+                else if (allDirs[i].EndsWith("NotIcon"))
+                    continue;
                 Directory.Delete(allDirs[i], true);
             }
         });
