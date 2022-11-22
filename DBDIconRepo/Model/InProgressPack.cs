@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DBDIconRepo.Model
 {
-    public class InProgressPack : IconPack.Model.Pack
+    public partial class InProgressPack : IconPack.Model.Pack
     {
         [ObservableProperty]
         string workingDirectory = string.Empty;

@@ -155,11 +155,12 @@
         
         <!--Hide the page for now-->
         <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                   Fill="{DynamicResource CommandBarBackground}"/>
+                   Fill="{DynamicResource CommandBarBackground}"
+                   Margin="-24"/>
         <StackPanel VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-            <ui:FontIcon Glyph="&#xE822;"/>
+                    Orientation="Vertical">
+            <ui:FontIcon Glyph="&#xE822;" FontSize="72" Margin="12"/>
             <TextBlock>
                 The function of this page isn't ready to use yet.
                 <LineBreak/>For now, GitHub desktop is the recommended alternative
