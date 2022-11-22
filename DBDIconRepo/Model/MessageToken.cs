@@ -11,8 +11,11 @@ public class MessageToken
     public const string REPOWAITFORINSTALLTOKEN = "REPOWAITINGFORINSTALL";
     public const string REPORTINSTALLPACKTOKEN = "REPORTINSTALLINGPACK";
 
-    public const string RequestMainPageChage = "PLEASEGOTOOTHERPAGE";
+    public const string RequestMainPageChange = "PLEASEGOTOOTHERPAGE";
 
     public const string MassRepoStarChangedToken = "MassRepoStarChanged";
     public const string RepoStarChangedToken = "RepoStarChanged";
+
+    public const string RequestSubToAppActivateEvent = "PleaseMonitorAppActivateDeactivate";
+    public const string RequestUnSubToAppActivateEvent = "PleaseStopMonitorAppActivateDeactivate";
 }

@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-    <PackageReference Include="IconInfo" Version="6.3.0" />
+    <PackageReference Include="IconInfo" Version="6.3.0.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="MdXaml" Version="1.15.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />

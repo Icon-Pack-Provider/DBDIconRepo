@@ -3,6 +3,7 @@ using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
 using ModernWpf.Controls;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
@@ -18,8 +19,11 @@ public partial class Home : Window
     public Home()
     {
         InitializeComponent();
-        Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChage,
+        Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
+        Messenger.Default.Register<Home, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
+        this.Activated += ActivationEvent;
+        this.Deactivated += DeactivatedEvent;
         //Force inducing a few seconds of eye seizure to fix color issue
         Task.Run(async () =>
         {
@@ -42,6 +46,22 @@ public partial class Home : Window
         {
 
         });
+    }
+
+    Action? callOnActivated = null;
+    Action? callOnDeactivated = null;
+    private void SubToAppActivate(Home recipient, MonitorForAppFocusMessage message)
+    {
+        if (message.Subscribe)
+        {
+            callOnActivated = message.CallOnActivate;
+            callOnDeactivated = message.CallOnDeactivated;
+        }
+        else
+        {
+            callOnActivated = null;
+            callOnDeactivated= null;
+        }
     }
 
     private void SwitchPageHandler(Home recipient, SwitchToOtherPageMessage message)
@@ -94,6 +114,31 @@ public partial class Home : Window
                 if (!ViewModel.GitService.IsAnonymous)
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
+            case "upload":
+                if (ViewModel.GitService.IsAnonymous)
+                {
+                    homeSelection.IsSelected = true;
+                    MessageBox.Show("I am not letting you in without login to GitHub!",
+                        "I don't know how did you manage to do this, but", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    if (contentFrame.Content.GetType().Name != nameof(MainWindow))
+                        contentFrame.Navigate(new MainWindow());
+                    ViewModel.CurrentPageName = "Home";
+                    return;
+                }
+                contentFrame.Navigate(new UploadPack());
+                ViewModel.CurrentPageName = "Upload new pack";
+                break;
         }
     }
+    private void DeactivatedEvent(object? sender, System.EventArgs e)
+    {
+        callOnDeactivated?.Invoke();
+    }
+
+    private void ActivationEvent(object? sender, System.EventArgs e)
+    {
+        callOnActivated?.Invoke();
+    }
+
 }
