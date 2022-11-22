@@ -13,7 +13,7 @@
         <vm:UploadPackViewModel x:Name="ViewModel"/>
     </Page.DataContext>
 
-    <Grid Margin="12">
+    <Grid Margin="12" IsHitTestVisible="False">
         <!-- First page -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding ShowOnSetWorkDirectoryAndInvalidWorkDirectory}">
@@ -152,5 +152,18 @@
                 </StackPanel>
             </Grid>
         </ScrollViewer>
+        
+        <!--Hide the page for now-->
+        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   Fill="{DynamicResource CommandBarBackground}"/>
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+            <ui:FontIcon Glyph="&#xE822;"/>
+            <TextBlock>
+                The function of this page isn't ready to use yet.
+                <LineBreak/>For now, GitHub desktop is the recommended alternative
+            </TextBlock>
+        </StackPanel>
     </Grid>
 </Page>
