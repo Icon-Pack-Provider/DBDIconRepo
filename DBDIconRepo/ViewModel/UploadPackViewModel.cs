@@ -26,6 +26,9 @@ public partial class UploadPackViewModel : ObservableObject
     public Setting Config => SettingManager.Instance;
 
     [ObservableProperty]
+    InProgressPack? workingPack = new();
+
+    [ObservableProperty]
     string workingDirectory = string.Empty;
 
     [RelayCommand]
@@ -196,10 +199,14 @@ public partial class UploadPackViewModel : ObservableObject
             for (int i = 0; i < allDirs.Length; i++)
             {
                 if (allDirs[i].EndsWith("Temp"))
-                    continue;
+                    continue; //TODO:Move to update mode instead of upload mode?
                 else if (allDirs[i].EndsWith("NotIcon"))
                     continue;
-                Directory.Delete(allDirs[i], true);
+                else if (allDirs[i].EndsWith("Git"))
+                    continue; //TODO:Move to update mode instead of upload mode?
+                DirectoryInfo dir = new(allDirs[i]);
+                if (dir.EnumerateFiles().Count() < 1)
+                    Directory.Delete(allDirs[i], true);
             }
         });
     }
@@ -221,6 +228,7 @@ public partial class UploadPackViewModel : ObservableObject
     [RelayCommand]
     private void ResponseAllowNotToMove()
     {
+        //TODO: Instead of cancel everything, copy everything that is icons to AppFolder (IconRepository) on app data and upload from there
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
     }
 

@@ -112,8 +112,27 @@
                             Content="Browse folder"/>
                 </StackPanel>
 
+                <!--Preview-->
+                <Grid Grid.Row="4"
+                      HorizontalAlignment="Left"
+                      Margin="0,12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Rectangle Width="480" Fill="DimGray" Opacity="0.5"
+                               Grid.RowSpan="5"/>
+                    <!--Banner preview-->
+                    <Rectangle Fill="Red" Height="100" Margin="5"/>
+                    <TextBlock Text="{Binding RepoDisplayName}" Grid.Row="1" HorizontalAlignment="Center"                               
+                               FontSize="20" FontWeight="Bold"
+                               Margin="5,12"/>
+                </Grid>
+                
                 <StackPanel Orientation="Vertical" 
-                            Grid.Row="4"
+                            Grid.Row="5"
                             HorizontalAlignment="Stretch"
                             Margin="0,12">
                     <Button Content="Upload"
