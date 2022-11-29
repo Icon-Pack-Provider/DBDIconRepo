@@ -4,9 +4,9 @@ using DBDIconRepo.Service;
 
 namespace DBDIconRepo.ViewModel;
 
-public partial class MainViewModel : ObservableObject
+public partial class RootPagesViewModel : ObservableObject
 {
-    public MainViewModel()
+    public RootPagesViewModel()
     {
 
     }
