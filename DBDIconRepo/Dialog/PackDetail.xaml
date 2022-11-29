@@ -217,7 +217,7 @@
                         <TextBlock Text="{Binding SelectedPack.Description}" FontSize="14"/>
                         <TextBlock FontSize="14">
                             <!-- Open Git profile? -->
-                            Made by <Hyperlink Command="{Binding OpenOwnerURL}"><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
+                            Made by <Hyperlink Command="{Binding OpenOwnerURLCommand}"><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
                         </TextBlock>
                         <StackPanel Margin="0,5" Orientation="Horizontal">
                             <Button>
@@ -226,7 +226,7 @@
                                     <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
                                 </StackPanel>
                             </Button>
-                            <Button Margin="5,0" Command="{Binding OpenPackURL}">
+                            <Button Margin="5,0" Command="{Binding OpenPackURLCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph="" FontSize="12"/>
                                     <TextBlock FontSize="12" Text="Find pack origin" Margin="4,0"/>
@@ -246,7 +246,7 @@
                     <TextBlock Text="Readme" FontSize="18" VerticalAlignment="Center"/>
                     
                     <!--Expand to readme-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Readme" Margin="0,4"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToReadmePageCommand}" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -255,7 +255,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Readme'}">
                         <StackPanel Orientation="Horizontal">
@@ -294,26 +294,26 @@
                             </StackPanel>
                             <ui:FlyoutService.Flyout>
                                 <ui:MenuFlyout>
-                                    <MenuItem IsCheckable="True" Header="Perk name" Command="{Binding SetPerkSortingMethod}" CommandParameter="Name"
-                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                    <MenuItem IsCheckable="True" Header="Perk name" Command="{Binding SetPerkSortByNameCommand}"
+                                              IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
                                                 Converter={StaticResource perkSortByToBool}, ConverterParameter='Name'}"/>
-                                    <MenuItem IsCheckable="True" Header="Character" Command="{Binding SetPerkSortingMethod}" CommandParameter="Owner"
-                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                    <MenuItem IsCheckable="True" Header="Character" Command="{Binding SetPerkSortByOwnerCommand}"
+                                              IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
                                                 Converter={StaticResource perkSortByToBool}, ConverterParameter='Owner'}"/>
-                                    <MenuItem IsCheckable="True" Header="Random" Command="{Binding SetPerkSortingMethod}" CommandParameter="Random"
-                                                      IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
+                                    <MenuItem IsCheckable="True" Header="Random" Command="{Binding SetPerkSortByRandomCommand}"
+                                              IsChecked="{Binding CurrentPerkSortingMethod, Mode=OneWay,
                                                 Converter={StaticResource perkSortByToBool}, ConverterParameter='Random'}"/>
                                     <Separator/>
                                     <MenuItem IsCheckable="True" Header="Ascending" IsChecked="{Binding IsPerkSortByAscending, Mode=OneWay}"
-                                                      Command="{Binding SetPerkSortingAscendingMethod}" CommandParameter="true"/>
+                                                      Command="{Binding SetPerkSortAscendingCommand}"/>
                                     <MenuItem IsCheckable="True" Header="Descending" IsChecked="{Binding IsPerkSortByAscending, Mode=OneWay, Converter={StaticResource invertBool}}"
-                                                      Command="{Binding SetPerkSortingAscendingMethod}" CommandParameter="false"/>
+                                                      Command="{Binding SetPerkSortDescendingCommand}"/>
                                 </ui:MenuFlyout>
                             </ui:FlyoutService.Flyout>
                         </Button>
                     </StackPanel>
                     <!--Expand to perk list-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Perks" Margin="0,4"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToPerksPageCommand}" Margin="0,4"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -322,7 +322,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Perks'}">
                         <StackPanel Orientation="Horizontal">
@@ -357,7 +357,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Character portraits" FontSize="18" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Portraits"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToPortraitsPageCommand}"
                             Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -366,7 +366,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Portraits'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -399,7 +399,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Killer powers" FontSize="18" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Powers"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToPowersPageCommand}"
                             Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -408,7 +408,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Powers'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -442,7 +442,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Survivor items" FontSize="18" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Items"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToItemsPageCommand}"
                             Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -451,7 +451,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Items'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -486,8 +486,8 @@
                     
                     <TextBlock Text="Killer power/Survivor item Addons" FontSize="18" VerticalAlignment="Center"/>
                     
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Addons" Margin="0,4"
-                            Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToAddonsPageCommand}" 
+                            Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show more"/>
@@ -495,7 +495,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Addons'}">
                         <StackPanel Orientation="Horizontal">
@@ -518,7 +518,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Status effect" FontSize="18" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Status"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToStatusPageCommand}"
                             Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -527,7 +527,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Status'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -560,7 +560,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Offerings" FontSize="18" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Offerings"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOfferingsPageCommand}"
                             Margin="0,4" Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Overview'}">
                         <StackPanel Orientation="Horizontal">
@@ -569,7 +569,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding SetDisplayMode}" CommandParameter="Overview"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Offerings'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>

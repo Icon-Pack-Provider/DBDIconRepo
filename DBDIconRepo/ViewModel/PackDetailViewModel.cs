@@ -7,30 +7,23 @@ using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
 using IconPack;
 using IconPack.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Input;
 
 namespace DBDIconRepo.ViewModel;
 
 public partial class PackDetailViewModel : ObservableObject
 {
-    Pack? _selected;
-    public Pack? SelectedPack
-    {
-        get => _selected;
-        set => SetProperty(ref _selected, value);
-    }
+    [ObservableProperty]
+    Pack? selectedPack;
 
     public PackDetailViewModel() { }
     public PackDetailViewModel(Pack? selected)
     {
-        PrepareCommands();
         SelectedPack = selected;
         PrepareDisplayData();
     }
@@ -216,47 +209,33 @@ public partial class PackDetailViewModel : ObservableObject
     [ObservableProperty]
     bool isPreparing = true;
 
-    DetailFocusMode _dm = DetailFocusMode.Overview;
-    public DetailFocusMode CurrentDisplayMode
-    {
-        get => _dm;
-        set => SetProperty(ref _dm, value);
-    }
+    [ObservableProperty]
+    DetailFocusMode currentDisplayMode = DetailFocusMode.Overview;
 
-    bool _hasReadme;
-    public bool HasReadmeMD
-    {
-        get => _hasReadme;
-        set => SetProperty(ref _hasReadme, value);
-    }
+    [RelayCommand] private void GoToOverviewPage() => CurrentDisplayMode = DetailFocusMode.Overview;
+    [RelayCommand] private void GoToReadmePage() => CurrentDisplayMode = DetailFocusMode.Readme;
+    [RelayCommand] private void GoToPerksPage() => CurrentDisplayMode = DetailFocusMode.Perks;
+    [RelayCommand] private void GoToPortraitsPage() => CurrentDisplayMode = DetailFocusMode.Portraits;
+    [RelayCommand] private void GoToPowersPage() => CurrentDisplayMode = DetailFocusMode.Powers;
+    [RelayCommand] private void GoToItemsPage() => CurrentDisplayMode = DetailFocusMode.Items;
+    [RelayCommand] private void GoToAddonsPage() => CurrentDisplayMode = DetailFocusMode.Addons;
+    [RelayCommand] private void GoToStatusPage() => CurrentDisplayMode = DetailFocusMode.Status;
+    [RelayCommand] private void GoToOfferingsPage() => CurrentDisplayMode = DetailFocusMode.Offerings;
 
-    FlowDocument _readme = new();
-    public FlowDocument ReadmeMDContent
-    {
-        get => _readme;
-        set => SetProperty(ref _readme, value);
-    }
+    [ObservableProperty]
+    bool hasReadmeMD;
 
-    bool _hasBanner;
-    public bool HasBanner
-    {
-        get => _hasBanner;
-        set => SetProperty(ref _hasBanner, value);
-    }
+    [ObservableProperty]
+    FlowDocument readmeMDContent = new();
 
-    string? _bannerURL;
-    public string? BannerURL
-    {
-        get => _bannerURL;
-        set => SetProperty(ref _bannerURL, value);
-    }
+    [ObservableProperty]
+    bool hasBanner;
 
-    string? _heroIconURL = null;
-    public string? HeroIconURL
-    {
-        get => _heroIconURL;
-        set => SetProperty(ref _heroIconURL, value);
-    }
+    [ObservableProperty]
+    string? bannerURL;
+
+    [ObservableProperty]
+    string? heroIconURL = null;
 
     //Perks display
     [ObservableProperty]
@@ -298,75 +277,39 @@ public partial class PackDetailViewModel : ObservableObject
     }
 
     //Portraits display
-    ObservableCollection<PortraitPreviewItem>? _portrait = new();
-    public ObservableCollection<PortraitPreviewItem>? PortraitPreview
-    {
-        get => _portrait;
-        set => SetProperty(ref _portrait, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<PortraitPreviewItem>? portraitPreview = new();
 
     //Powers display
-    ObservableCollection<PowerPreviewItem>? _power = new();
-    public ObservableCollection<PowerPreviewItem>? PowerPreview
-    {
-        get => _power;
-        set => SetProperty(ref _power, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<PowerPreviewItem>? powerPreview = new();
 
     //Items display
-    ObservableCollection<ItemPreviewItem>? _items = new();
-    public ObservableCollection<ItemPreviewItem>? ItemsPreview
-    {
-        get => _items;
-        set => SetProperty(ref _items, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<ItemPreviewItem>? itemsPreview = new();
 
     //Addons
-    ObservableCollection<AddonPreviewItem>? _addons = new();
-    public ObservableCollection<AddonPreviewItem>? AddonsPreview
-    {
-        get => _addons;
-        set => SetProperty(ref _addons, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<AddonPreviewItem>? addonsPreview = new();
 
     //Emblems
-    ObservableCollection<EmblemPreviewItem>? _emblem = new();
-    public ObservableCollection<EmblemPreviewItem>? EmblemPreview
-    {
-        get => _emblem;
-        set => SetProperty(ref _emblem, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<EmblemPreviewItem>? emblemPreview = new();
 
     //Daily ritual
-    ObservableCollection<DailyRitualPreviewItem>? _dailyRitual = new();
-    public ObservableCollection<DailyRitualPreviewItem>? DailyRitualPreview
-    {
-        get => _dailyRitual;
-        set => SetProperty(ref _dailyRitual, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<DailyRitualPreviewItem>? dailyRitualPreview = new();
 
     //Offering
-    ObservableCollection<OfferingPreviewItem>? _offerings = new();
-    public ObservableCollection<OfferingPreviewItem>? OfferingsPreview
-    {
-        get => _offerings;
-        set => SetProperty(ref _offerings, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<OfferingPreviewItem>? offeringsPreview = new();
 
     //Status effects
-    ObservableCollection<StatusEffectPreviewItem>? _statusEffects = new();
-    public ObservableCollection<StatusEffectPreviewItem>? StatusEffectsPreview
-    {
-        get => _statusEffects;
-        set => SetProperty(ref _statusEffects, value);
-    }
+    [ObservableProperty]
+    ObservableCollection<StatusEffectPreviewItem>? statusEffectsPreview = new();
 
-    private ObservableCollection<PerkPreviewItem> _sorted = new();
-    public ObservableCollection<PerkPreviewItem>? SortedPerks
-    {
-        get => _sorted;
-        set => SetProperty(ref _sorted, value);
-    }
+    [ObservableProperty]
+    private ObservableCollection<PerkPreviewItem> sortedPerks = new();
 
     public void SortingPerkList()
     {
@@ -380,71 +323,40 @@ public partial class PackDetailViewModel : ObservableObject
     [ObservableProperty]
     bool canSort;
 
-    PerkSortBy _perkSortBy = PerkSortBy.Name;
-    public PerkSortBy CurrentPerkSortingMethod
+    
+    [ObservableProperty]
+    PerkSortBy currentPerkSortingMethod = PerkSortBy.Name;
+
+    [RelayCommand] private void SetPerkSortByName() => CurrentPerkSortingMethod = PerkSortBy.Name;
+    [RelayCommand] private void SetPerkSortByOwner() => CurrentPerkSortingMethod = PerkSortBy.Owner;
+    [RelayCommand] private void SetPerkSortByRandom() => CurrentPerkSortingMethod = PerkSortBy.Random;
+
+    partial void OnCurrentPerkSortingMethodChanged(PerkSortBy value)
     {
-        get => _perkSortBy;
-        set
-        {
-            if (SetProperty(ref _perkSortBy, value))
-                SortingPerkList();
-        }
+        SortingPerkList();
     }
 
-    bool _sortPerkAscending = true;
-    public bool IsPerkSortByAscending
+    [ObservableProperty]
+    bool isPerkSortByAscending = true;
+
+    [RelayCommand] private void SetPerkSortAscending() => IsPerkSortByAscending = true;
+    [RelayCommand] private void SetPerkSortDescending() => IsPerkSortByAscending = false;
+
+    partial void OnIsPerkSortByAscendingChanged(bool value)
     {
-        get => _sortPerkAscending;
-        set
-        {
-            if (SetProperty(ref _sortPerkAscending, value))
-                SortingPerkList();
-        }
+        SortingPerkList();
     }
 
-    public ICommand? SetDisplayMode { get; private set; }
-    public ICommand? SetPerkSortingMethod { get; private set; }
-    public ICommand? SetPerkSortingAscendingMethod { get; private set; }
-    public ICommand? OpenPackURL { get; private set; }
-    public ICommand? OpenOwnerURL { get; private set; }
-    private void PrepareCommands()
-    {
-        SetDisplayMode = new RelayCommand<string?>(SetDisplayModeAction);
-        SetPerkSortingMethod = new RelayCommand<string?>(SetPerkSortingMethodAction);
-        SetPerkSortingAscendingMethod = new RelayCommand<string?>(SetPerkSortingAscendingMethodAction);
-        OpenPackURL = new RelayCommand<RoutedEventArgs>(OpenPackURLAction);
-        OpenOwnerURL = new RelayCommand<RoutedEventArgs>(OpenOwnerURLAction);
-    }
-
-    private void OpenOwnerURLAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void OpenOwnerURL()
     {
         URL.OpenURL($"https://www.github.com/{SelectedPack.Repository.Owner}");
     }
 
-    private void OpenPackURLAction(RoutedEventArgs? obj)
+    [RelayCommand]
+    private void OpenPackURL()
     {
         URL.OpenURL(SelectedPack.URL);
-    }
-
-    private void SetPerkSortingAscendingMethodAction(string? str)
-    {
-        if (str is null)
-            return;
-        IsPerkSortByAscending = str == "true";
-    }
-
-    private void SetPerkSortingMethodAction(string? obj)
-    {
-        if (obj is null)
-            return;
-        CurrentPerkSortingMethod = Enum.Parse<PerkSortBy>(obj);
-    }
-
-    private void SetDisplayModeAction(string? obj)
-    {
-        if (string.IsNullOrEmpty(obj))
-            return;
-        CurrentDisplayMode = Enum.Parse<DetailFocusMode>(obj);
     }
 }
 
