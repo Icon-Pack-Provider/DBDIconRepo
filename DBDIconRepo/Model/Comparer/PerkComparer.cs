@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DBDIconRepo.Model.Comparer;
 
-public class PerkComparer : IComparer<Perk>
+public class PerkComparer : IComparer<Perk?>
 {
     public int Compare(Perk? x, Perk? y)
     {

@@ -30,12 +30,22 @@ public partial class PackDetailViewModel : ObservableObject
 
     public async void PrepareDisplayData()
     {
+        List<IBasePreview> identifiedItems = new();
+        SelectedPack.ContentInfo.Files
+            .Select(file => IconTypeIdentify.FromBasicInfo(file, SelectedPack.Repository))
+            .AsParallel()
+            .ToList()
+            .ForEach(i => identifiedItems.Add(i));
+
         //Banner
-        var bannerExist = await Packs.IsPackBannerExist(SelectedPack);
-        if (bannerExist)
+        var bannerTask = Task.Run(async () =>
         {
-            BannerURL = await Packs.GetPackBannerURL(SelectedPack);
-        }
+            var bannerExist = await Packs.IsPackBannerExist(SelectedPack);
+            if (bannerExist)
+            {
+                BannerURL = await Packs.GetPackBannerURL(SelectedPack);
+            }
+        });        
 
         //Get any previewable icon
         if (SelectedPack.Overrides is not null && SelectedPack.Overrides.DisplayFiles is not null)
@@ -55,153 +65,151 @@ public partial class PackDetailViewModel : ObservableObject
         }
 
         //Readme.md
-        var readmeExist = await Packs.IsPackReadmeExist(SelectedPack);
-        if (readmeExist)
+        var readmeTask = Task.Run(async () =>
         {
-            var localReadme = await Packs.GetPackReadme(SelectedPack);
-            MdXaml.Markdown translator = new();
-            ReadmeMDContent = translator.Transform(localReadme);
-        }
-
-        List<IBasePreview> identifiedItems = new();
-        SelectedPack.ContentInfo.Files
-            .Select(file => IconTypeIdentify.FromBasicInfo(file, SelectedPack.Repository))
-            .AsParallel()
-            .ToList()
-            .ForEach(i => identifiedItems.Add(i));
+            var readmeExist = await Packs.IsPackReadmeExist(SelectedPack);
+            if (readmeExist)
+            {
+                var localReadme = await Packs.GetPackReadme(SelectedPack);
+                MdXaml.Markdown translator = new();
+                ReadmeMDContent = translator.Transform(localReadme);
+            }
+        });
 
         //Filter identified items into its own observableCollection
-        if (SelectedPack.ContentInfo.HasPerks)
+        var perkListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
-            {
-                var perks = identifiedItems.Where(i => i.Info is Perk)
+            if (!SelectedPack.ContentInfo.HasPerks)
+                return;
+            var perks = identifiedItems.Where(i => i.Info is Perk)
                 .OrderBy(i => i.Info as Perk, new PerkComparer());
-                foreach (var perk in perks)
+            foreach (var perk in perks)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        PerksPreview.Add((PerkPreviewItem)perk);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
+                    PerksPreview.Add((PerkPreviewItem)perk);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
             SortingPerkList();
-        }
+        });
 
         //Portrait icons
-        if (SelectedPack.ContentInfo.HasPortraits)
+        var portraitListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasPortraits)
+                return;
+            var portraits = identifiedItems.Where(i => i.Info is Portrait);
+            foreach (var portrait in portraits)
             {
-                var portraits = identifiedItems.Where(i => i.Info is Portrait);
-                foreach (var portrait in portraits)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        PortraitPreview.Add((PortraitPreviewItem)portrait);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    PortraitPreview.Add((PortraitPreviewItem)portrait);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
         //Powers
-        if (SelectedPack.ContentInfo.HasPowers)
+        var powerListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasPowers)
+                return;
+            var powers = identifiedItems.Where(i => i.Info is Power);
+            foreach (var power in powers)
             {
-                var powers = identifiedItems.Where(i => i.Info is Power);
-                foreach (var power in powers)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        PowerPreview.Add((PowerPreviewItem)power);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    PowerPreview.Add((PowerPreviewItem)power);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
         //Items
-        if (SelectedPack.ContentInfo.HasItems)
+        var itemListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasItems)
+                return;
+            var items = identifiedItems.Where(i => i.Info is Item);
+            foreach (var item in items)
             {
-                var items = identifiedItems.Where(i => i.Info is Item);
-                foreach (var item in items)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        ItemsPreview.Add((ItemPreviewItem)item);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    ItemsPreview.Add((ItemPreviewItem)item);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
         //Status
-        if (SelectedPack.ContentInfo.HasStatus)
+        var statusListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasStatus)
+                return;
+            var status = identifiedItems.Where(i => i.Info is StatusEffect);
+            foreach (var st in status)
             {
-                var status = identifiedItems.Where(i => i.Info is StatusEffect);
-                foreach (var st in status)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        StatusEffectsPreview.Add((StatusEffectPreviewItem)st);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    StatusEffectsPreview.Add((StatusEffectPreviewItem)st);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
         //Offerings
-        if (SelectedPack.ContentInfo.HasOfferings)
+        var offeringListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasOfferings)
+                return;
+            var offerings = identifiedItems.Where(i => i.Info is Offering);
+            foreach (var offering in offerings)
             {
-                var offerings = identifiedItems.Where(i => i.Info is Offering);
-                foreach (var offering in offerings)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        if (OfferingsPreview is null)
-                            OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
-                        OfferingsPreview.Add((OfferingPreviewItem)offering);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    if (OfferingsPreview is null)
+                        OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
+                    OfferingsPreview.Add((OfferingPreviewItem)offering);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
         //Addons
-        if (SelectedPack.ContentInfo.HasAddons)
+        var addonListingTask = Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            if (!SelectedPack.ContentInfo.HasAddons)
+                return;
+            var addons = identifiedItems.Where(i => i.Info is Addon);
+            foreach (var addon in addons)
             {
-                var addons = identifiedItems.Where(i => i.Info is Addon);
-                foreach (var addon in addons)
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        if (AddonsPreview is null)
-                            AddonsPreview = new ObservableCollection<AddonPreviewItem>();
-                        AddonsPreview.Add((AddonPreviewItem)addon);
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-            });
-        }
+                    if (AddonsPreview is null)
+                        AddonsPreview = new ObservableCollection<AddonPreviewItem>();
+                    AddonsPreview.Add((AddonPreviewItem)addon);
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+        });
 
+        await Task.WhenAll(bannerTask,
+            readmeTask,
+            perkListingTask,
+            portraitListingTask,
+            powerListingTask,
+            itemListingTask,
+            statusListingTask,
+            offeringListingTask,
+            addonListingTask);
         //TODO:When showing emblems sort it by name, then by type (none, silver, gold, iri etc.)
         IsPreparing = false;
     }
