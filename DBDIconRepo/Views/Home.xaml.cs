@@ -1,144 +1,65 @@
-﻿using DBDIconRepo.Helper;
+﻿using DBDIconRepo.Dialog;
 using DBDIconRepo.Model;
-using DBDIconRepo.Model.Preview;
-using IconInfo.Icon;
-using ModernWpf.Controls;
-using System;
-using System.Threading.Tasks;
+using DBDIconRepo.ViewModel;
+using ModernWpf.Controls.Primitives;
 using System.Windows;
+using System.Windows.Controls;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Views;
 
-/// <summary>
-/// Interaction logic for Home.xaml
-/// </summary>
-public partial class Home : Window
+public partial class Home : Page
 {
-    private static bool attempt = false;
+    //public HomeViewModel ViewModel { get; } = new HomeViewModel();
+
     public Home()
     {
         InitializeComponent();
-        Messenger.Default.Register<Home, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
-            SwitchPageHandler);
-        Messenger.Default.Register<Home, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
-        this.Activated += ActivationEvent;
-        this.Deactivated += DeactivatedEvent;
-        //Force inducing a few seconds of eye seizure to fix color issue
-        Task.Run(async () =>
+        this.Unloaded += UnregisterStuff;
+        Messenger.Default.Register<Home, RequestViewPackDetailMessage, string>(this,
+            MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
+    }
+
+    private void OpenPackDetailWindow(Home recipient, RequestViewPackDetailMessage message)
+    {
+        foreach (var window in Application.Current.Windows)
         {
-            if (attempt)
-                return;
-            attempt = true;
-            await Application.Current.Dispatcher.InvokeAsync(async () =>
+            if (window is PackDetail pd)
             {
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Default);
-            }, System.Windows.Threading.DispatcherPriority.Send);
-        }).Await(() =>
-        {
-
-        });
-    }
-
-    Action? callOnActivated = null;
-    Action? callOnDeactivated = null;
-    private void SubToAppActivate(Home recipient, MonitorForAppFocusMessage message)
-    {
-        if (message.Subscribe)
-        {
-            callOnActivated = message.CallOnActivate;
-            callOnDeactivated = message.CallOnDeactivated;
-        }
-        else
-        {
-            callOnActivated = null;
-            callOnDeactivated= null;
-        }
-    }
-
-    private void SwitchPageHandler(Home recipient, SwitchToOtherPageMessage message)
-    {
-        SwitchPage(message.Page);
-    }
-
-    private void StartupAction(object sender, RoutedEventArgs e)
-    {
-        homeSelection.IsSelected = true;
-    }
-
-    private void SwitchPage(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
-    {
-        if (args.SelectedItem is null)
-            return;
-        if (args.IsSettingsSelected)
-        {
-            SwitchPage("setting");
-            return;
-        }
-        string page = (args.SelectedItem as NavigationViewItemBase).Tag.ToString();
-        SwitchPage(page);
-    }
-
-    public void SwitchPage(string page)
-    {
-        switch (page)
-        {
-            case "home":
-                contentFrame.Navigate(new MainWindow());
-                ViewModel.CurrentPageName = "Home";
-                break;
-            case "login":
-                contentFrame.Navigate(new PleaseLogin());
-                ViewModel.CurrentPageName = "Anonymous";
-                break;
-            case "loggedIn":
-                contentFrame.Navigate(new LetMeOut());
-                ViewModel.CurrentPageName = SettingManager.Instance.GitUsername;
-                break;
-            case "setting":
-                contentFrame.Navigate(new SettingPage());
-                ViewModel.CurrentPageName = "Settings";
-                break;
-            case "favorite":
-                contentFrame.Navigate(new FavoritePage());
-                if (ViewModel.GitService.IsAnonymous)
-                    ViewModel.CurrentPageName = "Local favorites";
-                if (!ViewModel.GitService.IsAnonymous)
-                    ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
-                break;
-            case "upload":
-                if (ViewModel.GitService.IsAnonymous)
+                if (pd.DataContext is PackDetailViewModel pdv && pdv.SelectedPack == message.Selected)
                 {
-                    homeSelection.IsSelected = true;
-                    MessageBox.Show("I am not letting you in without login to GitHub!",
-                        "I don't know how did you manage to do this, but", MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    if (contentFrame.Content.GetType().Name != nameof(MainWindow))
-                        contentFrame.Navigate(new MainWindow());
-                    ViewModel.CurrentPageName = "Home";
+                    pd.Hide();
+                    pd.Show();
                     return;
                 }
-                contentFrame.Navigate(new UploadPack());
-                ViewModel.CurrentPageName = "Upload new pack";
-                break;
+            }
         }
-    }
-    private void DeactivatedEvent(object? sender, System.EventArgs e)
-    {
-        callOnDeactivated?.Invoke();
+
+        PackDetail detail = new(message.Selected);
+        detail.Show();
     }
 
-    private void ActivationEvent(object? sender, System.EventArgs e)
+    private void UnregisterStuff(object sender, RoutedEventArgs e)
     {
-        callOnActivated?.Invoke();
+        Messenger.Default.UnregisterAll(this);
+        ViewModel.UnregisterMessages();
     }
 
+    private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
+    {
+        FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+    }
+}
+
+public class IconPreviewTemplateSelector : DataTemplateSelector
+{
+    public DataTemplate IconDisplay { get; set; }
+    public DataTemplate BannerDisplay { get; set; }
+    public override DataTemplate SelectTemplate(object item, DependencyObject container)
+    {
+        if (item is Model.IconDisplay)
+            return IconDisplay;
+        else
+            return BannerDisplay;
+    }
 }
