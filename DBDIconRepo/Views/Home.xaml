@@ -16,6 +16,7 @@
     <Window.Resources>
         <c:BoolToVisibility x:Key="boolToVisibility"/>
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
+        <c:AnonymousIconRandomizer x:Key="anonIconRandomizer"/>
     </Window.Resources>
     
     <ui:NavigationView PaneDisplayMode="Left" 
@@ -43,8 +44,11 @@
                                    Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
             <ui:NavigationViewItem Content="Anonymous" Tag="login"
-                                   Icon="Help"
-                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
+                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
         </ui:NavigationView.FooterMenuItems>
         <Frame x:Name="contentFrame"
                Margin="12"
