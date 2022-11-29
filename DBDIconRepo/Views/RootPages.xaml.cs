@@ -136,6 +136,7 @@ public partial class RootPages : Window
     private void ActivationEvent(object? sender, System.EventArgs e)
     {
         callOnActivated?.Invoke();
+        ViewModel.CheckIfDBDRunning();
     }
 
 }

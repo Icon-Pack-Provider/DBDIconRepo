@@ -17,42 +17,58 @@
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
         <c:AnonymousIconRandomizer x:Key="anonIconRandomizer"/>
     </Window.Resources>
-    
-    <ui:NavigationView PaneDisplayMode="Left" 
-                       IsBackEnabled="False"
-                       SelectionChanged="SwitchPage"
-                       Loaded="StartupAction"
-                       PaneTitle="{Binding CurrentPageName, Mode=OneWay}"
-                       IsBackButtonVisible="Collapsed">
-        <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="Home" Tag="home"
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!--DBD Warner-->
+        <Rectangle Fill="{DynamicResource NavigationViewDefaultPaneBackground}" Margin="-5,0,-5,-5"
+                   Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
+        <TextBlock TextAlignment="Center" Margin="5"
+                   Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+            Dead by Daylight is running!
+            <LineBreak/>Installed icons might not show up until restart the game
+        </TextBlock>
+        <!--Actual content-->
+        <ui:NavigationView PaneDisplayMode="Left" 
+                           IsBackEnabled="False"
+                           SelectionChanged="SwitchPage"
+                           Loaded="StartupAction"
+                           PaneTitle="{Binding CurrentPageName, Mode=OneWay}"
+                           Grid.Row="1"
+                           IsBackButtonVisible="Collapsed">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Home" Tag="home"
                                    Icon="Home" x:Name="homeSelection"/>
-            <ui:NavigationViewItem Content="Single icon" Tag="single"
+                <ui:NavigationViewItem Content="Single icon" Tag="single"
                                    Visibility="Collapsed"
                                    Icon="ViewAll"/>
-            <ui:NavigationViewItem Content="Favorite" Tag="favorite">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xE1CE;"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-        </ui:NavigationView.MenuItems>
-        <ui:NavigationView.FooterMenuItems>
-            <ui:NavigationViewItem Content="Upload pack" Tag="upload"
+                <ui:NavigationViewItem Content="Favorite" Tag="favorite">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE1CE;"/>
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem Content="Upload pack" Tag="upload"
                                    Icon="Upload" Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
-            <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
+                <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
                                    Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
-            <ui:NavigationViewItem Content="Anonymous" Tag="login"
+                <ui:NavigationViewItem Content="Anonymous" Tag="login"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-        </ui:NavigationView.FooterMenuItems>
-        <Frame x:Name="contentFrame"
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"/>
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+            <Frame x:Name="contentFrame"
                Margin="12"
                NavigationUIVisibility="Hidden"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch"/>
-    </ui:NavigationView>
+        </ui:NavigationView>
+    </Grid>
 </Window>
