@@ -23,15 +23,6 @@ public partial class PackDisplay : ObservableObject
     public PackDisplay(Pack _info)
     {
         Info = _info;
-        SettingManager.Instance.PropertyChanged += MonitorSetting;
-    }
-
-    private void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName != nameof(Setting.InstallEverythingInPack))
-            return;
-        installPackOption = SettingManager.Instance.InstallEverythingInPack;
-        OnPropertyChanged(nameof(ShouldInstallEverything));
     }
 
     [ObservableProperty]
@@ -75,7 +66,7 @@ public partial class PackDisplay : ObservableObject
     private async void InstallThisPack(RoutedEventArgs? obj)
     {
         ObservableCollection<IPackSelectionItem>? installationPick = new();
-        if (ShouldInstallEverything)
+        if (SettingManager.Instance.InstallEverythingInPack)
         {
             installationPick = new(Info.ContentInfo.Files
                 .Where(file => file.EndsWith(".png") && !file.StartsWith(".banner"))
@@ -264,36 +255,6 @@ public partial class PackDisplay : ObservableObject
                 PreviewSources.Add(newIcon);
             }
         }
-    }
-
-    bool? installPackOption = null;
-    public bool ShouldInstallEverything
-    {
-        get
-        {
-            if (installPackOption is null)
-                installPackOption = SettingManager.Instance.InstallEverythingInPack;
-            return installPackOption.Value;
-        }
-        set
-        {
-            if (SetProperty(ref installPackOption, value))
-            {
-                SettingManager.Instance.InstallEverythingInPack = value;
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void SetInstallAll()
-    {
-        ShouldInstallEverything = true;
-    }
-
-    [RelayCommand]
-    private void SetNotInstallAll()
-    {
-        ShouldInstallEverything = false;
     }
 
     #region Favorite/Starred

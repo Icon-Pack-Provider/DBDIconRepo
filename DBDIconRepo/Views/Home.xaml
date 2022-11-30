@@ -130,6 +130,23 @@
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </Button>
+            <Button Padding="8" Click="OpenAttatchedFlyout">
+                <ui:SymbolIcon Symbol="Download"/>
+                <ui:FlyoutBase.AttachedFlyout>
+                    <ui:MenuFlyout>
+                        <MenuItem IsHitTestVisible="False" Header="Install option:"
+                                  IsEnabled="False"/>
+                        <ui:RadioMenuItem GroupName="mode"
+                                          Header="Install everything in pack"
+                                          IsChecked="{Binding Config.InstallEverythingInPack, Mode=OneWay}"
+                                          Command="{Binding SetInstallEverythingCommand}"/>
+                        <ui:RadioMenuItem GroupName="mode"
+                                          Header="Ask which icons to install"
+                                          IsChecked="{Binding Config.InstallEverythingInPack, Mode=OneWay, Converter={StaticResource invertBool}}"
+                                          Command="{Binding SetInstallSpcificCommand}"/>
+                    </ui:MenuFlyout>
+                </ui:FlyoutBase.AttachedFlyout>
+            </Button>
 
 
         </StackPanel>
@@ -225,27 +242,17 @@
                                 <ColumnDefinition Width="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.ColumnDefinitions>
                             <!-- Normal state -->
-                            <ui:SplitButton Grid.Column="0" HorizontalAlignment="Stretch"
+                            <Button Grid.Column="0" HorizontalAlignment="Stretch"
                                             Command="{Binding InstallThisPackCommand}"
                                             MinWidth="32" MinHeight="32"
                                             Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
-                                <ui:SplitButton.Flyout>
-                                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay}" 
-                                                  Command="{Binding SetInstallAllCommand}"
-                                                  Header="Install all"/>
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay, Converter={StaticResource invertBool}}" 
-                                                  Command="{Binding SetNotInstallAllCommand}"
-                                                  Header="Install specific"/>
-                                    </ui:MenuFlyout>
-                                </ui:SplitButton.Flyout>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph=""
                                                  Margin="5,0"
                                                  FontFamily="Segoe MDL2 Assets"/>
                                     <TextBlock Text="Install"/>
                                 </StackPanel>
-                            </ui:SplitButton>
+                            </Button>
                             
                             <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"
@@ -476,27 +483,17 @@
                                 <RowDefinition Height="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.RowDefinitions>
                             <!-- Normal state -->
-                            <ui:SplitButton Grid.Row="0" HorizontalAlignment="Stretch"
+                            <Button Grid.Row="0" HorizontalAlignment="Stretch"
                                             Command="{Binding InstallThisPackCommand}"
                                             MinWidth="32" MinHeight="32"
                                             Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
-                                <ui:SplitButton.Flyout>
-                                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay}" 
-                                                  Command="{Binding SetInstallAllCommand}"
-                                                  Header="Install all"/>
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay, Converter={StaticResource invertBool}}" 
-                                                  Command="{Binding SetNotInstallAllCommand}"
-                                                  Header="Install specific"/>
-                                    </ui:MenuFlyout>
-                                </ui:SplitButton.Flyout>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph=""
                                                  Margin="5,0"
                                                  FontFamily="Segoe MDL2 Assets"/>
                                     <TextBlock Text="Install"/>
                                 </StackPanel>
-                            </ui:SplitButton>
+                            </Button>
 
                             <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"

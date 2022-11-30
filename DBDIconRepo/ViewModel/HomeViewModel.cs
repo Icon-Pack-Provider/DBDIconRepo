@@ -284,6 +284,10 @@ public partial class HomeViewModel : ObservableObject
     public Setting? Config => SettingManager.Instance;
 
     #region Commands
+    [RelayCommand] private void SetInstallEverything() => Config.InstallEverythingInPack = true;
+    [RelayCommand] private void SetInstallSpcific() => Config.InstallEverythingInPack = false;
+
+
     [RelayCommand]
     private void OnlyPerkFilter(RoutedEventArgs? obj)
     {
