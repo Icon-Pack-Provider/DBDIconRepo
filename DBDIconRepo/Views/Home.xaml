@@ -44,6 +44,33 @@
             x:Key="iconPreviewTemplateSelector"
             IconDisplay="{StaticResource IconPackIconDisplay}"
             BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
+        
+        <!--Table preview flyout-->
+        <DataTemplate x:Key="tableIconPreview">
+            <Image Width="64" Height="64">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+                <ToolTipService.ToolTip>
+                    <TextBlock Text="{Binding Tooltip.Name}"/>
+                </ToolTipService.ToolTip>
+            </Image>
+        </DataTemplate>
+        <DataTemplate x:Key="tableBannerPreview">
+            <Image Height="84" Margin="-2">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+            </Image>
+        </DataTemplate>
+        <local:IconPreviewTemplateSelector 
+            x:Key="tablePreviewTemplator"
+            IconDisplay="{StaticResource tableIconPreview}"
+            BannerDisplay="{StaticResource tableBannerPreview}"/>
     </Page.Resources>
     <Page.DataContext>
         <vm:HomeViewModel x:Name="ViewModel"/>
@@ -473,7 +500,7 @@
                         </StackPanel>
                         
                         <!--Install & details-->
-                        <Grid VerticalAlignment="Center" Grid.Column="3">
+                        <Grid VerticalAlignment="Center" Grid.Column="3" Margin="12,0" MinWidth="120">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <!-- Separator -->
@@ -525,6 +552,97 @@
                 </DataTemplate>
             </ui:ListView.ItemTemplate>
         </ui:ListView>
+        <!--Table view-->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
+                  SelectionMode="Single" Padding="14" Visibility="{Binding ShowOnTableView, Mode=OneWay}"
+                  AutoGenerateColumns="False" CanUserResizeColumns="True" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Preview" CanUserReorder="False" CanUserResize="False" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button HorizontalAlignment="Center" Background="Transparent" Click="OpenAttatchedFlyout">
+                                <Button.ToolTip>
+                                    <TextBlock>
+                                        Left click: Pack preview
+                                        <LineBreak/>Right clicl: Pack menu
+                                    </TextBlock>
+                                </Button.ToolTip>
+                                <ui:FontIcon Glyph="&#xE10C;"/>
+                                <ui:FlyoutBase.AttachedFlyout>
+                                    <ui:Flyout>
+                                        <ui:ListView ScrollViewer.CanContentScroll="False"
+                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                     HorizontalContentAlignment="Center"
+                                                     IsSelectionEnabled="False" Focusable="False"
+                                                     ItemTemplateSelector="{StaticResource tablePreviewTemplator}"
+                                                     ItemsSource="{Binding PreviewSources, Mode=OneWay}">
+                                            <ui:ListView.ItemContainerStyle>
+                                                <Style TargetType="ui:ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    <Setter Property="Padding" Value="0"/>
+                                                    <Setter Property="Margin" Value="6"/>
+                                                    <Setter Property="Focusable" Value="False"/>
+                                                </Style>
+                                            </ui:ListView.ItemContainerStyle>
+                                            <ui:ListView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1"/>
+                                                </ItemsPanelTemplate>
+                                            </ui:ListView.ItemsPanel>
+                                        </ui:ListView>
+                                    </ui:Flyout>
+                                </ui:FlyoutBase.AttachedFlyout>
+                                <ui:ContextFlyoutService.ContextFlyout>
+                                    <ui:MenuFlyout>
+                                        <MenuItem Header="Details" Command="{Binding OpenPackDetailWindowCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE946;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Search this author"
+                                                  Command="{Binding SearchForThisAuthorCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE11A;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Favorite"
+                                                  Visibility="{Binding IsFavorited, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"
+                                                  Command="{Binding FavoriteThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE1CE;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="UnFavorite"
+                                                  Visibility="{Binding IsFavorited, Mode=OneWay, Converter={StaticResource boolToVisibility}}"
+                                                  Command="{Binding UnFavoriteThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE8D9;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Install" Command="{Binding InstallThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:SymbolIcon Symbol="Download"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ui:MenuFlyout>
+                                </ui:ContextFlyoutService.ContextFlyout>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Pack name" Binding="{Binding Path=Info.Name}"/>
+                <DataGridTextColumn Header="Author" Binding="{Binding Path=Info.Author}"/>
+                <DataGridCheckBoxColumn Header="Perks" Binding="{Binding Info.ContentInfo.HasPerks}"/>
+                <DataGridCheckBoxColumn Header="Portraits" Binding="{Binding Info.ContentInfo.HasPortraits}"/>
+                <DataGridCheckBoxColumn Header="Powers" Binding="{Binding Info.ContentInfo.HasPowers}"/>
+                <DataGridCheckBoxColumn Header="Items" Binding="{Binding Info.ContentInfo.HasItems}"/>
+                <DataGridCheckBoxColumn Header="Addons" Binding="{Binding Info.ContentInfo.HasAddons}"/>
+                <DataGridCheckBoxColumn Header="Status" Binding="{Binding Info.ContentInfo.HasStatus}"/>
+                <DataGridCheckBoxColumn Header="Offerings" Binding="{Binding Info.ContentInfo.HasOfferings}"/>
+            </DataGrid.Columns>            
+        </DataGrid>
         
         <!-- No pack -->
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
