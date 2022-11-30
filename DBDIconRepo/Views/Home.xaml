@@ -44,6 +44,33 @@
             x:Key="iconPreviewTemplateSelector"
             IconDisplay="{StaticResource IconPackIconDisplay}"
             BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
+        
+        <!--Table preview flyout-->
+        <DataTemplate x:Key="tableIconPreview">
+            <Image Width="64" Height="64">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+                <ToolTipService.ToolTip>
+                    <TextBlock Text="{Binding Tooltip.Name}"/>
+                </ToolTipService.ToolTip>
+            </Image>
+        </DataTemplate>
+        <DataTemplate x:Key="tableBannerPreview">
+            <Image Height="84" Margin="-2">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                </Image.Source>
+            </Image>
+        </DataTemplate>
+        <local:IconPreviewTemplateSelector 
+            x:Key="tablePreviewTemplator"
+            IconDisplay="{StaticResource tableIconPreview}"
+            BannerDisplay="{StaticResource tableBannerPreview}"/>
     </Page.Resources>
     <Page.DataContext>
         <vm:HomeViewModel x:Name="ViewModel"/>
@@ -102,12 +129,59 @@
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </Button>
+            <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
+                <ui:SymbolIcon Symbol="View"/>
+                <ui:FlyoutBase.AttachedFlyout>
+                    <ui:MenuFlyout Placement="Bottom">
+                        <ui:RadioMenuItem Header="Grid" GroupName="view"
+                                          IsChecked="{Binding CurrentViewIsGrid, Mode=OneWay}"
+                                          Command="{Binding SetViewToGridCommand}">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xE138;"/>
+                            </MenuItem.Icon>
+                        </ui:RadioMenuItem>
+                        <ui:RadioMenuItem Header="List" GroupName="view"
+                                          IsChecked="{Binding CurrentViewIsList, Mode=OneWay}"
+                                          Command="{Binding SetViewToListCommand}">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xE15C;"/>
+                            </MenuItem.Icon>
+                        </ui:RadioMenuItem>
+                        <ui:RadioMenuItem Header="Table" GroupName="view"
+                                          IsChecked="{Binding CurrentViewIsTable, Mode=OneWay}"
+                                          Command="{Binding SetViewToTableCommand}">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xE700;"/>
+                            </MenuItem.Icon>
+                        </ui:RadioMenuItem>
+                    </ui:MenuFlyout>
+                </ui:FlyoutBase.AttachedFlyout>
+            </Button>
+            <Button Padding="8" Click="OpenAttatchedFlyout">
+                <ui:SymbolIcon Symbol="Download"/>
+                <ui:FlyoutBase.AttachedFlyout>
+                    <ui:MenuFlyout>
+                        <MenuItem IsHitTestVisible="False" Header="Install option:"
+                                  IsEnabled="False"/>
+                        <ui:RadioMenuItem GroupName="mode"
+                                          Header="Install everything in pack"
+                                          IsChecked="{Binding Config.InstallEverythingInPack, Mode=OneWay}"
+                                          Command="{Binding SetInstallEverythingCommand}"/>
+                        <ui:RadioMenuItem GroupName="mode"
+                                          Header="Ask which icons to install"
+                                          IsChecked="{Binding Config.InstallEverythingInPack, Mode=OneWay, Converter={StaticResource invertBool}}"
+                                          Command="{Binding SetInstallSpcificCommand}"/>
+                    </ui:MenuFlyout>
+                </ui:FlyoutBase.AttachedFlyout>
+            </Button>
 
 
         </StackPanel>
+        <!--Grid view-->
         <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
                      IsSelectionEnabled="False"
-                     Padding="12">
+                     Padding="12"
+                     Visibility="{Binding ShowOnGridView, Mode=OneWay}">
             <ui:GridView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="480" Height="270">
@@ -118,7 +192,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <!-- Background -->
-                        <Rectangle Fill="DimGray" Grid.RowSpan="4" Opacity="0.5"/>
+                        <Rectangle Fill="{DynamicResource NavigationViewDefaultPaneBackground}" Grid.RowSpan="4" Opacity="0.5"/>
                         <!-- Preview/Banner -->                        
                         <ui:ListView ScrollViewer.CanContentScroll="False"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -195,27 +269,17 @@
                                 <ColumnDefinition Width="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
                             </Grid.ColumnDefinitions>
                             <!-- Normal state -->
-                            <ui:SplitButton Grid.Column="0" HorizontalAlignment="Stretch"
+                            <Button Grid.Column="0" HorizontalAlignment="Stretch"
                                             Command="{Binding InstallThisPackCommand}"
                                             MinWidth="32" MinHeight="32"
                                             Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
-                                <ui:SplitButton.Flyout>
-                                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay}" 
-                                                  Command="{Binding SetInstallAllCommand}"
-                                                  Header="Install all"/>
-                                        <MenuItem IsCheckable="True" IsChecked="{Binding ShouldInstallEverything, Mode=OneWay, Converter={StaticResource invertBool}}" 
-                                                  Command="{Binding SetNotInstallAllCommand}"
-                                                  Header="Install specific"/>
-                                    </ui:MenuFlyout>
-                                </ui:SplitButton.Flyout>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph=""
                                                  Margin="5,0"
                                                  FontFamily="Segoe MDL2 Assets"/>
                                     <TextBlock Text="Install"/>
                                 </StackPanel>
-                            </ui:SplitButton>
+                            </Button>
                             
                             <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"
@@ -271,6 +335,314 @@
                 </DataTemplate>
             </ui:GridView.ItemTemplate>
         </ui:GridView>
+        <!--List view-->
+        <ui:ListView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
+                     IsSelectionEnabled="False"
+                     Padding="14"
+                     Visibility="{Binding ShowOnListView, Mode=OneWay}">
+            <ui:ListView.ItemContainerStyle>
+                <Style TargetType="ui:ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="4"/>
+                </Style>
+            </ui:ListView.ItemContainerStyle>
+            <ui:ListView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Preview/Banner -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Background -->
+                        <Rectangle Fill="{DynamicResource NavigationViewDefaultPaneBackground}" Grid.RowSpan="4" Opacity="0.5"/>
+                        
+                        <Image Width="100" Height="100" Visibility="{Binding RevealIfMainPreviewIsIcon}">
+                            <Image.Source>
+                                <BitmapImage UriSource="{Binding MainPreviewItem.URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding MainPreviewItem.DecodeWidth}"
+                                 DecodePixelHeight="{Binding MainPreviewItem.DecodeHeight}"/>
+                            </Image.Source>
+                            <ToolTipService.ToolTip>
+                                <TextBlock Text="{Binding MainPreviewItem.Tooltip.Name}"/>
+                            </ToolTipService.ToolTip>
+                        </Image>
+                        <Image Height="100" Width="100" Stretch="UniformToFill" Visibility="{Binding RevealIfMainPreviewIsBanner}"
+                               x:Name="bannerPreview">
+                            <Image.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="bannerPreview"
+                                                                           Storyboard.TargetProperty="Width">
+                                                <DoubleAnimationUsingKeyFrames.KeyFrames>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0" Value="100"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.1" Value="115"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="420"/>
+                                                </DoubleAnimationUsingKeyFrames.KeyFrames>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="bannerBlurBits"
+                                                                           Storyboard.TargetProperty="Width">
+                                                <DoubleAnimationUsingKeyFrames.KeyFrames>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.1" Value="0"/>
+                                                </DoubleAnimationUsingKeyFrames.KeyFrames>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="bannerPreview"
+                                                                           Storyboard.TargetProperty="Width">
+                                                <DoubleAnimationUsingKeyFrames.KeyFrames>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.28" Value="115"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="100"/>
+                                                </DoubleAnimationUsingKeyFrames.KeyFrames>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="bannerBlurBits"
+                                                                           Storyboard.TargetProperty="Width">
+                                                <DoubleAnimationUsingKeyFrames.KeyFrames>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.28" Value="0"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="15"/>
+                                                </DoubleAnimationUsingKeyFrames.KeyFrames>
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Image.Triggers>
+                            <Image.Source>
+                                <BitmapImage UriSource="{Binding MainPreviewItem.URL, Converter={StaticResource url2bitmapuri}}"
+                                 DecodePixelWidth="{Binding MainPreviewItem.DecodeWidth}"
+                                 DecodePixelHeight="{Binding MainPreviewItem.DecodeHeight}"/>
+                            </Image.Source>
+                        </Image>
+                        <Grid Grid.Column="1" Width="15" ClipToBounds="True" x:Name="bannerBlurBits" HorizontalAlignment="Left">
+                            <Image Grid.Column="1" Height="100" Width="100" Margin="-105,0,0,0"
+                                   Stretch="UniformToFill" Visibility="{Binding RevealIfMainPreviewIsBanner}">
+                                <Image.Effect>
+                                    <BlurEffect Radius="10"/>
+                                </Image.Effect>
+                                <Image.Source>
+                                    <BitmapImage UriSource="{Binding MainPreviewItem.URL, Converter={StaticResource url2bitmapuri}}"
+                                             DecodePixelWidth="{Binding MainPreviewItem.DecodeWidth}"
+                                             DecodePixelHeight="{Binding MainPreviewItem.DecodeHeight}"/>
+                                </Image.Source>
+                            </Image>
+                        </Grid>                        
+                        
+                        <!--Info-->
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal">                                
+                                <!--Pack name-->
+                                <TextBlock HorizontalAlignment="Left" 
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Info.Name}" 
+                                           FontSize="20" FontWeight="Bold"/>
+                                <!--Favorite buttons-->
+                                <Grid>
+                                    <!-- Favorite -->
+                                    <Button Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                            Command="{Binding FavoriteThisPackCommand}" Margin="4">
+                                        <Grid>
+                                            <ui:FontIcon Glyph="&#xE1CE;" FontSize="16" />
+                                        </Grid>
+                                    </Button>
+                                    <!-- Unfavorite -->
+                                    <Button Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4"
+                                            Command="{Binding UnFavoriteThisPackCommand}"
+                                            Visibility="{Binding IsFavorited, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+                                        <Grid>
+                                            <ui:FontIcon Glyph="&#xE1CE;" FontSize="16"/>
+                                            <ui:FontIcon Glyph="&#xE1CF;" Foreground="Yellow" FontSize="16" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                                
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Margin="0,4">
+                                <StackPanel.Resources>
+                                    <Style TargetType="ui:FontIcon">
+                                        <Setter Property="Margin" Value="4,0"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock HorizontalAlignment="Left">
+                                Author: <Hyperlink Command="{Binding SearchForThisAuthorCommand}"><Run Text="{Binding Info.Author, Converter={StaticResource propertyDisplay}}"/></Hyperlink>
+                                </TextBlock>
+                                <!-- Content availability info info -->
+                                <StackPanel Orientation="Horizontal" Margin="0,4">
+                                    <TextBlock Text="Content: "/>
+                                    <ui:FontIcon Glyph="&#xE18A;" FontFamily="Segoe MDL2 Assets" Margin="0,0,4,0"
+                                             ToolTip="This icon pack contain perks icon"
+                                             Visibility="{Binding Info.ContentInfo.HasPerks, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain portraits icon"
+                                             Visibility="{Binding Info.ContentInfo.HasPortraits, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain killer powers icon"
+                                             Visibility="{Binding Info.ContentInfo.HasPowers, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain survivor items icon"
+                                             Visibility="{Binding Info.ContentInfo.HasItems, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain power/item addons icon"
+                                             Visibility="{Binding Info.ContentInfo.HasAddons, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain status effects icon"
+                                             Visibility="{Binding Info.ContentInfo.HasStatus, Converter={StaticResource boolToVisibility}}"/>
+                                    <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"
+                                             ToolTip="This icon pack contain offerings icon"
+                                             Visibility="{Binding Info.ContentInfo.HasOfferings, Converter={StaticResource boolToVisibility}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <!--Install & details-->
+                        <Grid VerticalAlignment="Center" Grid.Column="3" Margin="12,0" MinWidth="120">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Separator -->
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <!--Status-->
+                                <RowDefinition Height="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToGridLength}}"/>
+                            </Grid.RowDefinitions>
+                            <!-- Normal state -->
+                            <Button Grid.Row="0" HorizontalAlignment="Stretch"
+                                            Command="{Binding InstallThisPackCommand}"
+                                            MinWidth="32" MinHeight="32"
+                                            Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph=""
+                                                 Margin="5,0"
+                                                 FontFamily="Segoe MDL2 Assets"/>
+                                    <TextBlock Text="Install"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Detail button -->
+                            <Button ToolTipService.ToolTip="Detail"
+                                    Grid.Row="2" HorizontalAlignment="Stretch"
+                                    MinWidth="32"
+                                    MinHeight="32"
+                                    Command="{Binding OpenPackDetailWindowCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph="" 
+                                                 Margin="5,0"
+                                                 FontFamily="Segoe MDL2 Assets"/>
+                                    <TextBlock Text="Detail"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Downloading state -->
+                            <!-- Downloading status display -->
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding TotalDownloadProgress, Mode=OneWay}"
+                                         VerticalAlignment="Center" Height="18" Margin="5"
+                                         Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Downloading'}"/>
+
+                            <!-- Installing state -->
+                            <TextBlock Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Installing'}">
+                                <Run Text="{Binding LatestInstalledFile, Mode=OneWay}"/>
+                                (<Run Text="{Binding CurrentInstallProgress, Mode=OneWay}"/>/<Run Text="{Binding TotalInstallProgress, Mode=OneWay}"/>)
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+        <!--Table view-->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
+                  SelectionMode="Single" Padding="14" Visibility="{Binding ShowOnTableView, Mode=OneWay}"
+                  AutoGenerateColumns="False" CanUserResizeColumns="True" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Preview" CanUserReorder="False" CanUserResize="False" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button HorizontalAlignment="Center" Background="Transparent" Click="OpenAttatchedFlyout">
+                                <Button.ToolTip>
+                                    <TextBlock>
+                                        Left click: Pack preview
+                                        <LineBreak/>Right clicl: Pack menu
+                                    </TextBlock>
+                                </Button.ToolTip>
+                                <ui:FontIcon Glyph="&#xE10C;"/>
+                                <ui:FlyoutBase.AttachedFlyout>
+                                    <ui:Flyout>
+                                        <ui:ListView ScrollViewer.CanContentScroll="False"
+                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                     HorizontalContentAlignment="Center"
+                                                     IsSelectionEnabled="False" Focusable="False"
+                                                     ItemTemplateSelector="{StaticResource tablePreviewTemplator}"
+                                                     ItemsSource="{Binding PreviewSources, Mode=OneWay}">
+                                            <ui:ListView.ItemContainerStyle>
+                                                <Style TargetType="ui:ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    <Setter Property="Padding" Value="0"/>
+                                                    <Setter Property="Margin" Value="6"/>
+                                                    <Setter Property="Focusable" Value="False"/>
+                                                </Style>
+                                            </ui:ListView.ItemContainerStyle>
+                                            <ui:ListView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1"/>
+                                                </ItemsPanelTemplate>
+                                            </ui:ListView.ItemsPanel>
+                                        </ui:ListView>
+                                    </ui:Flyout>
+                                </ui:FlyoutBase.AttachedFlyout>
+                                <ui:ContextFlyoutService.ContextFlyout>
+                                    <ui:MenuFlyout>
+                                        <MenuItem Header="Details" Command="{Binding OpenPackDetailWindowCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE946;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Search this author"
+                                                  Command="{Binding SearchForThisAuthorCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE11A;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Favorite"
+                                                  Visibility="{Binding IsFavorited, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"
+                                                  Command="{Binding FavoriteThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE1CE;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="UnFavorite"
+                                                  Visibility="{Binding IsFavorited, Mode=OneWay, Converter={StaticResource boolToVisibility}}"
+                                                  Command="{Binding UnFavoriteThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:FontIcon Glyph="&#xE8D9;"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Install" Command="{Binding InstallThisPackCommand}">
+                                            <MenuItem.Icon>
+                                                <ui:SymbolIcon Symbol="Download"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ui:MenuFlyout>
+                                </ui:ContextFlyoutService.ContextFlyout>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Pack name" Binding="{Binding Path=Info.Name}"/>
+                <DataGridTextColumn Header="Author" Binding="{Binding Path=Info.Author}"/>
+                <DataGridCheckBoxColumn Header="Perks" Binding="{Binding Info.ContentInfo.HasPerks}"/>
+                <DataGridCheckBoxColumn Header="Portraits" Binding="{Binding Info.ContentInfo.HasPortraits}"/>
+                <DataGridCheckBoxColumn Header="Powers" Binding="{Binding Info.ContentInfo.HasPowers}"/>
+                <DataGridCheckBoxColumn Header="Items" Binding="{Binding Info.ContentInfo.HasItems}"/>
+                <DataGridCheckBoxColumn Header="Addons" Binding="{Binding Info.ContentInfo.HasAddons}"/>
+                <DataGridCheckBoxColumn Header="Status" Binding="{Binding Info.ContentInfo.HasStatus}"/>
+                <DataGridCheckBoxColumn Header="Offerings" Binding="{Binding Info.ContentInfo.HasOfferings}"/>
+            </DataGrid.Columns>            
+        </DataGrid>
         
         <!-- No pack -->
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"

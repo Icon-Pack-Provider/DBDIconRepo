@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Strings;
+using DBDIconRepo.ViewModel;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -70,6 +71,9 @@ public partial class Setting : ObservableObject
 
     [ObservableProperty]
     bool dismissedTheFavoritePageHeaderPrompt = false;
+
+    [ObservableProperty]
+    int packViewMode = (int)PackView.Grid;
 
 #if DEBUG
     [ObservableProperty]
