@@ -107,7 +107,13 @@ public static class IconTypeIdentify
     {
         FileInfo fileInfo = new(path);
         string name = fileInfo.NameOnly();
-        string start = path[..path.IndexOf('/')];
+        string start = string.Empty;
+        if (!path.Contains('/'))
+        {
+            start = path;
+        }
+        else
+            start = path[..path.IndexOf('/')];
         return start switch
         {
             Terms.Portrait => new Portrait() { File = name, Name = name },

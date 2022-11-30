@@ -40,7 +40,30 @@ public partial class PackDisplay : ObservableObject
     //Include images
     //Limit to just 4 items!
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MainPreviewItem))]
+    [NotifyPropertyChangedFor(nameof(ShowIfMainPreviewIsIcon))]
+    [NotifyPropertyChangedFor(nameof(RevealIfMainPreviewIsIcon))]
+    [NotifyPropertyChangedFor(nameof(ShowIfMainPreviewIsBanner))]
+    [NotifyPropertyChangedFor(nameof(RevealIfMainPreviewIsBanner))]
     ObservableCollection<IDisplayItem>? previewSources;
+
+    public IDisplayItem? MainPreviewItem
+    {
+        get
+        {
+            if (PreviewSources is null)
+                return null;
+            if (PreviewSources.Count < 1)
+                return null;
+            return PreviewSources[0];
+        }
+    }
+
+    public bool ShowIfMainPreviewIsIcon => MainPreviewItem is not null && MainPreviewItem is IconDisplay;
+    public Visibility RevealIfMainPreviewIsIcon => ShowIfMainPreviewIsIcon ? Visibility.Visible : Visibility.Collapsed;
+
+    public bool ShowIfMainPreviewIsBanner => MainPreviewItem is not null && MainPreviewItem is BannerDisplay;
+    public Visibility RevealIfMainPreviewIsBanner => ShowIfMainPreviewIsBanner ? Visibility.Visible : Visibility.Collapsed;
 
     [RelayCommand]
     private void OpenPackDetailWindow(RoutedEventArgs? obj)

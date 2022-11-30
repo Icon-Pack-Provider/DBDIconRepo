@@ -283,7 +283,7 @@ public partial class HomeViewModel : ObservableObject
 
     public Setting? Config => SettingManager.Instance;
 
-#region Commands
+    #region Commands
     [RelayCommand]
     private void OnlyPerkFilter(RoutedEventArgs? obj)
     {
@@ -347,5 +347,51 @@ public partial class HomeViewModel : ObservableObject
         Config.SortBy = option;
         OnPropertyChanged(nameof(FilteredList));
     }
-#endregion
+    #endregion
+
+
+    private PackView? currentPackView = null;
+    public PackView CurrentPackView
+    {
+        get
+        {
+            if (currentPackView == null)
+            {
+                currentPackView = (PackView)Config.PackViewMode;
+            }
+            return currentPackView.Value;
+        }
+        set
+        {
+            if (SetProperty(ref currentPackView, value))
+            {
+                Config.PackViewMode = (int)value;
+                OnPropertyChanged(nameof(ShowOnGridView));
+                OnPropertyChanged(nameof(ShowOnListView));
+                OnPropertyChanged(nameof(ShowOnTableView));
+                OnPropertyChanged(nameof(CurrentViewIsGrid));
+                OnPropertyChanged(nameof(CurrentViewIsList));
+                OnPropertyChanged(nameof(CurrentViewIsTable));
+            }
+        }
+    }
+
+    public Visibility ShowOnGridView => CurrentPackView == PackView.Grid ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowOnListView => CurrentPackView == PackView.List ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowOnTableView => CurrentPackView == PackView.Table ? Visibility.Visible : Visibility.Collapsed;
+
+    public bool CurrentViewIsGrid => CurrentPackView == PackView.Grid;
+    public bool CurrentViewIsList => CurrentPackView == PackView.List;
+    public bool CurrentViewIsTable => CurrentPackView == PackView.Table;
+
+    [RelayCommand] private void SetViewToGrid() => CurrentPackView = PackView.Grid;
+    [RelayCommand] private void SetViewToList() => CurrentPackView = PackView.List;
+    [RelayCommand] private void SetViewToTable() => CurrentPackView = PackView.Table;
+}
+
+public enum PackView
+{
+    Grid,
+    List,
+    Table
 }
