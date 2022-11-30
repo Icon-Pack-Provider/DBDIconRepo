@@ -5,6 +5,7 @@ using DBDIconRepo.Model;
 using DBDIconRepo.Model.Comparer;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
+using IconInfo.Icons;
 using IconPack;
 using IconPack.Model;
 using System.Collections.Generic;
@@ -92,7 +93,12 @@ public partial class PackDetailViewModel : ObservableObject
                 System.Windows.Threading.DispatcherPriority.Send :
                 System.Windows.Threading.DispatcherPriority.Background);
             }
-            SortingPerkList();
+            await Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                await SortPerks();
+            }, SettingManager.Instance.SacrificingAppResponsiveness ?
+            System.Windows.Threading.DispatcherPriority.Send :
+            System.Windows.Threading.DispatcherPriority.Background);
         });
 
         //Portrait icons

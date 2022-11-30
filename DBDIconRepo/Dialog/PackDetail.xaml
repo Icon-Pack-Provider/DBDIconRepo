@@ -322,7 +322,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Perks'}">
                         <StackPanel Orientation="Horizontal">
@@ -366,7 +366,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Portraits'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -408,7 +408,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Powers'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -451,7 +451,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Items'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -495,7 +495,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay,
                         Converter={StaticResource focusToVisibility}, ConverterParameter='Addons'}">
                         <StackPanel Orientation="Horizontal">
@@ -527,7 +527,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Status'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
@@ -569,7 +569,7 @@
                         </StackPanel>
                     </Button>
                     <!--Return to detail-->
-                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPage}"
+                    <Button HorizontalAlignment="Right" Command="{Binding GoToOverviewPageCommand}"
                             Visibility="{Binding CurrentDisplayMode, Mode=OneWay, Converter={StaticResource focusToVisibility}, ConverterParameter='Offerings'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show less"/>
