@@ -42,6 +42,25 @@ public partial class PackDetail : Window
         topDownloadButton.Visibility =
             mainContentScroll.ContentVerticalOffset > packDetailPanel.RenderSize.Height ? 
             Visibility.Visible : Visibility.Collapsed;
+        if (mainContentScroll.ContentVerticalOffset <= 1)
+        {
+            acrylicRectangle.Opacity = 0;
+            acrylicRectangle.Height = 300;
+            bannerBG.Height = 300;
+        }
+        else if (mainContentScroll.ContentVerticalOffset <= 180)
+        {
+            double percentage = mainContentScroll.ContentVerticalOffset / 180;
+            acrylicRectangle.Opacity = percentage;
+            acrylicRectangle.Height = 300 - (120 * percentage);
+            bannerBG.Height = 300 - (120 * percentage);
+        }
+        else
+        {
+            acrylicRectangle.Opacity = 1;
+            acrylicRectangle.Height = 180;
+            bannerBG.Height = 180;
+        }
         System.Diagnostics.Debug.WriteLine($"Item height: {packDetailPanel.RenderSize.Height}" +
             $"\r\nCurrent position? {mainContentScroll.ContentVerticalOffset} || {mainContentScroll.VerticalOffset}");
     }

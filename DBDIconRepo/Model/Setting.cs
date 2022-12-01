@@ -75,6 +75,12 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     int packViewMode = (int)PackView.Grid;
 
+    [ObservableProperty]
+    int backgroundMode = (int)BackgroundOption.Random;
+
+    [ObservableProperty]
+    string lockedBackgroundPath = string.Empty;
+
 #if DEBUG
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");
@@ -82,6 +88,13 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
 #endif
+}
+
+public enum BackgroundOption
+{
+    None,
+    Random,
+    Lock
 }
 
 public static class SettingManager

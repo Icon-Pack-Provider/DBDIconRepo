@@ -1,5 +1,6 @@
 ﻿using DBDIconRepo.Model;
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
@@ -23,6 +24,17 @@ public class BytesImageDecoderConverter : IValueConverter
             bitmap.StreamSource = new MemoryStream(image);
             bitmap.EndInit();
             bitmap.Freeze();
+            return bitmap;
+        }
+        else if (value is string path)
+        {
+            //Background
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new(path, UriKind.Absolute);
+            bitmap.EndInit();
+            if (bitmap.CanFreeze)
+                bitmap.Freeze();
             return bitmap;
         }
         return null;
