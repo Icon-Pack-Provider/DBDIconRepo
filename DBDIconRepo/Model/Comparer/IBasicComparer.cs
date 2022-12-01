@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DBDIconRepo.Model.Comparer;
 
-public class IBasicComparer : IComparer<IBasic>
+public class IBasicComparer : IComparer<IBasic?>
 {
     public int Compare(IBasic? x, IBasic? y)
     {
