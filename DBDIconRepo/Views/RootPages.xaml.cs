@@ -7,11 +7,12 @@ using ModernWpf.Controls;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Views;
 
-public partial class RootPages : Window
+public partial class RootPages
 {
     private static bool attempt = false;
     public RootPages()
@@ -174,4 +175,15 @@ public partial class RootPages : Window
         ViewModel.CheckIfDBDRunning();
     }
 
+    private void animatePaneExpanding(NavigationView sender, object args)
+    {
+        var board = PaneBackgroundImitator.TryFindResource("animatePaneExpand") as Storyboard;
+        board.Begin();
+    }
+
+    private void animatePaneShrinking(NavigationView sender, NavigationViewPaneClosingEventArgs args)
+    {
+        var board = PaneBackgroundImitator.TryFindResource("animatePaneShrink") as Storyboard;
+        board.Begin();
+    }
 }

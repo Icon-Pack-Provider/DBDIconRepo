@@ -2,15 +2,21 @@
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
+using System;
+using System.IO;
 using System.Windows;
 
 namespace DBDIconRepo.ViewModel;
 
 public partial class RootPagesViewModel : ObservableObject
 {
+    [ObservableProperty]
+    string backgroundImage = "";
     public RootPagesViewModel()
     {
         CheckIfDBDRunning();
+        //Temporal bg
+        BackgroundImage = @"C:\Users\rayle\AppData\Roaming\IconRepositoryDev\Addons\Background\CH26_KNIGHT.jpg";
     }
 
     public void CheckIfDBDRunning()

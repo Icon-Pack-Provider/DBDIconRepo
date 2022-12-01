@@ -1,5 +1,6 @@
 ﻿using DBDIconRepo.Model;
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
@@ -21,6 +22,16 @@ public class BytesImageDecoderConverter : IValueConverter
             bitmap.DecodePixelHeight = System.Convert.ToInt32(toDecode.Height);
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.StreamSource = new MemoryStream(image);
+            bitmap.EndInit();
+            bitmap.Freeze();
+            return bitmap;
+        }
+        else if (value is string path)
+        {
+            //Background
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new(path, UriKind.Absolute);
             bitmap.EndInit();
             bitmap.Freeze();
             return bitmap;
