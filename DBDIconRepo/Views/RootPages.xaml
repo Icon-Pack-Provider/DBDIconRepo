@@ -65,10 +65,10 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
             <Grid>
-                <ScrollViewer VerticalAlignment="Top"
-                              HorizontalAlignment="Center"
-                              x:Name="progressScroller"
-                              
+                <ScrollViewer VerticalAlignment="Bottom"
+                              HorizontalAlignment="Left"
+                              x:Name="progressScroller"            
+                              Margin="12"
                               Visibility="{Binding IsInitializing, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
                     <TextBlock Text="{Binding ProgressText, Mode=OneWay}" FontSize="18"/>
                 </ScrollViewer>

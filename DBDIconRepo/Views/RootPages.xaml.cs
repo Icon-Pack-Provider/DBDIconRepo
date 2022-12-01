@@ -71,11 +71,11 @@ public partial class RootPages : Window
         //Load stuffs
         var packTask = IconPack.Packs.GetPacks((notif) =>
         {
-            ViewModel.ProgressText.Insert(0, $"{DateTime.Now:G}: [Packs] {notif}\r\n");
+            ViewModel.ProgressText += $"{DateTime.Now:G}: [Packs] {notif}\r\n";
         });
         var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
         {
-            ViewModel.ProgressText.Insert(0, $"{DateTime.Now:G}: [Addon] {notif}\r\n");
+            ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
         });
 
         Task.WhenAll(packTask, addonTask).Await(() =>
@@ -92,7 +92,7 @@ public partial class RootPages : Window
         {
             Logger.Write(ViewModel.ProgressText);
             Logger.Write($"{error.Message}\r\n{error.StackTrace}");
-            ViewModel.ProgressText += error.Message;
+            ViewModel.ProgressText += "\r\n" + error.Message;
             ViewModel.IsInitializing = true;
             Application.Current.Dispatcher.Invoke(() =>
             {
