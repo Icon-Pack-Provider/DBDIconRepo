@@ -2,8 +2,8 @@
 
 internal static class Terms
 {
-    public const string CloneURL = "https://github.com/Icon-Pack-Provider/IconCategorize.git";
-    public const string CloneDirectoryName = "Catagorize";
+    public static string CloneURL = "https://github.com/Icon-Pack-Provider/IconRepoAddons.git";
+    public const string CloneDirectoryName = "Addons";
     public const string CloneDotGitDirectory = ".git";
     public const string LastFetchFilename = "FETCH_HEAD";
 

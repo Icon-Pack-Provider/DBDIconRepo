@@ -64,11 +64,21 @@
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
-            <Frame x:Name="contentFrame"
-               Margin="12"
-               NavigationUIVisibility="Hidden"
-               HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"/>
+            <Grid>
+                <ScrollViewer VerticalAlignment="Top"
+                              HorizontalAlignment="Center"
+                              x:Name="progressScroller"
+                              
+                              Visibility="{Binding IsInitializing, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+                    <TextBlock Text="{Binding ProgressText, Mode=OneWay}" FontSize="18"/>
+                </ScrollViewer>
+                <Frame x:Name="contentFrame"
+                       Margin="12"
+                       NavigationUIVisibility="Hidden"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"/>
+            </Grid>
+            
         </ui:NavigationView>
     </Grid>
 </Window>

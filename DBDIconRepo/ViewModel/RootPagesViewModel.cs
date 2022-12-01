@@ -28,4 +28,10 @@ public partial class RootPagesViewModel : ObservableObject
     bool isDBDRunning;
 
     public Visibility RevealWhenDBDIsRunning;
+
+    [ObservableProperty]
+    bool isInitializing;
+
+    [ObservableProperty]
+    string progressText = string.Empty;
 }

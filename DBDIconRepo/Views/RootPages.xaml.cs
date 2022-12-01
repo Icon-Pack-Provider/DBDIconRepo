@@ -68,7 +68,38 @@ public partial class RootPages : Window
 
     private void StartupAction(object sender, RoutedEventArgs e)
     {
-        homeSelection.IsSelected = true;
+        //Load stuffs
+        var packTask = IconPack.Packs.GetPacks((notif) =>
+        {
+            ViewModel.ProgressText.Insert(0, $"{DateTime.Now:G}: [Packs] {notif}\r\n");
+        });
+        var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
+        {
+            ViewModel.ProgressText.Insert(0, $"{DateTime.Now:G}: [Addon] {notif}\r\n");
+        });
+
+        Task.WhenAll(packTask, addonTask).Await(() =>
+        {
+            ViewModel.IsInitializing = true;
+            Logger.Write(ViewModel.ProgressText);
+            ViewModel.ProgressText = string.Empty;
+            RemoveLogicalChild(progressScroller);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                homeSelection.IsSelected = true;
+            });
+        },
+        (error) =>
+        {
+            Logger.Write(ViewModel.ProgressText);
+            Logger.Write($"{error.Message}\r\n{error.StackTrace}");
+            ViewModel.ProgressText += error.Message;
+            ViewModel.IsInitializing = true;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                homeSelection.IsSelected = true;
+            });
+        });
     }
 
     private void SwitchPage(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
