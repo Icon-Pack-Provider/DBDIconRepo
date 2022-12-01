@@ -57,13 +57,13 @@ public partial class PackDisplay : ObservableObject
     public Visibility RevealIfMainPreviewIsBanner => ShowIfMainPreviewIsBanner ? Visibility.Visible : Visibility.Collapsed;
 
     [RelayCommand]
-    private void OpenPackDetailWindow(RoutedEventArgs? obj)
+    private void OpenPackDetailWindow()
     {
         Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
     }
 
     [RelayCommand]
-    private async void InstallThisPack(RoutedEventArgs? obj)
+    private async void InstallThisPack()
     {
         if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
         {
@@ -107,7 +107,7 @@ public partial class PackDisplay : ObservableObject
     }
 
     [RelayCommand]
-    private void SearchForThisAuthor(RoutedEventArgs? obj)
+    private void SearchForThisAuthor()
     {
         Messenger.Default.Send(new RequestSearchQueryMessage(Info.Author), MessageToken.REQUESTSEARCHQUERYTOKEN);
     }

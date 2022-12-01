@@ -4,6 +4,7 @@ using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Comparer;
 using DBDIconRepo.Model.Preview;
+using IconInfo;
 using IconInfo.Icon;
 using IconInfo.Icons;
 using IconPack;
@@ -371,6 +372,19 @@ public partial class PackDetailViewModel : ObservableObject
     private void OpenPackURL()
     {
         URL.OpenURL(SelectedPack.URL);
+    }
+
+    [RelayCommand]
+    private void InstallThisPack()
+    {
+        Task.Run(() =>
+        {
+            PackDisplay model = new(SelectedPack);
+            model.InstallThisPackCommand.Execute(null);
+        }).Await(() =>
+        {
+            MessageBox.Show($"Pack {SelectedPack.Name} installed");
+        });
     }
 }
 

@@ -160,7 +160,7 @@
             </TabItem>
             <ui:TabControlHelper.TabStripFooter>
                 <Button HorizontalAlignment="Right" Margin="4"
-                        x:Name="topDownloadButton">
+                        x:Name="topDownloadButton" Command="{Binding InstallThisPackCommand}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon Glyph="" FontSize="14"/>
@@ -220,7 +220,7 @@
                             Made by <Hyperlink Command="{Binding OpenOwnerURLCommand}"><Run Text="{Binding SelectedPack.Author}"/></Hyperlink>
                         </TextBlock>
                         <StackPanel Margin="0,5" Orientation="Horizontal">
-                            <Button>
+                            <Button Command="{Binding InstallThisPackCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Glyph="" FontSize="12"/>
                                     <TextBlock FontSize="12" Text="Install" Margin="4,0"/>
