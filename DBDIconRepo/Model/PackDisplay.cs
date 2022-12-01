@@ -67,8 +67,7 @@ public partial class PackDisplay : ObservableObject
     {
         if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
         {
-            MessageBox.Show("Please check the Setting and set the Dead by Daylight installation folder",
-                "Installation path hasn't set yet.", MessageBoxButton.OK, MessageBoxImage.Error);
+            DialogHelper.Show("Please check the Setting and set the Dead by Daylight installation folder", "Installation path hasn't set yet.", DialogSymbol.Error);
             return;
         }
         ObservableCollection<IPackSelectionItem>? installationPick = new();
@@ -176,7 +175,7 @@ public partial class PackDisplay : ObservableObject
         if (CurrentInstallProgress >= TotalInstallProgress - 1)
         {
             CurrentPackState = PackState.None;
-            MessageBox.Show($"Pack {Info.Name} installed");
+            DialogHelper.Show($"Pack {Info.Name} installed");
             Messenger.Default.Unregister<InstallationProgressReportMessage, string>(this,
                 $"{MessageToken.REPORTINSTALLPACKTOKEN}{Info.Repository.Name}");
         }

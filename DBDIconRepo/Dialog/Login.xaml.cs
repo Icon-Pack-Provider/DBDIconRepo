@@ -25,7 +25,7 @@ public partial class Login : Window
     {
         if (string.IsNullOrEmpty(passwordBox.Password))
         {
-            MessageBox.Show("No login information", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            DialogHelper.Show("No login information", "Error", DialogSymbol.Error);
             return;
         }
 
@@ -49,8 +49,9 @@ public partial class Login : Window
             }
             catch
             {
-                MessageBox.Show("Either token has no user query access, or invalid token!",
-                    "Bad credentials error:", MessageBoxButton.OK, MessageBoxImage.Error);
+                DialogHelper.Show("Either token has no user query access, or invalid token!",
+                    "Bad credentials error:", DialogSymbol.Error);
+                return;
             }            
         }
 

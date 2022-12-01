@@ -1,4 +1,5 @@
-﻿using DBDIconRepo.Helper;
+﻿using DBDIconRepo.Dialog;
+using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
@@ -149,9 +150,9 @@ public partial class RootPages : Window
                 if (ViewModel.GitService.IsAnonymous)
                 {
                     homeSelection.IsSelected = true;
-                    MessageBox.Show("I am not letting you in without login to GitHub!",
-                        "I don't know how did you manage to do this, but", MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    DialogHelper.Show("I am not letting you in without login to GitHub!", 
+                        "I don't know how did you manage to do this, but", 
+                        DialogSymbol.Error);
                     if (contentFrame.Content.GetType().Name != nameof(Home))
                         contentFrame.Navigate(new Home());
                     ViewModel.CurrentPageName = "Home";

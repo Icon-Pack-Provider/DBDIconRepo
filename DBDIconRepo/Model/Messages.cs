@@ -1,4 +1,5 @@
-﻿using IconPack.Model;
+﻿using DBDIconRepo.Dialog;
+using IconPack.Model;
 using IconPack.Model.Progress;
 using System;
 using System.Collections.Generic;
@@ -187,4 +188,13 @@ public class MonitorForAppFocusMessage
 
     public MonitorForAppFocusMessage(bool sub)
         => Subscribe = sub;
+}
+
+public class DialogResponseMessage
+{
+    public DialogResponse Response { get; }
+    public DialogResponseMessage(DialogResponse response)
+    {
+        Response = response;
+    }
 }

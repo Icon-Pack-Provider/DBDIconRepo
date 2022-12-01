@@ -110,7 +110,7 @@ public partial class SettingViewModel : ObservableObject
             return;
         if (IconManager.Uninstall(Config.DBDInstallationPath))
         {
-            MessageBox.Show($"Icon pack uninstall succesfully!");
+            DialogHelper.Show($"Icon pack uninstall succesfully!");
         }
     }
 

@@ -383,7 +383,7 @@ public partial class PackDetailViewModel : ObservableObject
             model.InstallThisPackCommand.Execute(null);
         }).Await(() =>
         {
-            MessageBox.Show($"Pack {SelectedPack.Name} installed");
+            DialogHelper.Show($"Pack {SelectedPack.Name} installed");
         });
     }
 }
