@@ -6,8 +6,9 @@
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       xmlns:c="clr-namespace:DBDIconRepo.Converters"
+      xmlns:local="clr-namespace:DBDIconRepo.Views"
       mc:Ignorable="d" ui:Design.RequestedTheme="Dark"
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="450" d:DesignWidth="800" x:Name="mainPage">
     <Page.DataContext>
         <vm:SettingViewModel x:Name="ViewModel"/>
     </Page.DataContext>
@@ -15,6 +16,29 @@
         <c:TextSwitchConverter x:Key="textSelector"/>
         <c:BoolToVisibility x:Key="boolToVisibility"/>
         <c:ResolutionFromScaleTextConverter x:Key="resFromScale"/>
+        <c:BytesImageDecoderConverter x:Key="imageEncoder"/>
+
+        <DataTemplate x:Key="existingBG">
+            <Image Source="{Binding Converter={StaticResource imageEncoder}}" Height="96"
+                   Stretch="UniformToFill" Margin="-8,0"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="customBG">
+            <Grid Margin="0,0,4,0" Width="96" Height="96">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ui:FontIcon Glyph="&#xE155;" HorizontalAlignment="Center"
+                             FontSize="32" Margin="0,12,0,0"/>
+                <TextBlock Text="Custom" Grid.Row="1"
+                           TextAlignment="Center" Margin="0,0,0,12"/>
+            </Grid>
+        </DataTemplate>
+
+        <local:BackgroundOptionTemplator ExistingBackground="{StaticResource existingBG}"
+                                         CustomBackground="{StaticResource customBG}"
+                                         x:Key="backgroundOptionTemplator"/>
     </Page.Resources>
 
     <ScrollViewer>
@@ -183,6 +207,29 @@
                     </Slider>
                 </StackPanel>
             </StackPanel>
+
+            <ComboBox ui:ControlHelper.Header="App background picture" MinWidth="180" Margin="0,5"
+                      SelectedIndex="{Binding BackgroundModeSetting, Mode=TwoWay}" d:SelectedIndex="1">
+                <ComboBoxItem Content="None"/>
+                <ComboBoxItem Content="Daily Shuffle"/>
+                <ComboBoxItem Content="Static"/>
+            </ComboBox>
+            <ListView Margin="0,5"
+                      ui:ControlHelper.Header="Pick a background"
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ItemsSource="{Binding AvailableBackgrounds}"
+                      ItemTemplateSelector="{StaticResource backgroundOptionTemplator}"
+                      Visibility="{Binding CanSetCustomBackground, Mode=OneWay}"
+                      SelectedIndex="{Binding SelectedCustomBackground, Mode=TwoWay}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+
+
 
             <!-- TODO:Planned feature -->
         <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"

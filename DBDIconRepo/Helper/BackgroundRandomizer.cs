@@ -9,26 +9,37 @@ namespace DBDIconRepo.Helper;
 
 public static class BackgroundRandomizer
 {
-    public static List<string>? AvailableBackgrounds = null;
-
-    public static void List()
+    private static List<string>? availableBackgrounds = null;
+    public static List<string>? AvailableBackgrounds
     {
-        if (AvailableBackgrounds is null)
-            AvailableBackgrounds = new();
+        get
+        {
+            if (availableBackgrounds is null)
+                availableBackgrounds = List();
+            return availableBackgrounds;
+        }
+        set
+        {
+            availableBackgrounds = value;
+        }
+    }
+
+    private static List<string> List()
+    {
         string path = Path.Combine(SettingManager.Instance.CacheAndDisplayDirectory,
             Terms.CloneDirectoryName, "Background");
         DirectoryInfo dir = new DirectoryInfo(path);
         if (!dir.Exists)
         {
-            return;
+            return new();
         }
-        AvailableBackgrounds = new(Directory.GetFiles(path));
+        return new(Directory.GetFiles(path));
     }
 
     public static string Get()
     {
         if (AvailableBackgrounds is null)
-            List();
+            AvailableBackgrounds = List();
         //Check setting first
         BackgroundOption option = (BackgroundOption)SettingManager.Instance.BackgroundMode;
         switch (option)

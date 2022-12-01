@@ -16,11 +16,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\nothing.png" />
     <None Remove="Resources\pfpHolder.ico" />
     <None Remove="Resources\pfpHolder.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\nothing.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\pfpHolder.ico" />
   </ItemGroup>
 

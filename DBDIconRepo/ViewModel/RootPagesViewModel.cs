@@ -17,6 +17,25 @@ public partial class RootPagesViewModel : ObservableObject
         CheckIfDBDRunning();
         //Temporal bg
         BackgroundImage = BackgroundRandomizer.Get();
+        Config.PropertyChanged += MonitorSetting;
+    }
+
+    private void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Setting.LockedBackgroundPath))
+        {
+            BackgroundImage = Config.LockedBackgroundPath;
+        }
+        else if (e.PropertyName == nameof(Setting.BackgroundMode))
+        {
+            BackgroundOption mode = (BackgroundOption)Config.BackgroundMode;
+            switch (mode)
+            {
+                case BackgroundOption.Random:
+                    BackgroundImage = BackgroundRandomizer.Get();
+                    break;
+            }
+        }
     }
 
     public void CheckIfDBDRunning()

@@ -31,7 +31,7 @@ public class BytesImageDecoderConverter : IValueConverter
             //Background
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new(path, UriKind.Absolute);
+            bitmap.UriSource = new(path, UriKind.RelativeOrAbsolute);
             bitmap.EndInit();
             if (bitmap.CanFreeze)
                 bitmap.Freeze();
