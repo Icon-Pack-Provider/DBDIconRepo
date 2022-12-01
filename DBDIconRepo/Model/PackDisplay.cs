@@ -65,6 +65,12 @@ public partial class PackDisplay : ObservableObject
     [RelayCommand]
     private async void InstallThisPack(RoutedEventArgs? obj)
     {
+        if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
+        {
+            MessageBox.Show("Please check the Setting and set the Dead by Daylight installation folder",
+                "Installation path hasn't set yet.", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         ObservableCollection<IPackSelectionItem>? installationPick = new();
         if (SettingManager.Instance.InstallEverythingInPack)
         {
