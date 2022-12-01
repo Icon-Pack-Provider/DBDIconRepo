@@ -16,7 +16,7 @@ public partial class RootPagesViewModel : ObservableObject
     {
         CheckIfDBDRunning();
         //Temporal bg
-        BackgroundImage = @"C:\Users\rayle\AppData\Roaming\IconRepositoryDev\Addons\Background\CH26_KNIGHT.jpg";
+        BackgroundImage = BackgroundRandomizer.Get();
     }
 
     public void CheckIfDBDRunning()
