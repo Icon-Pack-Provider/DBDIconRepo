@@ -17,6 +17,8 @@ namespace DBDIconRepo.Helper
     {
         public static void Write(string message)
         {
+            if (string.IsNullOrEmpty(message))
+                return;
             string logFile = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, "error.log");
             if (!File.Exists(logFile))
             {

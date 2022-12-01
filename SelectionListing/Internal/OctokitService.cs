@@ -27,6 +27,11 @@ internal class OctokitService
         Client = client;
     }
 
+    public OctokitService()
+    {
+        Client = new(new ProductHeaderValue("iconlistingapi"));
+    }
+
     public static void InitializeInstance(OctokitService instance)
     {
         _instance = instance;

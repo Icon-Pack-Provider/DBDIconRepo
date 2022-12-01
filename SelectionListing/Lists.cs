@@ -32,6 +32,16 @@ public static class Lists
         }
     }
 
+    public static void Initialize(string workingDirectory)
+    {
+        if (!IsInitialized)
+        {
+            IsInitialized = true;
+            OctokitService.InitializeInstance(new());
+            WorkingDirectory = workingDirectory;
+        }
+    }
+
     /*
      * Pull from icon catagorize repo
      * https://github.com/Icon-Pack-Provider/IconCategorize

@@ -28,6 +28,11 @@ internal class OctokitService
         Client = client;
     }
 
+    public OctokitService()
+    {
+        Client = new(new ProductHeaderValue(productHeaderValue));
+    }
+
     public static OctokitService? Instance
     {
         get

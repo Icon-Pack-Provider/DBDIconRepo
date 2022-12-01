@@ -80,13 +80,12 @@ public partial class RootPages : Window
 
         Task.WhenAll(packTask, addonTask).Await(() =>
         {
-            ViewModel.IsInitializing = true;
             Logger.Write(ViewModel.ProgressText);
-            ViewModel.ProgressText = string.Empty;
-            RemoveLogicalChild(progressScroller);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 homeSelection.IsSelected = true;
+                ViewModel.ProgressText = string.Empty;
+                ViewModel.IsInitializing = true;
             });
         },
         (error) =>
@@ -98,6 +97,10 @@ public partial class RootPages : Window
             Application.Current.Dispatcher.Invoke(() =>
             {
                 homeSelection.IsSelected = true;
+                if (error.Message.Contains("API rate limit exceeded"))
+                {
+                    this.Title = $"Dead by daylight: Icon repo | GitHub rate limit exceeded. Many function might not work properly!";
+                }
             });
         });
     }

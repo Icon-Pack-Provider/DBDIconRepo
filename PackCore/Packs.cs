@@ -41,6 +41,18 @@ public static class Packs
         }
     }
 
+    public static void Initialize(string workingDirectory)
+    {
+        if (!IsInitialized)
+        {
+            IsInitialized = true;
+            Ioc.Default.ConfigureServices(new ServiceCollection()
+                .AddSingleton((svc) => new OctokitService())
+                .BuildServiceProvider());
+            WorkingDirectory = workingDirectory;
+        }
+    }
+
     public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
     {
         ThrowHelper.APINotInitialize();
