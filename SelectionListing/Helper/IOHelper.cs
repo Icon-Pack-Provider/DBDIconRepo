@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using SelectionListing.Internal;
+using System.Text;
 using static SelectionListing.Internal.Flags;
 using static SelectionListing.Internal.Terms;
 
@@ -14,6 +15,26 @@ internal static class IOHelper
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
         return new DirectoryInfo(dir);
+    }
+
+    public static string GetCacheCatagorizeRepoURL()
+    {
+        string path = Path.Join(WorkingDirectory, "addon_repo.txt");
+        if (!File.Exists(path))
+        {
+            File.WriteAllText(path, CloneURL);
+            return CloneURL;
+        }
+        string url = File.ReadAllText(path);
+        try
+        {
+            Uri validate = new(url);
+            return url;
+        }
+        catch //Empty file, or invalid URL
+        {
+            return CloneURL;
+        }
     }
 
     public static DirectoryInfo GetCacheDotGitDirectory()

@@ -41,16 +41,18 @@ public static class Packs
         }
     }
 
-    public static async Task<ObservableCollection<Pack?>> GetPacks()
+    public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
     {
         ThrowHelper.APINotInitialize();
 
         var request = new SearchRepositoriesRequest($"topic:{PackTag}");
         var result = await OctokitService.Instance.Client.Search.SearchRepo(request);
+        notifications?.Invoke($"Gather icon pack repositories\r\nFound {result.TotalCount} repositories");
 
         var packs = new ObservableCollection<Pack?>();
         foreach (var repo in result.Items)
         {
+            notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
             var pack = await GetPack(repo);
             if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
                 || IsMissingInfo(pack))
@@ -60,7 +62,7 @@ public static class Packs
 
             packs.Add(pack);
         }
-
+        notifications?.Invoke("All repositories information has been gathered!");
         return packs;
     }
 
