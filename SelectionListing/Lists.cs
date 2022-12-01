@@ -117,7 +117,7 @@ public static class Lists
     public static ObservableCollection<SelectionMenuItem> GetListings()
     {
         ObservableCollection<SelectionMenuItem> listings = new();
-        var directory = IOHelper.GetCacheCatagorizeDirectory();
+        var directory = IOHelper.GetCatagoryListingDirectory();
         var dirs = directory.GetDirectories();
         foreach (var dir in dirs)
         {

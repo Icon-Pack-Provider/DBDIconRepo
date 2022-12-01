@@ -17,6 +17,16 @@ internal static class IOHelper
         return new DirectoryInfo(dir);
     }
 
+    public static DirectoryInfo GetCatagoryListingDirectory()
+    {
+        if (!Directory.Exists(WorkingDirectory))
+            Directory.CreateDirectory(WorkingDirectory);
+        string dir = Path.Combine(WorkingDirectory, CloneDirectoryName, "ComponentGroup");
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+        return new DirectoryInfo(dir);
+    }
+
     public static string GetCacheCatagorizeRepoURL()
     {
         string path = Path.Join(WorkingDirectory, "addon_repo.txt");

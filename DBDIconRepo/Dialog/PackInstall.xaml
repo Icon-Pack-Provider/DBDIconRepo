@@ -11,9 +11,9 @@
         xmlns:lister="clr-namespace:SelectionListing.Model;assembly=SelectionListing"
         ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d" Height="480" Width="600">
-    <Window.DataContext>
+    <d:Window.DataContext>
         <vm:PackInstallViewModel x:Name="ViewModel"/>
-    </Window.DataContext>
+    </d:Window.DataContext>
     <Window.Resources>
         <convert:NameOrDisplayNameOnSelectionListing x:Key="listingNameDecide"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
