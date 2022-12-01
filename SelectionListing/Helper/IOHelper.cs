@@ -1,7 +1,7 @@
 ﻿using SelectionListing.Internal;
 using System.Text;
 using static SelectionListing.Internal.Flags;
-using static SelectionListing.Internal.Terms;
+using static SelectionListing.Terms;
 
 namespace SelectionListing.Helper;
 

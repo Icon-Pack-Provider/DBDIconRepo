@@ -3,7 +3,7 @@ using Octokit;
 using SelectionListing.Internal;
 using SelectionListing.Helper;
 using static SelectionListing.Internal.Flags;
-using static SelectionListing.Internal.Terms;
+using static SelectionListing.Terms;
 using System.Collections.ObjectModel;
 using SelectionListing.Model;
 using System;
