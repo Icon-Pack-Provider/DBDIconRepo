@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:DBDIconRepo.Views"
       xmlns:convert="clr-namespace:DBDIconRepo.Converters"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       mc:Ignorable="d" 
       Title="Dead by daylight: Icon repo">
@@ -386,7 +387,7 @@
                                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="bannerBlurBits"
                                                                            Storyboard.TargetProperty="Width">
                                                 <DoubleAnimationUsingKeyFrames.KeyFrames>
-                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.1" Value="0"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="0"/>
                                                 </DoubleAnimationUsingKeyFrames.KeyFrames>
                                             </DoubleAnimationUsingKeyFrames>
                                         </Storyboard>
@@ -406,7 +407,7 @@
                                                                            Storyboard.TargetProperty="Width">
                                                 <DoubleAnimationUsingKeyFrames.KeyFrames>
                                                     <LinearDoubleKeyFrame KeyTime="0:0:0:0.28" Value="0"/>
-                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="15"/>
+                                                    <LinearDoubleKeyFrame KeyTime="0:0:0:0.3" Value="400"/>
                                                 </DoubleAnimationUsingKeyFrames.KeyFrames>
                                             </DoubleAnimationUsingKeyFrames>
                                         </Storyboard>
@@ -419,18 +420,20 @@
                                  DecodePixelHeight="{Binding MainPreviewItem.DecodeHeight}"/>
                             </Image.Source>
                         </Image>
-                        <Grid Grid.Column="1" Width="15" ClipToBounds="True" x:Name="bannerBlurBits" HorizontalAlignment="Left">
-                            <Image Grid.Column="1" Height="100" Width="100" Margin="-105,0,0,0"
-                                   Stretch="UniformToFill" Visibility="{Binding RevealIfMainPreviewIsBanner}">
-                                <Image.Effect>
-                                    <BlurEffect Radius="10"/>
-                                </Image.Effect>
+                        <Grid Grid.Column="1" Grid.ColumnSpan="2" ClipToBounds="True" 
+                              x:Name="bannerBlurBits" HorizontalAlignment="Left"
+                              Width="420">
+                            <Image Grid.Column="1" Height="100" Width="420" Margin="-100,0,0,0" x:Name="additionalBitsImage"
+                                   Stretch="Fill" Visibility="{Binding RevealIfMainPreviewIsBanner}"
+                                   HorizontalAlignment="Left">
                                 <Image.Source>
                                     <BitmapImage UriSource="{Binding MainPreviewItem.URL, Converter={StaticResource url2bitmapuri}}"
                                              DecodePixelWidth="{Binding MainPreviewItem.DecodeWidth}"
                                              DecodePixelHeight="{Binding MainPreviewItem.DecodeHeight}"/>
                                 </Image.Source>
                             </Image>
+                            <Rectangle Height="100" Width="400"
+                                       Fill="{fw:AcrylicBrush TargetName=additionalBitsImage}"/>
                         </Grid>                        
                         
                         <!--Info-->
