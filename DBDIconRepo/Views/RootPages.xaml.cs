@@ -186,4 +186,9 @@ public partial class RootPages
         var board = PaneBackgroundImitator.TryFindResource("animatePaneShrink") as Storyboard;
         board.Begin();
     }
+
+    private void OpenNewVersionLink(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        ViewModel.OpenAppReleasePage();
+    }
 }

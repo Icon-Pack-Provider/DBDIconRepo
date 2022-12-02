@@ -229,6 +229,15 @@
                 </ListView.ItemsPanel>
             </ListView>
 
+            <ui:ToggleSwitch Header="Check for latest beta version" Margin="0,5"
+                         IsOn="{Binding Config.LatestBeta, Mode=TwoWay}">
+                <ui:ToggleSwitch.OnContent>
+                    Update checker will check latest beta version
+                </ui:ToggleSwitch.OnContent>
+                <ui:ToggleSwitch.OffContent>
+                    Update checker will check latest stable version
+                </ui:ToggleSwitch.OffContent>
+            </ui:ToggleSwitch>
 
 
             <!-- TODO:Planned feature -->

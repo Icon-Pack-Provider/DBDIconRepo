@@ -6,5 +6,5 @@ public class Terms
     /// <summary>
     /// Year.Month.Day.Revision
     /// </summary>
-    public const string Version = "2022.12.02.1";
+    public const string Version = "2022.12.02.2";
 }

@@ -99,7 +99,7 @@
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItemSeparator/>
-                <ui:NavigationViewItem SelectsOnInvoked="False"
+                <ui:NavigationViewItem SelectsOnInvoked="False" MouseDown="OpenNewVersionLink"
                                        IsHitTestVisible="{Binding AllowOpenAppURL, Mode=OneWay}">
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph="{Binding UpdateIconGlyph, Mode=OneWay}" 
