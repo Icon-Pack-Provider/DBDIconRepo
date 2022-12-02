@@ -234,7 +234,6 @@ public partial class RootPages
         {
             //Set opacity, if Light:0.75; otherwise Dark:0
             var currentTheme = ModernWpf.ThemeManager.GetActualTheme(this);
-            this.Resources["DefinedTintOpacity"] = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
             ((PaneBackgroundImitator.Fill as VisualBrush)
                 .Visual as SourceChord.FluentWPF.AcrylicPanel)
                 .TintOpacity = currentTheme == ElementTheme.Dark ? 0d : 0.75d;

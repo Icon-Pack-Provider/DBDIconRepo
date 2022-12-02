@@ -193,7 +193,7 @@ public partial class SettingViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ChooseBackground()
+    public void ChooseBackground()
     {
         Ookii.Dialogs.Wpf.VistaOpenFileDialog dialog = new()
         {
@@ -208,24 +208,8 @@ public partial class SettingViewModel : ObservableObject
             if (!File.Exists(dialog.FileName))
                 return;
 
-            var copy = File.ReadAllBytes(dialog.FileName);
-            //Is it custom right now?
-            var custom = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, "custombg");
-            var custom1 = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, "bgcustom");
-            try
-            {
-                if (File.Exists(custom))
-                    File.Delete(custom);
-                File.WriteAllBytes(custom, copy);
-                SettingManager.Instance.LockedBackgroundPath = custom;
-            }
-            catch
-            {
-                if (File.Exists(custom1))
-                    File.Delete(custom1);
-                File.WriteAllBytes(custom1, copy);
-                SettingManager.Instance.LockedBackgroundPath = custom1;
-            }
+            //Fine! I'll point directly to that file then!
+            SettingManager.Instance.LockedBackgroundPath = dialog.FileName;
             return;
         }
         SelectedCustomBackground = 1;

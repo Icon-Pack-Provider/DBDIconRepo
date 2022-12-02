@@ -40,18 +40,21 @@ public static class BackgroundRandomizer
     {
         if (AvailableBackgrounds is null || forceRecheck)
             AvailableBackgrounds = List();
-        if (AvailableBackgrounds.Count < 1)
-            return string.Empty; //Inital launch; no addon folder yet
         //Check setting first
         BackgroundOption option = (BackgroundOption)SettingManager.Instance.BackgroundMode;
         switch (option)
         {
             case BackgroundOption.Random:
+                if (AvailableBackgrounds.Count < 1)
+                    return string.Empty; //Inital launch; no addon folder yet
                 //Daily seed
                 int seed = (int)(DateTime.Today.Ticks % int.MaxValue);
                 Random random = new(seed);
                 return AvailableBackgrounds[random.Next(0, AvailableBackgrounds.Count)];
             case BackgroundOption.Lock:
+                //Check if file still exist
+                if (!File.Exists(SettingManager.Instance.LockedBackgroundPath))
+                    return string.Empty;
                 return SettingManager.Instance.LockedBackgroundPath;
             default:
             case BackgroundOption.None:

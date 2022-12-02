@@ -12,6 +12,18 @@ public partial class SettingPage : Page
     {
         InitializeComponent();
     }
+
+    private void ForcePickNewBackground(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is ListView list)
+        {
+            if (list.SelectedIndex == 0)
+            {
+                //Force select new background
+                ViewModel.ChooseBackground();
+            }
+        }
+    }
 }
 
 public class BackgroundOptionTemplator : DataTemplateSelector

@@ -218,6 +218,7 @@
                       ui:ControlHelper.Header="Pick a background"
                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      MouseDoubleClick="ForcePickNewBackground"
                       ItemsSource="{Binding AvailableBackgrounds}"
                       ItemTemplateSelector="{StaticResource backgroundOptionTemplator}"
                       Visibility="{Binding CanSetCustomBackground, Mode=OneWay}"
