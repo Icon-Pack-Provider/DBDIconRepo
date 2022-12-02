@@ -422,10 +422,9 @@
                         </Image>
                         <Grid Grid.Column="1" Grid.ColumnSpan="2" ClipToBounds="True" 
                               x:Name="bannerBlurBits" HorizontalAlignment="Left"
-                              Width="420">
+                              Width="420" Visibility="{Binding RevealIfMainPreviewIsBanner, Mode=OneWay}">
                             <Image Grid.Column="1" Height="100" Width="420" Margin="-100,0,0,0" x:Name="additionalBitsImage"
-                                   Stretch="Fill" Visibility="{Binding RevealIfMainPreviewIsBanner}"
-                                   HorizontalAlignment="Left">
+                                   Stretch="Fill" HorizontalAlignment="Left">
                                 <Image.Source>
                                     <BitmapImage UriSource="{Binding MainPreviewItem.URL, Converter={StaticResource url2bitmapuri}}"
                                              DecodePixelWidth="{Binding MainPreviewItem.DecodeWidth}"
