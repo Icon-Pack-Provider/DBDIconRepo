@@ -6,7 +6,10 @@
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         xmlns:c="clr-namespace:DBDIconRepo.Converters"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:sys="clr-namespace:System;assembly=netstandard"
         ui:WindowHelper.UseModernWindowStyle="True"
+        ui:ThemeManager.ActualThemeChanged="TryUpdateAcrylicColor"
+        ui:ThemeManager.IsThemeAware="True"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         fw:AcrylicWindow.Enabled="True"
         fw:AcrylicWindow.TitleBarMode="Default"
@@ -20,6 +23,7 @@
         <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="{DynamicResource SystemChromeMediumLowColor}" />
         <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{DynamicResource SystemChromeMediumLowColor}" />
         <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="{DynamicResource SystemChromeMediumColor}" />
+        <sys:Double x:Key="DefinedTintOpacity">0</sys:Double>
 
         <c:BoolToVisibility x:Key="boolToVisibility"/>
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
@@ -38,7 +42,8 @@
                MinHeight="768"/>
         <!--Pane imitator/The easier way than modify a whole NavigationView resources-->
         <Rectangle VerticalAlignment="Stretch" Grid.RowSpan="2"
-                   HorizontalAlignment="Left" Fill="{fw:AcrylicBrush TargetName=Background}" 
+                   HorizontalAlignment="Left" 
+                   Fill="{fw:AcrylicBrush TargetName=Background, TintOpacity={StaticResource DefinedTintOpacity}}" 
                    Width="{Binding OpenPaneLength, ElementName=mainPane}" x:Name="PaneBackgroundImitator"
                    Visibility="{Binding ShouldShowAcrylicPanel, Mode=OneWay}">
             <Rectangle.Resources>

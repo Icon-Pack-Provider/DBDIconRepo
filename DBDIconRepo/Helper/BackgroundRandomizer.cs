@@ -36,9 +36,9 @@ public static class BackgroundRandomizer
         return new(Directory.GetFiles(path));
     }
 
-    public static string Get()
+    public static string Get(bool forceRecheck = false)
     {
-        if (AvailableBackgrounds is null)
+        if (AvailableBackgrounds is null || forceRecheck)
             AvailableBackgrounds = List();
         if (AvailableBackgrounds.Count < 1)
             return string.Empty; //Inital launch; no addon folder yet

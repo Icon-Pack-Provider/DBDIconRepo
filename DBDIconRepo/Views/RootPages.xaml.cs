@@ -3,6 +3,7 @@ using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
 using IconInfo.Icon;
+using ModernWpf;
 using ModernWpf.Controls;
 using System;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ namespace DBDIconRepo.Views;
 
 public partial class RootPages
 {
-    private static bool attempt = false;
     public RootPages()
     {
         InitializeComponent();
@@ -25,28 +25,7 @@ public partial class RootPages
         Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
-        //Force inducing a few seconds of eye seizure to fix color issue
-        Task.Run(async () =>
-        {
-            if (attempt)
-                return;
-            attempt = true;
-            await Application.Current.Dispatcher.InvokeAsync(async () =>
-            {
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Light);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Dark);
-                await Task.Delay(50);
-                ModernWpf.ThemeManager.SetRequestedTheme(this, ModernWpf.ElementTheme.Default);
-            }, System.Windows.Threading.DispatcherPriority.Send);
-        }).Await(() =>
-        {
-            
-        });
+        
         ViewModel.PropertyChanged += IsBackgroundChangedYet;
         ViewModel.Initialize();
     }
@@ -56,23 +35,29 @@ public partial class RootPages
         //Replace navigation pane color to transparent
         if (e.PropertyName == nameof(DBDIconRepo.ViewModel.RootPagesViewModel.BackgroundImage))
         {
-            if (string.IsNullOrEmpty(ViewModel.BackgroundImage))
-                return; //Still blank?
-            if (this.Resources.Contains("NavigationViewTopPaneBackground")
-                && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
-            {
-                navtop.Color = Colors.Transparent;
-            }
-            if (this.Resources.Contains("NavigationViewDefaultPaneBackground")
-                && this.Resources["NavigationViewDefaultPaneBackground"] is SolidColorBrush navbg)
-            {
-                navbg.Color = Colors.Transparent;
-            }
-            if (this.Resources.Contains("NavigationViewExpandedPaneBackground")
-                && this.Resources["NavigationViewExpandedPaneBackground"] is SolidColorBrush navex)
-            {
-                navex.Color = Colors.Transparent;
-            }
+            UpdateBackgroundBasedSideNavigationPanel();
+            TryUpdateAcrylicTintColor();
+        }
+    }
+
+    private void UpdateBackgroundBasedSideNavigationPanel()
+    {
+        if (string.IsNullOrEmpty(ViewModel.BackgroundImage))
+            return; //Still blank?
+        if (this.Resources.Contains("NavigationViewTopPaneBackground")
+            && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
+        {
+            navtop.Color = Colors.Transparent;
+        }
+        if (this.Resources.Contains("NavigationViewDefaultPaneBackground")
+            && this.Resources["NavigationViewDefaultPaneBackground"] is SolidColorBrush navbg)
+        {
+            navbg.Color = Colors.Transparent;
+        }
+        if (this.Resources.Contains("NavigationViewExpandedPaneBackground")
+            && this.Resources["NavigationViewExpandedPaneBackground"] is SolidColorBrush navex)
+        {
+            navex.Color = Colors.Transparent;
         }
     }
 
@@ -118,6 +103,9 @@ public partial class RootPages
                 ViewModel.ProgressText = string.Empty;
                 ViewModel.IsInitializing = true;
             });
+            //Check for new background maybe?
+            ViewModel.BackgroundImage = BackgroundRandomizer.Get(forceRecheck: true);
+            UpdateBackgroundBasedSideNavigationPanel();
         },
         (error) =>
         {
@@ -224,5 +212,27 @@ public partial class RootPages
     private void OpenNewVersionLink(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         ViewModel.OpenAppReleasePage();
+    }
+
+    private void TryUpdateAcrylicColor(object sender, RoutedEventArgs e)
+    {
+        TryUpdateAcrylicTintColor();
+    }
+
+    private void TryUpdateAcrylicTintColor()
+    {
+        if (ViewModel is null)
+            return;
+        if (string.IsNullOrEmpty(ViewModel.BackgroundImage)) //No need to do its if background is blank
+            return;
+        if (this.Resources["DefinedTintOpacity"] is double d)
+        {
+            //Set opacity, if Light:0.75; otherwise Dark:0
+            var currentTheme = ModernWpf.ThemeManager.GetActualTheme(this);
+            this.Resources["DefinedTintOpacity"] = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
+            ((PaneBackgroundImitator.Fill as VisualBrush)
+                .Visual as SourceChord.FluentWPF.AcrylicPanel)
+                .TintOpacity = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
+        }
     }
 }
