@@ -174,6 +174,10 @@ public partial class RootPages
                 if (!ViewModel.GitService.IsAnonymous)
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
+            case "history":
+                contentFrame.Navigate(new HistoryPage());
+                ViewModel.CurrentPageName = "Install history";
+                break;
             case "upload":
                 if (ViewModel.GitService.IsAnonymous)
                 {
