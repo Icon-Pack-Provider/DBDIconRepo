@@ -94,7 +94,7 @@ public partial class RootPagesViewModel : ObservableObject
                 return;
             }
             UpdateState = latest.TagName == Version ? CheckUpdateState.Updated : CheckUpdateState.Outdated;
-            LatestVersionURL = latest.Url;
+            LatestVersionURL = latest.HtmlUrl;
         }
         else
         {
@@ -104,7 +104,7 @@ public partial class RootPagesViewModel : ObservableObject
                 UpdateState = CheckUpdateState.Failed;
             }
             UpdateState = latest.TagName == Version ? CheckUpdateState.Updated : CheckUpdateState.Outdated;
-            LatestVersionURL = latest.Url;
+            LatestVersionURL = latest.HtmlUrl;
         }
     }
 
