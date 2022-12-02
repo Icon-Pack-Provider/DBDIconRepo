@@ -40,6 +40,8 @@ public static class BackgroundRandomizer
     {
         if (AvailableBackgrounds is null)
             AvailableBackgrounds = List();
+        if (AvailableBackgrounds.Count < 1)
+            return string.Empty; //Inital launch; no addon folder yet
         //Check setting first
         BackgroundOption option = (BackgroundOption)SettingManager.Instance.BackgroundMode;
         switch (option)
