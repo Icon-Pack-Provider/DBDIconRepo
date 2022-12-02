@@ -6,6 +6,7 @@ using DBDIconRepo.Service;
 using DBDIconRepo.Strings;
 using Microsoft.VisualBasic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,7 +85,7 @@ public partial class RootPagesViewModel : ObservableObject
     [ObservableProperty]
     string progressText = string.Empty;
 
-    public string Version => Terms.Version;
+    public string Version => VersionHelper.Version;
 
     [RelayCommand]
     private async Task CheckForUpdate()
@@ -92,31 +93,46 @@ public partial class RootPagesViewModel : ObservableObject
         string url = Config.AppRepoURL;
         var splices = url.Split('/', StringSplitOptions.RemoveEmptyEntries);
         if (splices.Length != 4)
-            UpdateState = CheckUpdateState.Failed;        
-        var repo = await GitService.GitHubClientInstance.Repository.Get(splices[2], splices[3]);
-        var releases = await GitService.GitHubClientInstance.Repository.Release.GetAll(repo.Id);
-        
+            UpdateState = CheckUpdateState.Failed;
+
+        Octokit.Repository? repo = null;
+        try
+        {
+            repo = await GitService.GitHubClientInstance.Repository.Get(splices[2], splices[3]);
+        }
+        catch
+        {
+            //Rate limit or repo not available
+            UpdateState = CheckUpdateState.Failed;
+            return;
+        }
+
+        List<Octokit.Release> releases = new();
+        try
+        {
+            releases = new(await GitService.GitHubClientInstance.Repository.Release.GetAll(repo.Id));
+        }
+        catch
+        {
+            //Rate limit or repo not available
+            UpdateState = CheckUpdateState.Failed;
+            return;
+        }
+
+        Octokit.Release? latest = null;
         if (!Config.LatestBeta)
-        {
-            var latest = releases.FirstOrDefault(i => !i.Prerelease);
-            if (latest is null)
-            {
-                UpdateState = CheckUpdateState.Failed;
-                return;
-            }
-            UpdateState = latest.TagName == Version ? CheckUpdateState.Updated : CheckUpdateState.Outdated;
-            LatestVersionURL = latest.HtmlUrl;
-        }
+            latest = releases.FirstOrDefault(i => !i.Prerelease);
         else
+            latest = releases.FirstOrDefault(i => i.Prerelease);
+
+        if (latest is null) //Can't find its
         {
-            var latest = releases.FirstOrDefault(i => i.Prerelease);
-            if (latest is null)
-            {
-                UpdateState = CheckUpdateState.Failed;
-            }
-            UpdateState = latest.TagName == Version ? CheckUpdateState.Updated : CheckUpdateState.Outdated;
-            LatestVersionURL = latest.HtmlUrl;
+            UpdateState = CheckUpdateState.Failed;
+            return;
         }
+        bool isnewer = VersionHelper.IsNewer(latest.TagName);
+        UpdateState = isnewer ? CheckUpdateState.Outdated : CheckUpdateState.Updated;
+        LatestVersionURL = latest.HtmlUrl;
     }
 
     [ObservableProperty]
