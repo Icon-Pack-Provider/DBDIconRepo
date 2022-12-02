@@ -17,8 +17,15 @@ namespace DBDIconRepo.ViewModel;
 public partial class RootPagesViewModel : ObservableObject
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShouldShowAcrylicPanel))]
+    [NotifyPropertyChangedFor(nameof(ShouldShowNonAcrylicPanel))]
     string backgroundImage = "";
-    public RootPagesViewModel()
+
+    public Visibility ShouldShowAcrylicPanel => !string.IsNullOrEmpty(BackgroundImage) ? Visibility.Visible : Visibility.Collapsed;
+
+    public Visibility ShouldShowNonAcrylicPanel => string.IsNullOrEmpty(BackgroundImage) ? Visibility.Visible : Visibility.Collapsed;
+
+    public void Initialize()
     {
         CheckIfDBDRunning();
         //Background
@@ -33,7 +40,7 @@ public partial class RootPagesViewModel : ObservableObject
         });
     }
 
-    private void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(Setting.LockedBackgroundPath))
         {
@@ -48,6 +55,10 @@ public partial class RootPagesViewModel : ObservableObject
                     BackgroundImage = BackgroundRandomizer.Get();
                     break;
             }
+        }
+        else if (e.PropertyName == nameof(Setting.LatestBeta))
+        {
+            await CheckForUpdate();
         }
     }
 

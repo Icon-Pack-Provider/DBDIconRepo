@@ -17,9 +17,9 @@
         <vm:RootPagesViewModel x:Name="ViewModel"/>
     </Window.DataContext>
     <Window.Resources>
-        <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="Transparent" />
-        <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="Transparent" />
-        <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="Transparent" />
+        <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="{StaticResource SystemChromeMediumLowColor}" />
+        <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{StaticResource SystemChromeMediumLowColor}" />
+        <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="{StaticResource SystemChromeMediumColor}" />
 
         <c:BoolToVisibility x:Key="boolToVisibility"/>
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
@@ -39,15 +39,16 @@
         <!--Pane imitator/The easier way than modify a whole NavigationView resources-->
         <Rectangle VerticalAlignment="Stretch" Grid.RowSpan="2"
                    HorizontalAlignment="Left" Fill="{fw:AcrylicBrush TargetName=Background}" 
-                   Width="{Binding OpenPaneLength, ElementName=mainPane}" x:Name="PaneBackgroundImitator">
+                   Width="{Binding OpenPaneLength, ElementName=mainPane}" x:Name="PaneBackgroundImitator"
+                   Visibility="{Binding ShouldShowAcrylicPanel, Mode=OneWay}">
             <Rectangle.Resources>
-                <Storyboard x:Name="animatePaneExpand" x:Key="animatePaneExpand">
+                <Storyboard x:Key="animatePaneExpand">
                     <DoubleAnimation Duration="0:0:0:0.1"
                              Storyboard.TargetName="PaneBackgroundImitator"
                              Storyboard.TargetProperty="Width"
                              To="{Binding OpenPaneLength, ElementName=mainPane}"/>
                 </Storyboard>
-                <Storyboard x:Name="animatePaneShrink" x:Key="animatePaneShrink">
+                <Storyboard x:Key="animatePaneShrink">
                     <DoubleAnimation Duration="0:0:0:0.1"
                              Storyboard.TargetName="PaneBackgroundImitator"
                              Storyboard.TargetProperty="Width"

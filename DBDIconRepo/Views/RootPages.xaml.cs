@@ -7,7 +7,9 @@ using ModernWpf.Controls;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Views;
@@ -43,8 +45,35 @@ public partial class RootPages
             }, System.Windows.Threading.DispatcherPriority.Send);
         }).Await(() =>
         {
-
+            
         });
+        ViewModel.PropertyChanged += IsBackgroundChangedYet;
+        ViewModel.Initialize();
+    }
+
+    private void IsBackgroundChangedYet(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        //Replace navigation pane color to transparent
+        if (e.PropertyName == nameof(DBDIconRepo.ViewModel.RootPagesViewModel.BackgroundImage))
+        {
+            if (string.IsNullOrEmpty(ViewModel.BackgroundImage))
+                return; //Still blank?
+            if (this.Resources.Contains("NavigationViewTopPaneBackground")
+                && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
+            {
+                navtop.Color = Colors.Transparent;
+            }
+            if (this.Resources.Contains("NavigationViewDefaultPaneBackground")
+                && this.Resources["NavigationViewDefaultPaneBackground"] is SolidColorBrush navbg)
+            {
+                navbg.Color = Colors.Transparent;
+            }
+            if (this.Resources.Contains("NavigationViewExpandedPaneBackground")
+                && this.Resources["NavigationViewExpandedPaneBackground"] is SolidColorBrush navex)
+            {
+                navex.Color = Colors.Transparent;
+            }
+        }
     }
 
     Action? callOnActivated = null;
@@ -105,6 +134,11 @@ public partial class RootPages
                 }
             });
         });
+        //Background check
+        if (string.IsNullOrEmpty(ViewModel.BackgroundImage))
+        {
+            PaneBackgroundImitator.SetResourceReference(Rectangle.FillProperty, "SystemControlPageBackgroundChromeMediumLowBrush");
+        }
     }
 
     private void SwitchPage(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
