@@ -81,6 +81,12 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     string lockedBackgroundPath = string.Empty;
 
+    [ObservableProperty]
+    string appRepoURL = "https://github.com/Icon-Pack-Provider/DBDIconRepo";
+
+    [ObservableProperty]
+    bool latestBeta = false;
+
 #if DEBUG
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");

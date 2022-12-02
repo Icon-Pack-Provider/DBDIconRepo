@@ -3,14 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         xmlns:c="clr-namespace:DBDIconRepo.Converters"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         fw:AcrylicWindow.Enabled="True"
         fw:AcrylicWindow.TitleBarMode="Default"
         fw:AcrylicWindow.AcrylicWindowStyle="Normal"
-        ui:WindowHelper.UseModernWindowStyle="True"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="720" Width="1024">
     <Window.DataContext>
@@ -98,11 +98,25 @@
                         <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
+                <ui:NavigationViewItemSeparator/>
+                <ui:NavigationViewItem SelectsOnInvoked="False"
+                                       IsHitTestVisible="{Binding AllowOpenAppURL, Mode=OneWay}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="{Binding UpdateIconGlyph, Mode=OneWay}" 
+                                     Foreground="{Binding UpdateIconColor, Mode=OneWay}"/>
+                    </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.Content>
+                        <TextBlock>
+                            <Run Text="{Binding UpdateLabel, Mode=OneWay}"/>
+                            <LineBreak/><Run FontSize="8" Text="{Binding Version,Mode=OneTime}"/>
+                        </TextBlock>
+                    </ui:NavigationViewItem.Content>
+                </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
             <Grid>
                 <ScrollViewer VerticalAlignment="Bottom"
                               HorizontalAlignment="Left"
-                              x:Name="progressScroller"            
+                              x:Name="progressScroller"
                               Margin="12"
                               Visibility="{Binding IsInitializing, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
                     <TextBlock Text="{Binding ProgressText, Mode=OneWay}" FontSize="18"/>
