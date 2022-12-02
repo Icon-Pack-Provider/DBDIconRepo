@@ -40,10 +40,15 @@ public partial class RootPages
         }
     }
 
+    bool madeTransparent = false;
     private void UpdateBackgroundBasedSideNavigationPanel()
     {
         if (string.IsNullOrEmpty(ViewModel.BackgroundImage))
             return; //Still blank?
+        if (madeTransparent)
+            return;
+        if (!madeTransparent)
+            madeTransparent = true;
         if (this.Resources.Contains("NavigationViewTopPaneBackground")
             && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
         {

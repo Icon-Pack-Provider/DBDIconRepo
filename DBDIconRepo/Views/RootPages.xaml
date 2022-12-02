@@ -38,7 +38,7 @@
         </Grid.RowDefinitions>
         <Image x:Name="Background" Source="{Binding BackgroundImage, Converter={StaticResource imageEncoder}, Mode=OneWay}"
                Grid.RowSpan="2" Margin="-10"
-               MinWidth="1024" Stretch="Fill" StretchDirection="Both"
+               MinWidth="1024" Stretch="UniformToFill" StretchDirection="Both"
                MinHeight="768"/>
         <!--Pane imitator/The easier way than modify a whole NavigationView resources-->
         <Rectangle VerticalAlignment="Stretch" Grid.RowSpan="2"
