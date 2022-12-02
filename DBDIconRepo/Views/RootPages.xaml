@@ -17,9 +17,9 @@
         <vm:RootPagesViewModel x:Name="ViewModel"/>
     </Window.DataContext>
     <Window.Resources>
-        <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="{StaticResource SystemChromeMediumLowColor}" />
-        <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{StaticResource SystemChromeMediumLowColor}" />
-        <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="{StaticResource SystemChromeMediumColor}" />
+        <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="{DynamicResource SystemChromeMediumLowColor}" />
+        <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{DynamicResource SystemChromeMediumLowColor}" />
+        <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="{DynamicResource SystemChromeMediumColor}" />
 
         <c:BoolToVisibility x:Key="boolToVisibility"/>
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
