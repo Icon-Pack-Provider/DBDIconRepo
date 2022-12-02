@@ -54,12 +54,14 @@
                     Command="{Binding IDGAFCommand}"/>
 
             <TextBlock Visibility="{Binding Git.IsAnonymous, Converter={StaticResource boolToVisibility}}"
-                       VerticalAlignment="Center">
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
             You are currently view local Favorites pack
             </TextBlock>
             
             <TextBlock Visibility="{Binding Git.IsAnonymous, Converter={StaticResource invertBoolToVisibility}}"
-                       VerticalAlignment="Center">
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}">
             You are currently view Favorite pack of <Run Text="{Binding Config.GitUsername}"/>
             </TextBlock>
         </StackPanel>
