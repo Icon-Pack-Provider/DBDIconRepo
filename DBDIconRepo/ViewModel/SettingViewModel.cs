@@ -79,29 +79,33 @@ public partial class SettingViewModel : ObservableObject
     private void LocateDBDForSteam()
     {
         //Locate steam installation folder
-        string? steamPath = Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", "").ToString();
-        string libraryFolderFile = $"{steamPath}\\steamapps\\libraryfolders.vdf";
-        if (File.Exists(libraryFolderFile))
+        string dbdPath = GameLocator.FindDBDOnSteam();
+
+        if (string.IsNullOrEmpty(dbdPath))
         {
-            string content = File.ReadAllText(libraryFolderFile);
-            string dbdPath = SteamLibraryFolderHandler.GetDeadByDaylightPath(content);
-            if (!string.IsNullOrEmpty(dbdPath))
-            {
-                Config.DBDInstallationPath = dbdPath;
-            }
+            DialogHelper.Show("No Dead by Daylight Steam version found on the system");
+            return;
         }
+        Config.DBDInstallationPath = dbdPath;
     }
 
     [RelayCommand]
     private void LocateDBDForXbox()
     {
-
+        GameLocator.FindDBDOnXbox();
+        return;
     }
 
     [RelayCommand]
     private void LocateDBDForEpig()
     {
-
+        string dbdPath = GameLocator.FindDBDOnEpig();
+        if (string.IsNullOrEmpty(dbdPath))
+        {
+            DialogHelper.Show("No Dead by Daylight Epic Games version found on the system");
+            return;
+        }
+        Config.DBDInstallationPath = dbdPath;
     }
 
     [RelayCommand]

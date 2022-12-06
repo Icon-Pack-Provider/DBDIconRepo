@@ -27,6 +27,9 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
+    <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.2.2" />
+    <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.2.2" />
+    <PackageReference Include="GameFinder.StoreHandlers.Xbox" Version="1.8.0" />
     <PackageReference Include="IconInfo" Version="6.3.0.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="MdXaml" Version="1.15.0" />

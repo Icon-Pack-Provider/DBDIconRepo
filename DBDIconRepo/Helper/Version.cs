@@ -8,7 +8,7 @@ public static class VersionHelper
     /// <summary>
     /// Year.Month.Day.Revision
     /// </summary>
-    public const string Version = "2022.12.02.3";
+    public const string Version = "2022.12.06.4";
 
     /// <summary>
     /// Check if input version is newer
