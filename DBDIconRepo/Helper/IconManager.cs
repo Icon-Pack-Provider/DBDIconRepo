@@ -85,11 +85,13 @@ public static class IconManager
             }
             catch (DirectoryNotFoundException noDir)
             {
+                Logger.Write($"{noDir.Message}\r\n{noDir.StackTrace}");
                 //Re-clone???
                 throw new RepoNotUpdatedException();
             }
             catch (FileNotFoundException noFile)
             {
+                Logger.Write($"{noFile.Message}\r\n{noFile.StackTrace}");
                 throw new RepoNotUpdatedException();
             }
         }
