@@ -218,6 +218,11 @@ public partial class SettingViewModel : ObservableObject
         }
         SelectedCustomBackground = 1;
     }
+
+    public string Version => VersionHelper.Version;
+
+    [RelayCommand] private void OpenReleasePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/releases");
+    [RelayCommand] private void OpenIssuePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/issues");
 }
 
 public enum FindDBDFor
