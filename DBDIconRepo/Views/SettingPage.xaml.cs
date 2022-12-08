@@ -11,7 +11,7 @@ public partial class SettingPage : Page
     public SettingPage()
     {
         InitializeComponent();
-    }
+    }     
 
     private void ForcePickNewBackground(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
@@ -22,6 +22,20 @@ public partial class SettingPage : Page
                 //Force select new background
                 ViewModel.ChooseBackground();
             }
+        }
+    }
+
+    private void SizeTriggers(object sender, SizeChangedEventArgs e)
+    {
+        if (e.NewSize.Width > 930)
+        {
+            Grid.SetRow(aboutSection, 0);
+            Grid.SetColumn(aboutSection, 1);
+        }
+        else
+        {
+            Grid.SetRow(aboutSection, 1);
+            Grid.SetColumn(aboutSection, 0);
         }
     }
 }

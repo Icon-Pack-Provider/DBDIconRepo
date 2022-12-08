@@ -7,6 +7,7 @@
     <UseWPF>true</UseWPF>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<ApplicationIcon>Resources\app.ico</ApplicationIcon>
+	<Platforms>AnyCPU;ARM32;ARM64;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -63,7 +64,7 @@
 		</Page>
 	</ItemGroup>
 
-  <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
+	<Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
   <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
     <ItemGroup>
 	  <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />

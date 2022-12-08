@@ -7,8 +7,12 @@
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       xmlns:c="clr-namespace:DBDIconRepo.Converters"
       xmlns:local="clr-namespace:DBDIconRepo.Views"
+      Margin="-12" SizeChanged="SizeTriggers"
       mc:Ignorable="d" ui:Design.RequestedTheme="Dark"
       d:DesignHeight="450" d:DesignWidth="800" x:Name="mainPage">
+    <Page.Background>
+        <SolidColorBrush Color="{DynamicResource SystemAltMediumColor}" Opacity="0.8"/>
+    </Page.Background>
     <Page.DataContext>
         <vm:SettingViewModel x:Name="ViewModel"/>
     </Page.DataContext>
@@ -42,179 +46,188 @@
     </Page.Resources>
 
     <ScrollViewer>
-        <StackPanel Orientation="Vertical" Margin="5">
-        <ui:AutoSuggestBox PlaceholderText="D:\SteamLibrary\common\Dead by Daylight\"
+        <Grid Margin="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0">
+                <ui:AutoSuggestBox PlaceholderText="D:\SteamLibrary\common\Dead by Daylight\"
                            HorizontalAlignment="Left"
                            Text="{Binding Config.DBDInstallationPath, Mode=TwoWay}"
                            Header="Dead by Daylight installation path" Margin="0,2"
                            Width="400"/>
 
-        <StackPanel Orientation="Horizontal" Margin="0,4">
-            <Button Content="Browse..." Command="{Binding BrowseForDBDCommand}"/>
-            <ui:SplitButton Content="Detect" Command="{Binding LocateDBDCommand}" Margin="2,0">
-                <ui:SplitButton.Flyout>
-                    <ui:MenuFlyout>
-                        <ui:RadioMenuItem Header="Steam" GroupName="locator" IsChecked="{Binding FindDBDForSteam, Mode=OneWay}" Command="{Binding SetDBDLocatorToSteamCommand}"/>
-                        <ui:RadioMenuItem GroupName="locator" IsChecked="{Binding FindDBDForXbox, Mode=OneWay}" Command="{Binding SetDBDLocatorToXboxCommand}"
+                <StackPanel Orientation="Horizontal" Margin="0,4">
+                    <Button Content="Browse..." Command="{Binding BrowseForDBDCommand}"/>
+                    <ui:SplitButton Content="Detect" Command="{Binding LocateDBDCommand}" Margin="2,0">
+                        <ui:SplitButton.Flyout>
+                            <ui:MenuFlyout>
+                                <ui:RadioMenuItem Header="Steam" GroupName="locator" IsChecked="{Binding FindDBDForSteam, Mode=OneWay}" Command="{Binding SetDBDLocatorToSteamCommand}"/>
+                                <ui:RadioMenuItem GroupName="locator" IsChecked="{Binding FindDBDForXbox, Mode=OneWay}" Command="{Binding SetDBDLocatorToXboxCommand}"
                                           Header="Xbox Game pass for PC"/>
-                        <ui:RadioMenuItem Header="Epic Games" GroupName="locator" IsChecked="{Binding FindDBDForEpig, Mode=OneWay}" Command="{Binding SetDBDLocatorToEpigCommand}"/>
-                        <Separator/>
-                        <MenuItem Header="Steam" Command="{Binding LocateDBDForSteamCommand}"/>
-                        <MenuItem Header="Xbox game pass for PC" Command="{Binding LocateDBDForXboxCommand}"/>
-                        <MenuItem Header="Epic Games" Command="{Binding LocateDBDForEpigCommand}"/>
-                    </ui:MenuFlyout>
-                </ui:SplitButton.Flyout>
-            </ui:SplitButton>
-        </StackPanel>
+                                <ui:RadioMenuItem Header="Epic Games" GroupName="locator" IsChecked="{Binding FindDBDForEpig, Mode=OneWay}" Command="{Binding SetDBDLocatorToEpigCommand}"/>
+                                <Separator/>
+                                <MenuItem Header="Steam" Command="{Binding LocateDBDForSteamCommand}"/>
+                                <MenuItem Header="Xbox game pass for PC" Command="{Binding LocateDBDForXboxCommand}"/>
+                                <MenuItem Header="Epic Games" Command="{Binding LocateDBDForEpigCommand}"/>
+                            </ui:MenuFlyout>
+                        </ui:SplitButton.Flyout>
+                    </ui:SplitButton>
+                </StackPanel>
 
-        <ui:ToggleSwitch Header="Freeze app to load icon selection list on select component window faster" 
+                <ui:ToggleSwitch Header="Freeze app to load icon selection list on select component window faster" 
                          Margin="0,5"
                          IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
 
-        <ui:ToggleSwitch Header="Show Default icon pack" 
+                <ui:ToggleSwitch Header="Show Default icon pack" 
                          Margin="0,5"
                          IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}">
-            <ui:ToggleSwitch.OnContent>
-                Default icon pack will now show on list
-            </ui:ToggleSwitch.OnContent>
-            <ui:ToggleSwitch.OffContent>
-                Default icon pack will be hidden
-            </ui:ToggleSwitch.OffContent>
-        </ui:ToggleSwitch>
-        <ui:ToggleSwitch Header="Show test icon pack" Margin="0,5"
+                    <ui:ToggleSwitch.OnContent>
+                        Default icon pack will now show on list
+                    </ui:ToggleSwitch.OnContent>
+                    <ui:ToggleSwitch.OffContent>
+                        Default icon pack will be hidden
+                    </ui:ToggleSwitch.OffContent>
+                </ui:ToggleSwitch>
+                <ui:ToggleSwitch Header="Show test icon pack" Margin="0,5"
                          IsOn="{Binding Config.ShowDevTestPack, Mode=TwoWay}">
-            <ui:ToggleSwitch.OnContent>
-                All test icon packs (that made by Icon-Pack-Provider) will all be on the list
-            </ui:ToggleSwitch.OnContent>
-            <ui:ToggleSwitch.OffContent>
-                All test icon packs (that made by Icon-Pack-Provider) will not be on the list
-            </ui:ToggleSwitch.OffContent>
-        </ui:ToggleSwitch>
+                    <ui:ToggleSwitch.OnContent>
+                        All test icon packs (that made by Icon-Pack-Provider) will all be on the list
+                    </ui:ToggleSwitch.OnContent>
+                    <ui:ToggleSwitch.OffContent>
+                        All test icon packs (that made by Icon-Pack-Provider) will not be on the list
+                    </ui:ToggleSwitch.OffContent>
+                </ui:ToggleSwitch>
 
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <ToggleButton x:Name="iconsScale">
-                        <ToggleButton.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <ui:FontIcon Glyph="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource textSelector}, ConverterParameter=';'}"/>
-                                <TextBlock Text="Icon preview scale" Margin="5,0"/>
-                            </StackPanel>
-                        </ToggleButton.Content>
-                    </ToggleButton>
-                    <Button Padding="4" Margin="5">
-                        <ui:FontIcon Glyph="&#xE11B;" FontSize="14"/>
-                        <ui:FlyoutService.Flyout>
-                            <ui:Flyout>
-                                <TextBlock TextWrapping="Wrap" MaxWidth="220">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton x:Name="iconsScale">
+                            <ToggleButton.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource textSelector}, ConverterParameter=';'}"/>
+                                    <TextBlock Text="Icon preview scale" Margin="5,0"/>
+                                </StackPanel>
+                            </ToggleButton.Content>
+                        </ToggleButton>
+                        <Button Padding="4" Margin="5">
+                            <ui:FontIcon Glyph="&#xE11B;" FontSize="14"/>
+                            <ui:FlyoutService.Flyout>
+                                <ui:Flyout>
+                                    <TextBlock TextWrapping="Wrap" MaxWidth="220">
                                 Change the resolution of all the icons display in the app
                                 <LineBreak/><Bold>Higher</Bold> for clearer images, but higher ram usage
                                 <LineBreak/><Bold>Lower</Bold> for quick images load time and lower bandwidth usage, but blurrer images
-                                </TextBlock>
-                            </ui:Flyout>
-                        </ui:FlyoutService.Flyout>
-                    </Button>
-                </StackPanel>
-
-                <StackPanel Orientation="Vertical" Margin="5,12" MinWidth="420" HorizontalAlignment="Left"
-                        Visibility="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource boolToVisibility}}">
-                    <!--Set all-->
-                    <TextBlock Text="Quick resolution set"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
-                        <Button Content="Full" Command="{Binding SetAllResFullCommand}"/>
-                        <Button Content="Half" Command="{Binding SetAllResHalfCommand}" Margin="5,0"/>
-                        <Button Content="Lowest" Command="{Binding SetAllResMinimalCommand}"/>
+                                    </TextBlock>
+                                </ui:Flyout>
+                            </ui:FlyoutService.Flyout>
+                        </Button>
                     </StackPanel>
-                    
-                    <Slider x:Name="bannerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.BannerScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Banner (<Run Text="{Binding Config.Resolution.BannerScale, Converter={StaticResource resFromScale}, ConverterParameter='banner'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="portraitRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.PortraitScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Portrait (<Run Text="{Binding Config.Resolution.PortraitScale, Converter={StaticResource resFromScale}, ConverterParameter='portrait'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="perkRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.PerkScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Perk (<Run Text="{Binding Config.Resolution.PerkScale, Converter={StaticResource resFromScale}, ConverterParameter='perk'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="powerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.PowerScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Power (<Run Text="{Binding Config.Resolution.PowerScale, Converter={StaticResource resFromScale}, ConverterParameter='power'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="itemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.ItemScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Item (<Run Text="{Binding Config.Resolution.ItemScale, Converter={StaticResource resFromScale}, ConverterParameter='item'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="addonRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.AddonScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Addon (<Run Text="{Binding Config.Resolution.AddonScale, Converter={StaticResource resFromScale}, ConverterParameter='addon'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="emblemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.EmblemScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Emblem (<Run Text="{Binding Config.Resolution.EmblemScale, Converter={StaticResource resFromScale}, ConverterParameter='emblem'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="offeringRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.OfferingScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Offering (<Run Text="{Binding Config.Resolution.OfferingScale, Converter={StaticResource resFromScale}, ConverterParameter='offering'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="statusRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.StatusEffectScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Status Effect (<Run Text="{Binding Config.Resolution.StatusEffectScale, Converter={StaticResource resFromScale}, ConverterParameter='status'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                    <Slider x:Name="dailyRes" Minimum="0.1" Maximum="1" d:Value="0.5"
-                        Value="{Binding Config.Resolution.DailyRitualScale, Mode=TwoWay}">
-                        <ui:ControlHelper.Header>
-                            <TextBlock>
-                            Daily ritual (<Run Text="{Binding Config.Resolution.DailyRitualScale, Converter={StaticResource resFromScale}, ConverterParameter='daily'}"/>)
-                            </TextBlock>
-                        </ui:ControlHelper.Header>
-                    </Slider>
-                </StackPanel>
-            </StackPanel>
 
-            <ComboBox ui:ControlHelper.Header="App background picture" MinWidth="180" Margin="0,5"
+                    <StackPanel Orientation="Vertical" Margin="5,12" MinWidth="420" HorizontalAlignment="Left"
+                        Visibility="{Binding IsChecked, ElementName=iconsScale, Converter={StaticResource boolToVisibility}}">
+                        <!--Set all-->
+                        <TextBlock Text="Quick resolution set"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <Button Content="Full" Command="{Binding SetAllResFullCommand}"/>
+                            <Button Content="Half" Command="{Binding SetAllResHalfCommand}" Margin="5,0"/>
+                            <Button Content="Lowest" Command="{Binding SetAllResMinimalCommand}"/>
+                        </StackPanel>
+
+                        <Slider x:Name="bannerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.BannerScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Banner (<Run Text="{Binding Config.Resolution.BannerScale, Converter={StaticResource resFromScale}, ConverterParameter='banner'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="portraitRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PortraitScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Portrait (<Run Text="{Binding Config.Resolution.PortraitScale, Converter={StaticResource resFromScale}, ConverterParameter='portrait'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="perkRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PerkScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Perk (<Run Text="{Binding Config.Resolution.PerkScale, Converter={StaticResource resFromScale}, ConverterParameter='perk'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="powerRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.PowerScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Power (<Run Text="{Binding Config.Resolution.PowerScale, Converter={StaticResource resFromScale}, ConverterParameter='power'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="itemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.ItemScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Item (<Run Text="{Binding Config.Resolution.ItemScale, Converter={StaticResource resFromScale}, ConverterParameter='item'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="addonRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.AddonScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Addon (<Run Text="{Binding Config.Resolution.AddonScale, Converter={StaticResource resFromScale}, ConverterParameter='addon'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="emblemRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.EmblemScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Emblem (<Run Text="{Binding Config.Resolution.EmblemScale, Converter={StaticResource resFromScale}, ConverterParameter='emblem'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="offeringRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.OfferingScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Offering (<Run Text="{Binding Config.Resolution.OfferingScale, Converter={StaticResource resFromScale}, ConverterParameter='offering'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="statusRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.StatusEffectScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Status Effect (<Run Text="{Binding Config.Resolution.StatusEffectScale, Converter={StaticResource resFromScale}, ConverterParameter='status'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                        <Slider x:Name="dailyRes" Minimum="0.1" Maximum="1" d:Value="0.5"
+                        Value="{Binding Config.Resolution.DailyRitualScale, Mode=TwoWay}">
+                            <ui:ControlHelper.Header>
+                                <TextBlock>
+                            Daily ritual (<Run Text="{Binding Config.Resolution.DailyRitualScale, Converter={StaticResource resFromScale}, ConverterParameter='daily'}"/>)
+                                </TextBlock>
+                            </ui:ControlHelper.Header>
+                        </Slider>
+                    </StackPanel>
+                </StackPanel>
+
+                <ComboBox ui:ControlHelper.Header="App background picture" MinWidth="180" Margin="0,5"
                       SelectedIndex="{Binding BackgroundModeSetting, Mode=TwoWay}" d:SelectedIndex="1">
-                <ComboBoxItem Content="None"/>
-                <ComboBoxItem Content="Daily Shuffle"/>
-                <ComboBoxItem Content="Static"/>
-            </ComboBox>
-            <ListView Margin="0,5"
+                    <ComboBoxItem Content="None"/>
+                    <ComboBoxItem Content="Daily Shuffle"/>
+                    <ComboBoxItem Content="Static"/>
+                </ComboBox>
+                <ListView Margin="0,5"
                       ui:ControlHelper.Header="Pick a background"
                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -223,34 +236,61 @@
                       ItemTemplateSelector="{StaticResource backgroundOptionTemplator}"
                       Visibility="{Binding CanSetCustomBackground, Mode=OneWay}"
                       SelectedIndex="{Binding SelectedCustomBackground, Mode=TwoWay}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
 
-            <ui:ToggleSwitch Header="Check for latest beta version" Margin="0,5"
+                <ui:ToggleSwitch Header="Check for latest beta version" Margin="0,5"
                          IsOn="{Binding Config.LatestBeta, Mode=TwoWay}">
-                <ui:ToggleSwitch.OnContent>
-                    Update checker will check latest beta version
-                </ui:ToggleSwitch.OnContent>
-                <ui:ToggleSwitch.OffContent>
-                    Update checker will check latest stable version
-                </ui:ToggleSwitch.OffContent>
-            </ui:ToggleSwitch>
+                    <ui:ToggleSwitch.OnContent>
+                        Update checker will check latest beta version
+                    </ui:ToggleSwitch.OnContent>
+                    <ui:ToggleSwitch.OffContent>
+                        Update checker will check latest stable version
+                    </ui:ToggleSwitch.OffContent>
+                </ui:ToggleSwitch>
 
 
-            <!-- TODO:Planned feature -->
-        <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
+                <!-- TODO:Planned feature -->
+                <ui:ToggleSwitch Header="Show all pack outside curated repo" Margin="0,5"
                          Visibility="Collapsed"/>
 
-        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-            <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
-            <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPackCommand}"/>
-        </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,12">
+                    <Button Content="Reset settings" Command="{Binding ResetSettingCommand}"/>
+                    <Button Content="Uninstall icon pack" Margin="5,0" Command="{Binding UninstallIconPackCommand}"/>
+                </StackPanel>
 
-    </StackPanel>
+            </StackPanel>
+            <!-- About app -->
+            <StackPanel x:Name="aboutSection"
+                        Orientation="Vertical"
+                        Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="\Resources\app.ico"
+                       Width="72" Height="72"/>
+                    <StackPanel Orientation="Vertical" Margin="8" VerticalAlignment="Center">
+                        <TextBlock Text="Dead by Daylight: Icon Repository" FontSize="18"
+                               FontWeight="Bold" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
+                        Version <Run Text="{Binding Version, Mode=OneTime}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+                <Button Command="{Binding OpenReleasePageCommand}">
+                    <TextBlock>
+                        <Run FontFamily="Segoe MDL2 Assets">&#xE8A7;</Run> Check for latest release
+                    </TextBlock>
+                </Button>
+                <Button Margin="0,4" Command="{Binding OpenIssuePageCommand}">
+                    <TextBlock>
+                        <Run FontFamily="Segoe MDL2 Assets">&#xE104;</Run> Report problem
+                    </TextBlock>
+                </Button>
+            </StackPanel>
+        </Grid>
     </ScrollViewer>
-    
+
 </Page>
