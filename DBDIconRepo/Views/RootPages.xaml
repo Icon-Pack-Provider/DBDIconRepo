@@ -14,7 +14,7 @@
         fw:AcrylicWindow.TitleBarMode="Default"
         fw:AcrylicWindow.AcrylicWindowStyle="Normal"
         mc:Ignorable="d"
-        Title="Dead by daylight: Icon repo" Height="720" Width="1024">
+        Title="Dead by daylight: Icon repo" Height="720" Width="1024" Icon="\Resources\app.ico">
     <Window.DataContext>
         <vm:RootPagesViewModel x:Name="ViewModel"/>
     </Window.DataContext>
