@@ -58,20 +58,18 @@ public partial class SettingViewModel : ObservableObject
     [RelayCommand]
     private void LocateDBD()
     {
-        switch (PlatformLocatorTarget)
+        //Try steam first
+        string dbdPath = GameLocator.FindDBDOnSteam();
+        if (!string.IsNullOrEmpty(dbdPath))
         {
-            case FindDBDFor.Steam:
-                LocateDBDForSteam();
-                break;
-            case FindDBDFor.Xbox:
-                LocateDBDForXbox();
-                break;
-            case FindDBDFor.Epig:
-                LocateDBDForEpig();
-                break;
-            default:
-                //TODO:Adding support for Locating DBD on Toaster or something
-                break;
+            Config.DBDInstallationPath = dbdPath;
+            return;
+        }
+        //Then another one
+        dbdPath = GameLocator.FindDBDOnEpig();
+        if (!string.IsNullOrEmpty(dbdPath))
+        {
+            Config.DBDInstallationPath = dbdPath;
         }
     }
 
@@ -87,13 +85,6 @@ public partial class SettingViewModel : ObservableObject
             return;
         }
         Config.DBDInstallationPath = dbdPath;
-    }
-
-    [RelayCommand]
-    private void LocateDBDForXbox()
-    {
-        GameLocator.FindDBDOnXbox();
-        return;
     }
 
     [RelayCommand]
