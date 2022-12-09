@@ -2,8 +2,6 @@
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.Steam;
-using GameFinder.StoreHandlers.Xbox;
-using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
