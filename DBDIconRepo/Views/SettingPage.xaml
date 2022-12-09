@@ -67,13 +67,7 @@
                     <ui:SplitButton Content="Detect" Command="{Binding LocateDBDCommand}" Margin="2,0">
                         <ui:SplitButton.Flyout>
                             <ui:MenuFlyout>
-                                <ui:RadioMenuItem Header="Steam" GroupName="locator" IsChecked="{Binding FindDBDForSteam, Mode=OneWay}" Command="{Binding SetDBDLocatorToSteamCommand}"/>
-                                <ui:RadioMenuItem GroupName="locator" IsChecked="{Binding FindDBDForXbox, Mode=OneWay}" Command="{Binding SetDBDLocatorToXboxCommand}"
-                                          Header="Xbox Game pass for PC"/>
-                                <ui:RadioMenuItem Header="Epic Games" GroupName="locator" IsChecked="{Binding FindDBDForEpig, Mode=OneWay}" Command="{Binding SetDBDLocatorToEpigCommand}"/>
-                                <Separator/>
                                 <MenuItem Header="Steam" Command="{Binding LocateDBDForSteamCommand}"/>
-                                <MenuItem Header="Xbox game pass for PC" Command="{Binding LocateDBDForXboxCommand}"/>
                                 <MenuItem Header="Epic Games" Command="{Binding LocateDBDForEpigCommand}"/>
                             </ui:MenuFlyout>
                         </ui:SplitButton.Flyout>

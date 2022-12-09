@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -38,40 +39,21 @@ public partial class SettingViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FindDBDForSteam))]
-    [NotifyPropertyChangedFor(nameof(FindDBDForXbox))]
-    [NotifyPropertyChangedFor(nameof(FindDBDForEpig))]
-    FindDBDFor platformLocatorTarget;
-
-    [RelayCommand]
-    private void SetDBDLocatorToSteam() => PlatformLocatorTarget = FindDBDFor.Steam;
-    [RelayCommand]
-    private void SetDBDLocatorToXbox() => PlatformLocatorTarget = FindDBDFor.Xbox;
-    [RelayCommand]
-    private void SetDBDLocatorToEpig() => PlatformLocatorTarget = FindDBDFor.Epig;
-
-    public bool FindDBDForSteam => PlatformLocatorTarget == FindDBDFor.Steam;
-    public bool FindDBDForXbox => PlatformLocatorTarget == FindDBDFor.Xbox;
-    public bool FindDBDForEpig => PlatformLocatorTarget == FindDBDFor.Epig;
-    
     [RelayCommand]
     private void LocateDBD()
     {
-        switch (PlatformLocatorTarget)
+        string dbdPath = string.Empty;
+        dbdPath = GameLocator.FindDBDOnSteam();
+        if (!string.IsNullOrEmpty(dbdPath))
         {
-            case FindDBDFor.Steam:
-                LocateDBDForSteam();
-                break;
-            case FindDBDFor.Xbox:
-                LocateDBDForXbox();
-                break;
-            case FindDBDFor.Epig:
-                LocateDBDForEpig();
-                break;
-            default:
-                //TODO:Adding support for Locating DBD on Toaster or something
-                break;
+            Config.DBDInstallationPath = dbdPath;
+            return;
+        }
+        dbdPath = GameLocator.FindDBDOnEpig();
+        if (!string.IsNullOrEmpty(dbdPath))
+        {
+            Config.DBDInstallationPath = dbdPath;
+            return;
         }
     }
 
@@ -87,13 +69,6 @@ public partial class SettingViewModel : ObservableObject
             return;
         }
         Config.DBDInstallationPath = dbdPath;
-    }
-
-    [RelayCommand]
-    private void LocateDBDForXbox()
-    {
-        GameLocator.FindDBDOnXbox();
-        return;
     }
 
     [RelayCommand]
@@ -223,11 +198,4 @@ public partial class SettingViewModel : ObservableObject
 
     [RelayCommand] private void OpenReleasePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/releases");
     [RelayCommand] private void OpenIssuePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/issues");
-}
-
-public enum FindDBDFor
-{
-    Steam,
-    Xbox,
-    Epig
 }
