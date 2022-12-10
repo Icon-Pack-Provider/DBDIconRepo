@@ -10,11 +10,11 @@
         Title="{Binding DialogTitle, Mode=OneWay}"
         KeyDown="AutoResponse" 
         ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
-        MinWidth="120" MinHeight="72" MaxWidth="320" SizeToContent="Height">
+        Width="420" MinHeight="72" SizeToContent="Height">
     <d:Window.DataContext>
         <local:MessageDialog x:Name="vm"/>
     </d:Window.DataContext>
-    <Grid>
+    <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -28,27 +28,32 @@
             <ui:FontIcon x:Name="accompanyIcon" 
                          VerticalAlignment="Center"
                          HorizontalAlignment="Center"
-                         FontSize="32" Margin="12"
+                         FontSize="64" Margin="12"
                          Glyph="{Binding SymbolGlyph}"
                          Foreground="{Binding SymbolBrush}"
                          Visibility="{Binding SymbolVisibility}"/>
             <TextBlock Grid.Column="1"
-                       VerticalAlignment="Center"
-                       Margin="8" TextWrapping="Wrap"
+                       VerticalAlignment="Center" TextAlignment="Center"
+                       Margin="8" FontSize="20" TextWrapping="Wrap"
                        HorizontalAlignment="Left"
                        Text="{Binding DialogMessage, Mode=OneWay}"/>
         </Grid>
 
         <Rectangle MinWidth="120" MinHeight="32"
                    Grid.Row="1"/>
-        <Grid Grid.Row="1" MaxWidth="280" HorizontalAlignment="Left">
+        <Grid Grid.Row="1" HorizontalAlignment="Center">
             <ui:ItemsRepeater ItemsSource="{Binding AllDialogButtons, Mode=OneWay}"
                               x:Name="repeaters"
                               Margin="8">
+                <ui:ItemsRepeater.Layout>
+                    <ui:UniformGridLayout Orientation="Horizontal"
+                                          ItemsStretch="Uniform"
+                                          ItemsJustification="Center"/>
+                </ui:ItemsRepeater.Layout>
                 <ui:ItemsRepeater.ItemTemplate>
                     <DataTemplate DataType="local:ButtonDisplay">
-                        <Button Content="{Binding ButtonText}" Padding="12,6"
-                                Command="{Binding SendResponseCommand}"/>
+                        <Button Content="{Binding ButtonText}" Padding="12,6" FontSize="18"
+                                Command="{Binding SendResponseCommand}" Margin="12"/>
                     </DataTemplate>
                 </ui:ItemsRepeater.ItemTemplate>
             </ui:ItemsRepeater>

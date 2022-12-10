@@ -60,9 +60,9 @@
             </Rectangle.Resources>
         </Rectangle>
         <!--DBD Warner-->
-        <Rectangle Fill="{DynamicResource NavigationViewDefaultPaneBackground}" Margin="-5,0,-5,-5"
+        <Rectangle Fill="{DynamicResource SystemControlBackgroundAccentBrush}" Margin="-5,0,-5,-5" Panel.ZIndex="68"
                    Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
-        <TextBlock TextAlignment="Center" Margin="5"
+        <TextBlock TextAlignment="Center" Margin="5" FontWeight="Bold" FontSize="18" Panel.ZIndex="419"
                    Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
             Dead by Daylight is running!
             <LineBreak/>Installed icons might not show up until restart the game

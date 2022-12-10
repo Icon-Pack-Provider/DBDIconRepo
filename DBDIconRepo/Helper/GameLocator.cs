@@ -2,9 +2,7 @@
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.Steam;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 
 namespace DBDIconRepo.Helper;
 
@@ -57,22 +55,5 @@ public static class GameLocator
         }
         //No DBD found; probably...
         return string.Empty;
-    }
-
-    public static string FindDBDOnXbox()
-    {
-        var handler = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            new XboxHandler() : null;
-        if (handler is null)
-            return string.Empty;
-
-        handler.FindAllGames();
-        string json = JsonSerializer.Serialize(handler, new JsonSerializerOptions()
-        {
-            WriteIndented = true
-        });
-        string path = Path.Join(SettingManager.Instance.CacheAndDisplayDirectory, "dbdXboxTest.txt");
-        File.WriteAllText(path, json);
-        return json;
     }
 }
