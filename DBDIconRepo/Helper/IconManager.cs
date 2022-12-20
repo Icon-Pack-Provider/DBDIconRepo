@@ -54,6 +54,7 @@ public static class IconManager
         }
     }
 
+    private const string ExtensionPath = "\\DeadByDaylight\\Content\\UI\\Icons\\";
     public static async void Install(string dbdPath, IList<IPackSelectionItem> selections, IconPack.Model.Pack? packInfo)
     {
         foreach (var item in selections)
@@ -67,12 +68,11 @@ public static class IconManager
             var iconFolder = Packs.GetPackCacheClonedFolder(packInfo);
             string iconPath = Path.Join(iconFolder.FullName, item.FilePath);
             string targetPath = dbdPath;
-            string extensionPath = "\\DeadByDaylight\\Content\\UI\\Icons\\";
-            if (!targetPath.Contains(extensionPath))
-                targetPath = Path.Join(targetPath, extensionPath, item.FilePath);
+            if (!targetPath.Contains(ExtensionPath)) //Fill up extension path if it's isn't exist
+                targetPath = Path.Join(targetPath, ExtensionPath, item.FilePath);
             else
                 targetPath = Path.Join(targetPath, item.FilePath); //Incase some user manually put in extension path on setting
-            FileInfo info = new FileInfo(targetPath);
+            FileInfo info = new(targetPath);
             if (!Directory.Exists(info.DirectoryName))
                 Directory.CreateDirectory(info.DirectoryName);
             if (File.Exists(targetPath))

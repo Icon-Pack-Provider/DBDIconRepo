@@ -94,7 +94,16 @@ public static class Packs
         {
             var jsonFile = GetLocalPackJson(repo);
             string json = File.ReadAllText(jsonFile.FullName);
-            return JsonSerializer.Deserialize<Pack?>(json);
+            var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+
+            if (json.Contains(nameof(Pack.LastUpdate)))
+            {
+                //Last update on Json file is untrustworthy;
+                //It's function is for program to write into its and store locally
+                //Not store on GitHub repo
+                deserialized.LastUpdate = DateTime.MinValue;
+            }
+            return deserialized;
         }
 
         //Check on dah web
@@ -167,6 +176,11 @@ public static class Packs
 
             ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo))
         };
+        if (info.ContentInfo.Files is null || 
+            (info.ContentInfo.Files is not null && info.ContentInfo.Files.Count < 1))
+        {
+            info.ContentInfo = await PackContentInfo.GetContentInfo(repo);
+        }
         string json = JsonSerializer.Serialize(info, new JsonSerializerOptions()
         {
             WriteIndented = true,

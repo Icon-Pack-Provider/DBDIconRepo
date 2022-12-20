@@ -64,8 +64,8 @@
                    Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
         <TextBlock TextAlignment="Center" Margin="5" FontWeight="Bold" FontSize="18" Panel.ZIndex="419"
                    Visibility="{Binding IsDBDRunning, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
-            Dead by Daylight is running!
-            <LineBreak/>Installed icons might not show up until restart the game
+            Dead by Daylight is running. 
+            <LineBreak/>Despite some icons appearing in-game, others may not be visible until the game is restarted.
         </TextBlock>
         <!--Actual content-->
         <ui:NavigationView PaneDisplayMode="Left" 

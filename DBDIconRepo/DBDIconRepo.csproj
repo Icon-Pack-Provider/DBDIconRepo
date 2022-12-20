@@ -9,8 +9,13 @@
 	<ApplicationIcon>Resources\app.ico</ApplicationIcon>
 	<Platforms>AnyCPU;ARM32;ARM64;x64</Platforms>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+	<DebugSymbols>False</DebugSymbols>
+	<DebugType>None</DebugType>
+  </PropertyGroup>
 
-  <ItemGroup>
+
+	<ItemGroup>
     <Compile Remove="SortAllIconsIntoFolder\**" />
     <EmbeddedResource Remove="SortAllIconsIntoFolder\**" />
     <None Remove="SortAllIconsIntoFolder\**" />
