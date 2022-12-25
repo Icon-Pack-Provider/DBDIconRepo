@@ -7,9 +7,9 @@ using System.Runtime.Versioning;
 using System.Text.Json;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
-using Result = GameFinder.Common.Result<GameFinder.StoreHandlers.EGS.EGSGame>;
+using Result = GameFinder.Common.Result<GameFinder.StoreHandlers.EGSGame>;
 
-namespace GameFinder.StoreHandlers.EGS;
+namespace GameFinder.StoreHandlers;
 
 /// <summary>
 /// Represents a game installed with the Epic Games Store.

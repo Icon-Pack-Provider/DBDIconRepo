@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameFinder\GameFinder.csproj" />
     <ProjectReference Include="..\PackCore\IconPack.csproj" />
     <ProjectReference Include="..\SelectionListing\SelectionListing.csproj" />
   </ItemGroup>

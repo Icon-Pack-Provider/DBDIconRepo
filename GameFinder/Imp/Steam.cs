@@ -9,9 +9,9 @@ using System.Text;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using ValveKeyValue;
-using Result = GameFinder.Common.Result<GameFinder.StoreHandlers.Steam.SteamGame>;
+using Result = GameFinder.Common.Result<GameFinder.StoreHandlers.SteamGame>;
 
-namespace GameFinder.StoreHandlers.Steam;
+namespace GameFinder.StoreHandlers;
 
 /// <summary>
 /// Represents a game installed with Steam.
