@@ -22,9 +22,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService(gitToken))
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new(gitToken));
             WorkingDirectory = workingDirectory;
         }
     }
@@ -34,9 +32,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService(client))
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new(client));
             WorkingDirectory = workingDirectory;
         }
     }
@@ -46,9 +42,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService())
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new());
             WorkingDirectory = workingDirectory;
         }
     }
