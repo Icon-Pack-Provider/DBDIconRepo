@@ -1,7 +1,6 @@
 ﻿using IconPack.Model;
 using Octokit;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using IconPack.Internal;
 using IconPack.Internal.Helper;
 using static IconPack.Resource.Terms;
