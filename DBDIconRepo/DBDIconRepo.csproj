@@ -40,17 +40,16 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
-    <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.2.2" />
-    <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.2.2" />
-    <PackageReference Include="IconInfo" Version="6.3.0.2" />
+    <PackageReference Include="IconInfo" Version="6.4.0.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="MdXaml" Version="1.15.0" />
+    <PackageReference Include="MdXaml" Version="1.16.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
-    <PackageReference Include="Octokit" Version="3.0.0" />
+    <PackageReference Include="Octokit" Version="4.0.3" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameFinder\GameFinder.csproj" />
     <ProjectReference Include="..\PackCore\IconPack.csproj" />
     <ProjectReference Include="..\SelectionListing\SelectionListing.csproj" />
   </ItemGroup>

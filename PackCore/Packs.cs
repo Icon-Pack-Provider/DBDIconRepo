@@ -1,7 +1,6 @@
 ﻿using IconPack.Model;
 using Octokit;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using IconPack.Internal;
 using IconPack.Internal.Helper;
 using static IconPack.Resource.Terms;
@@ -22,9 +21,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService(gitToken))
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new(gitToken));
             WorkingDirectory = workingDirectory;
         }
     }
@@ -34,9 +31,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService(client))
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new(client));
             WorkingDirectory = workingDirectory;
         }
     }
@@ -46,9 +41,7 @@ public static class Packs
         if (!IsInitialized)
         {
             IsInitialized = true;
-            Ioc.Default.ConfigureServices(new ServiceCollection()
-                .AddSingleton((svc) => new OctokitService())
-                .BuildServiceProvider());
+            OctokitService.InitializeInstance(new());
             WorkingDirectory = workingDirectory;
         }
     }

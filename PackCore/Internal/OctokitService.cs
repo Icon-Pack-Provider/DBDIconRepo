@@ -33,12 +33,22 @@ internal class OctokitService
         Client = new(new ProductHeaderValue(productHeaderValue));
     }
 
+    public static void InitializeInstance(OctokitService instance)
+    {
+        _instance = instance;
+    }
+
+    private static OctokitService? _instance = null;
     public static OctokitService? Instance
     {
         get
         {
-            ThrowHelper.APINotInitialize();
-            return Ioc.Default.GetService<OctokitService>();
+            if (_instance is null)
+            {
+                ThrowHelper.APINotInitialize();
+                return null;
+            }
+            return _instance;
         }
     }
 
