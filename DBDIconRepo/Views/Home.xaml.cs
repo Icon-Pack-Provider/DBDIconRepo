@@ -1,7 +1,10 @@
 ﻿using DBDIconRepo.Dialog;
 using DBDIconRepo.Model;
 using DBDIconRepo.ViewModel;
+using IconPack;
 using ModernWpf.Controls.Primitives;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
@@ -18,6 +21,16 @@ public partial class Home : Page
         this.Unloaded += UnregisterStuff;
         Messenger.Default.Register<Home, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
+
+        Task<IconPack.Model.Pack?[]> packFactory = Task.Run(async () =>
+        {
+            var packs = await Packs.GetPacks();
+            return packs.ToArray();
+        });
+        DataContext = new HomeViewModel(packFactory, new()
+        {
+            ShowFavoriteComponent = true
+        });
     }
 
     private void OpenPackDetailWindow(Home recipient, RequestViewPackDetailMessage message)

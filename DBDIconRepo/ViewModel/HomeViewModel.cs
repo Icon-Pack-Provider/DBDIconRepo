@@ -4,80 +4,83 @@ using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
 using IconPack;
+using IconPack.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using static System.Windows.Forms.Design.AxImporter;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
 
-public partial class HomeViewModel : ObservableObject
+public partial class HomeViewModel : ObservableObject, IDisposable
 {
-    public HomeViewModel()
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsGettingPacks))]
+    bool gettingPacks = true;
+
+    public Visibility IsGettingPacks => gettingPacks ? Visibility.Visible : Visibility.Collapsed;
+
+    public HomeViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
     {
-        //Monitor settings
-        SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
-        //Register messages
-        Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
-            MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
-        ////Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
-        Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this, 
-            MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterChanged);
+        InitializeVM();
 
         Task.Run(async () =>
         {
-            //
+            var packs = await packGatherMethod;
+
             AllAvailablePack = new();
-            //
             Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
-            var packs = await Packs.GetPacks();
             foreach (var pack in packs)
             {
-                if (pack.Author == "Icon-Pack-Provider")
-                {
-                    if (pack.Name == "Dead-by-daylight-Default-icons")
-                    {
-                        if (!Config.ShowDefaultPack)
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-#if DEBUG
-                        if (!Config.ShowDevTestPack)
-                        {
-                            continue;
-                        }
-#else
-                        continue; //Hide all pack (except default icon) on Release build
-#endif
-                    }
-                }
-
-                PackDisplay display = new(pack);
-                if (display is null)
+                PackDisplay pd = new(pack, compOption);
+                if (pd is null) //Somehow??
                     continue;
+                //Check for infos about pack repository and cache to disk
                 //Check readme
                 await Packs.CheckPackReadme(pack);
-                //Check banner data
-                await Packs.CheckPackBanner(pack);
-                //Get banner or perks URL for pack showcasing/preview samples
-                await display.GatherPreview();
-                AllAvailablePack.Add(display);
+                //Banner and urls
+                await pd.GatherPreview();
+                AllAvailablePack.Add(pd);
             }
         }).Await(() =>
         {
-            //Task done!
-            //Filters
+            GettingPacks = false;
+            CanSearch = AllAvailablePack.Count > 0;
             ApplyFilter();
         }, (e) =>
         {
 
         });
+    }
+
+    public HomeViewModel() { InitializeVM(); }
+
+    [ObservableProperty]
+    private PackDisplayComponentOptions componentOptions = new();
+
+    bool _hasInitialized = false;
+    private void InitializeVM()
+    {
+        if (_hasInitialized)
+            return;
+        _hasInitialized = true;
+        //Monitor settings
+        SettingManager.Instance.PropertyChanged += MonitorSettingChanged;
+        //Register messages
+        Messenger.Default.Register<HomeViewModel, RequestSearchQueryMessage, string>(this,
+            MessageToken.REQUESTSEARCHQUERYTOKEN, HandleRequestedSearchQuery);
+        Messenger.Default.Register<HomeViewModel, FilterOptionChangedMessage, string>(this,
+            MessageToken.FILTEROPTIONSCHANGETOKEN, HandleFilterChanged);
+    }
+
+    public void Dispose()
+    {
+        //Unregister messages
+        UnregisterMessages();
     }
 
     private void HandleFilterChanged(HomeViewModel recipient, FilterOptionChangedMessage message)
@@ -151,7 +154,9 @@ public partial class HomeViewModel : ObservableObject
 
     public void UnregisterMessages()
     {
-        //Messenger.Default.Unregister<FilterOptionChangedMessage, string>(this, MessageToken.FILTEROPTIONSCHANGETOKEN);
+        //Stop monitoring settings
+        SettingManager.Instance.PropertyChanged -= MonitorSettingChanged;
+        //Unregister messages
         Messenger.Default.UnregisterAll(this);
     }
 
@@ -166,8 +171,11 @@ public partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     bool isFilteredListEmpty;
 
-    private Debouncer _queryDebouncer { get; } = new Debouncer();
-    string _query;
+    [ObservableProperty]
+    bool canSearch = false;
+
+    private Debouncer _queryDebouncer { get; } = new();
+    string _query = string.Empty;
     public string SearchQuery
     {
         get => _query;
@@ -178,26 +186,27 @@ public partial class HomeViewModel : ObservableObject
                 _queryDebouncer.Debounce(value.Length == 0 ? 100 : 500, () =>
                 {
                     if (QueryResults is null)
-                        QueryResults = new();
+                    QueryResults = new();
                     else
                         QueryResults.Clear();
                     //Pack name search
                     var allFoundName = AllAvailablePack
-                    .Where(i => i.Info.Name.Contains(value))
+                    .Where(i => i.Info.Name.ToLower().Contains(value.ToLower()))
                     .Select(i => i.Info.Name).Distinct();
                     var allFoundAuthor = AllAvailablePack
-                    .Where(i => i.Info.Repository.Owner.Contains(value))
+                    .Where(i => i.Info.Repository.Owner.ToLower().Contains(value.ToLower()))
                     .Select(i => i.Info.Repository.Owner).Distinct();
                     QueryResults = new(allFoundName.Concat(allFoundAuthor));
-                    
-                    OnPropertyChanged(nameof(FilteredList));
+
+                    //Trigger filter
+                    ApplyFilter();
                 });
             }
         }
     }
 
     [ObservableProperty]
-    ObservableCollection<string> queryResults;
+    ObservableCollection<string> queryResults = new();
 
     public ObservableCollection<PackDisplay> FilteredList
     {
@@ -205,79 +214,101 @@ public partial class HomeViewModel : ObservableObject
         {
             if (AllAvailablePack is null)
                 return new ObservableCollection<PackDisplay>();
-            var afterQuerySearch = new List<PackDisplay>(AllAvailablePack);
-            
 
-            if (!string.IsNullOrEmpty(SearchQuery))
+            List<PackDisplay> filtering = new(AllAvailablePack);
+            //Initial filter; Default pack visibility and dev pack visibility
+            if (!Config.ShowDevTestPack)
             {
-                afterQuerySearch = AllAvailablePack.Where(pack => 
-                pack.Info.Name.ToLower().Contains(SearchQuery.ToLower()) || 
-                pack.Info.Repository.Owner.ToLower().Contains(SearchQuery.ToLower())).ToList();
-            }
-            var newList = new List<PackDisplay>();
-
-            //Filter by perks
-            var perks = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPerks);
-            if (Config.FilterOptions.HasPerks)
-                newList = newList.Union(perks).ToList();
-
-            //Filter by add-ons
-            var addons = afterQuerySearch.Where(x => x.Info.ContentInfo.HasAddons);
-            if (Config.FilterOptions.HasAddons)
-                newList = newList.Union(addons).ToList();
-
-            //Filter by items
-            var items = afterQuerySearch.Where(x => x.Info.ContentInfo.HasItems);
-            if (Config.FilterOptions.HasItems)
-                newList = newList.Union(items).ToList();
-
-            //Filter by offerings
-            var offerings = afterQuerySearch.Where(x => x.Info.ContentInfo.HasOfferings);
-            if (Config.FilterOptions.HasOfferings)
-                newList = newList.Union(offerings).ToList();
-
-            //Filter by powers
-            var powers = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPowers);
-            if (Config.FilterOptions.HasPowers)
-                newList = newList.Union(powers).ToList();
-
-            //Filter by status
-            var status = afterQuerySearch.Where(x => x.Info.ContentInfo.HasStatus);
-            if (Config.FilterOptions.HasStatus)
-                newList = newList.Union(status).ToList();
-
-            //Filter by portraits
-            var portraits = afterQuerySearch.Where(x => x.Info.ContentInfo.HasPortraits);
-            if (Config.FilterOptions.HasPortraits)
-                newList = newList.Union(portraits).ToList();
-
-            IsFilteredListEmpty = newList.Count == 0;
-            if (newList.Count > 0)
-            {
-                //Sort before return
-                switch (Config.SortBy)
+                var devPacks = filtering
+                    .Where(pack => pack.Info.Author == "Icon-Pack-Provider")
+                    .ToList();
+                foreach (var pack in devPacks)
                 {
-                    case SortOptions.Name:
-                        if (Config.SortAscending)
-                            newList = newList.OrderBy(i => i.Info.Name).ToList();
-                        else
-                            newList = newList.OrderByDescending(i => i.Info.Name).ToList();
-                        break;
-                    case SortOptions.Author:
-                        if (Config.SortAscending)
-                            newList = newList.OrderBy(i => i.Info.Author).ToList();
-                        else
-                            newList = newList.OrderByDescending(i => i.Info.Author).ToList();
-                        break;
-                    case SortOptions.LastUpdate:
-                        if (Config.SortAscending)
-                            newList = newList.OrderBy(i => i.Info.LastUpdate).ToList();
-                        else
-                            newList = newList.OrderByDescending(i => i.Info.LastUpdate).ToList();
-                        break;
+                    if (pack.Info.Name == "Dead-by-daylight-Default-icons"
+                        && Config.ShowDefaultPack)
+                        continue;
+                    int index = filtering.IndexOf(pack);
+                    filtering.RemoveAt(index);
                 }
             }
-            return new ObservableCollection<PackDisplay>(newList);
+
+            //A search query option; null if SearchQuery is empty
+            string? query = SearchQuery != string.Empty ?
+                SearchQuery.Trim().ToLower() : null;
+            //A search query for pack name (Replace " " with "-")
+            string? nameAltQuery = query is not null ?
+                query.Replace(' ', '-') : null;
+
+            var filter = Config.FilterOptions;
+            //Filter by pack with specific components
+            for (int i = filtering.Count - 1; i >= 0; i--)
+            {
+
+                //Search query filter
+                if (query is not null) //No query; Don't filter with query
+                {
+                    //Is this pack match with search query of name
+                    //Use alt-name query if the pack using git repo name (where space is dash)
+                    bool isNameMatch = filtering[i].Info.Name.Contains('-') ?
+                        filtering[i].Info.Name.ToLower().Contains(query) :
+                        filtering[i].Info.Name.ToLower().Contains(nameAltQuery);
+                    //Is this pack match with searhc query of author name
+                    bool isAuthorMatch = filtering[i].Info.Author.ToLower().Contains(query);
+                    if (!isNameMatch && !isAuthorMatch)
+                    {
+                        //Not match any search query
+                        //Remove
+                        filtering.RemoveAt(i);
+                    }
+                }
+
+                var itemCIF = filtering[i].Info.ContentInfo;
+                //Component based filtering
+                if ((filter.HasPerks && itemCIF.HasPerks) ||
+                    (filter.HasAddons && itemCIF.HasAddons) ||
+                    (filter.HasItems && itemCIF.HasItems) ||
+                    (filter.HasOfferings && itemCIF.HasOfferings) ||
+                    (filter.HasPowers && itemCIF.HasPowers) ||
+                    (filter.HasStatus && itemCIF.HasStatus) ||
+                    (filter.HasPortraits && itemCIF.HasPortraits))
+                {
+                    continue;
+                }
+                else
+                {
+                    filtering.RemoveAt(i);
+                }
+            }
+
+            IsFilteredListEmpty = filtering.Count == 0;
+            if (filtering.Count <= 0)
+            {
+                return new ObservableCollection<PackDisplay>();
+            }
+
+            //Sort before return
+            switch (Config.SortBy)
+            {
+                case SortOptions.Name:
+                    if (Config.SortAscending)
+                        filtering = filtering.OrderBy(i => i.Info.Name).ToList();
+                    else
+                        filtering = filtering.OrderByDescending(i => i.Info.Name).ToList();
+                    break;
+                case SortOptions.Author:
+                    if (Config.SortAscending)
+                        filtering = filtering.OrderBy(i => i.Info.Author).ToList();
+                    else
+                        filtering = filtering.OrderByDescending(i => i.Info.Author).ToList();
+                    break;
+                case SortOptions.LastUpdate:
+                    if (Config.SortAscending)
+                        filtering = filtering.OrderBy(i => i.Info.LastUpdate).ToList();
+                    else
+                        filtering = filtering.OrderByDescending(i => i.Info.LastUpdate).ToList();
+                    break;
+            }
+            return new ObservableCollection<PackDisplay>(filtering);
         }
     }
 
@@ -398,4 +429,11 @@ public enum PackView
     Grid,
     List,
     Table
+}
+
+public class PackDisplayComponentOptions
+{
+    public bool ShowFavoriteComponent { get; set; } = true;
+
+    public PackDisplayComponentOptions() { }
 }

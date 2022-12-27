@@ -20,10 +20,13 @@ namespace DBDIconRepo.Model;
 //Use for commands and parameter for bindings
 public partial class PackDisplay : ObservableObject
 {
-    public PackDisplay(Pack _info)
+    public PackDisplay(Pack _info, PackDisplayComponentOptions? compOption = null)
     {
         Info = _info;
+        _displayOptions = compOption;
     }
+
+    private PackDisplayComponentOptions _displayOptions = new();
 
     [ObservableProperty]
     Pack? info;

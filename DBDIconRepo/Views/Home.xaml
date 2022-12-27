@@ -85,6 +85,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal"
                     HorizontalAlignment="Center">
             <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" 
+                               IsEnabled="{Binding CanSearch, Mode=OneWay}"
                                VerticalAlignment="Center" ItemsSource="{Binding QueryResults, Mode=OneWay}"
                                PlaceholderText="Enter keyword to search.." Width="350"/>
             <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
@@ -646,6 +647,19 @@
             </DataGrid.Columns>            
         </DataGrid>
         
+        <!-- Getting packs -->
+        <StackPanel Orientation="Vertical" 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding IsGettingPacks, Mode=OneWay}"
+                    Grid.RowSpan="2">
+            <ui:ProgressRing Width="64" Height="64" Margin="12"
+                             IsActive="True"
+                             Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <TextBlock Text="Gathering icon pack data"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                       FontSize="32"/>
+        </StackPanel>
         <!-- No pack -->
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                    TextAlignment="Center" Foreground="Gray"
