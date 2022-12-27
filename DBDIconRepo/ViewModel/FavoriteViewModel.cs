@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
+using IconPack.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
@@ -12,6 +14,20 @@ public partial class FavoriteViewModel : HomeViewModel
 {
     public FavoriteViewModel()
     {
+        Initialize();
+    }
+
+    public FavoriteViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
+        : base(packGatherMethod, compOption)
+    {
+        Initialize();
+    }
+
+    private bool _isInitialized = false;
+    private void Initialize()
+    {
+        if (_isInitialized) { return; }
+        _isInitialized = true;
         Messenger.Default.Register<FavoriteViewModel, RepoStarChangedMessage, string>(this, MessageToken.RepoStarChangedToken, HandleStarUpdate);
     }
 
