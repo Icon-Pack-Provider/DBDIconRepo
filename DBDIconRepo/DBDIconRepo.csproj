@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="IconInfo" Version="6.4.0.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
@@ -69,13 +69,4 @@
 			<ContainsDesignTimeResources>true</ContainsDesignTimeResources>
 		</Page>
 	</ItemGroup>
-
-	<Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
-  <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
-    <ItemGroup>
-	  <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
-	  <Analyzer Remove="@(Analyzer)" />
-	  <Analyzer Include="@(FilteredAnalyzer)" />
-    </ItemGroup>
-  </Target>
 </Project>

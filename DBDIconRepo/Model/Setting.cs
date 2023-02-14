@@ -87,6 +87,9 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     bool latestBeta = false;
 
+    [ObservableProperty]
+    bool saveHistory = true;
+
 #if DEBUG
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{Terms.AppDataFolder}Dev");
