@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DBDIconRepository (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DBDIconRepository (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
