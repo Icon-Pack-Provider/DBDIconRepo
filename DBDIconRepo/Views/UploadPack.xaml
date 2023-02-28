@@ -13,7 +13,7 @@
         <vm:UploadPackViewModel x:Name="ViewModel"/>
     </Page.DataContext>
 
-    <Grid Margin="12" IsHitTestVisible="False">
+    <Grid Margin="-12">
         <!-- First page -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding ShowOnSetWorkDirectoryAndInvalidWorkDirectory}">
@@ -24,10 +24,12 @@
             </Button>
             <TextBlock Text="Select folder to upload" HorizontalAlignment="Center"
                        FontSize="24"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                        Visibility="{Binding ShowOnSetWorkDirectory}"/>
             <TextBlock HorizontalAlignment="Center"
                        FontSize="24" 
                        TextAlignment="Center"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                        Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}">
                 No icons found on directory
                 <LineBreak/>Try other folder?
@@ -35,27 +37,88 @@
         </StackPanel>
 
         <Grid Visibility="{Binding ShowOnPreparingPack}">
-            <!--Step 1: Ask to sort folder-->
-            <StackPanel Orientation="Vertical"
-                        VerticalAlignment="Center"
+            <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Visibility="{Binding IsWaitingForPermissionToMoveResponse}">
-                <!--Ask for permission to sort folder-->
-                <TextBlock TextAlignment="Center"
-                           FontSize="18">
-                    Application require to move and organize all the files within this selected folder
-                    <LineBreak/>Do you wish to proceed?<LineBreak/>
-                    <LineBreak/>Waiting for reponse<Run Text="{Binding TextDisplayWhileWaitingForPermissionToMoveResponse}"/>
-                </TextBlock>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="12">
-                    <Button Content="Yes" Command="{Binding ResponseAllowToMoveCommand}" Padding="32,8"/>
-                    <Button Content="No" Command="{Binding ResponseAllowNotToMoveCommand}" Padding="32,8" Margin="5"/>
-                </StackPanel>
+                        Orientation="Vertical">
+                <ui:ProgressRing Width="64" Height="64" IsActive="True"/>
+                <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           FontSize="24"
+                           Text="Checking for valid icons"/>
             </StackPanel>
-            <!--Moving progress-->
-            <!--Add other steps that seem fit-->
         </Grid>
-        
+
+        <Grid Visibility="{Binding ShowOnSelectIcons}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <HierarchicalDataTemplate x:Key="folderTemplate"
+                                          DataType="{x:Type vm:IUploadableItem}" 
+                                          ItemsSource="{Binding SubItems, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding DisplayName}"/><LineBreak/>
+                                    <Run FontSize="12" Text="{Binding Path=DataContext.WorkingDirectory,
+                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/><Run Text="{Binding SubFolderDisplay, Mode=OneWay}"/>\<Run FontSize="12" Text="{Binding Name}"/>
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate x:Key="fileTemplate"
+                                          DataType="{x:Type vm:IUploadableItem}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsSelected}">
+                            <CheckBox.Content>
+                                <TextBlock>
+                                    <Run Text="{Binding DisplayName}"/><LineBreak/>
+                                    <Run FontSize="12" Text="{Binding FilePath}"/>
+                                </TextBlock>
+                            </CheckBox.Content>
+                        </CheckBox>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <local:UploadItemTemplator x:Key="itemTemplates"
+                                           UploadableFolderTemplator="{StaticResource folderTemplate}"
+                                           UploadableItemTemplator="{StaticResource fileTemplate}"/>
+            </Grid.Resources>
+            <TreeView ItemsSource="{Binding Uploadables}" ItemTemplateSelector="{StaticResource itemTemplates}">
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="IsExpanded" Value="{Binding IsExpand, Mode=TwoWay}"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+            </TreeView>
+
+            <ui:CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+                <ui:CommandBar.Content>
+                    <ui:CommandBar DefaultLabelPosition="Right">
+                        <ui:AppBarButton Label="Select other folder" Icon="Back" Command="{Binding CancelSelectionRevertCommand}"/>
+                    </ui:CommandBar>
+                </ui:CommandBar.Content>
+                <ui:AppBarButton Label="Expand all" Command="{Binding ExpandAllFolderCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xE740;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarButton Label="Collapsed all" Command="{Binding CollapseAllFolderCommand}">
+                    <ui:AppBarButton.Icon>
+                        <ui:FontIcon Glyph="&#xE73F;"/>
+                    </ui:AppBarButton.Icon>
+                </ui:AppBarButton>
+                <ui:AppBarSeparator/>
+                <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAllItemCommand}"/>
+                <ui:AppBarButton Label="Deselect all" Icon="ClearSelection" Command="{Binding UnSelectAllItemCommand}"/>
+                <ui:AppBarSeparator/>
+                <ui:AppBarButton Label="Refresh" Icon="Refresh" Command="{Binding DetermineUploadableItemsCommand}"/>
+                <ui:AppBarSeparator/>
+                <ui:AppBarButton Label="Continue" Icon="Forward" Command="{Binding FinishSelectionCommand}"/>
+            </ui:CommandBar>
+        </Grid>
         
         <ScrollViewer HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
@@ -71,12 +134,13 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="Fill in the detail of the pack:" 
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                FontSize="32" FontWeight="Bold" Margin="0,4,0,12"/>
 
                     <TextBox ui:ControlHelper.Header="Pack name"
                              ui:ControlHelper.PlaceholderText="enter pack name here"
                              Text="{Binding RepoDisplayName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                    <TextBlock>
+                    <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
                         The pack will be upload to:
                         <LineBreak/><Hyperlink>https://www.github.com/<Run Text="{Binding Config.GitUsername}"/>/<Run Text="{Binding RepositoryOnGitName, Mode=OneWay}"/></Hyperlink>
                     </TextBlock>
@@ -87,16 +151,6 @@
                          Text="{Binding RepoDescription, Mode=TwoWay}"
                          ui:ControlHelper.PlaceholderText="enter a short description about this pack here"/>
 
-                <StackPanel Grid.Row="2" Orientation="Vertical"
-                            Margin="0,4">
-                    <CheckBox Content="Allow pack addtional infos"
-                              IsChecked="{Binding AllowPackMetadata, Mode=TwoWay}"/>
-                    <TextBlock>
-                        Allow app to put other files beside icons onto repo
-                        <LineBreak/>such as pack.json and .banner.png
-                    </TextBlock>
-                </StackPanel>
-
                 <StackPanel Orientation="Vertical" Grid.Row="3">
                     <ComboBox ui:ControlHelper.Header="Pack preview"
                               IsSynchronizedWithCurrentItem="True"
@@ -106,10 +160,7 @@
                         <ComboBoxItem Content="Fixed set of icons"/>
                         <ComboBoxItem Content="Banner"/>
                     </ComboBox>
-                    <TextBlock Text="{Binding PreviewOptionExplainer}"/>
-                    <Button Command="{Binding OpenWorkFolderCommand}" 
-                            Visibility="{Binding ShowIfBannerStillNotExist}"
-                            Content="Browse folder"/>
+                    <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 </StackPanel>
 
                 <!--Preview-->
@@ -153,18 +204,5 @@
             </Grid>
         </ScrollViewer>
         
-        <!--Hide the page for now-->
-        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                   Fill="{DynamicResource CommandBarBackground}"
-                   Margin="-24"/>
-        <StackPanel VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    Orientation="Vertical">
-            <ui:FontIcon Glyph="&#xE822;" FontSize="72" Margin="12"/>
-            <TextBlock>
-                The function of this page isn't ready to use yet.
-                <LineBreak/>For now, GitHub desktop is the recommended alternative
-            </TextBlock>
-        </StackPanel>
     </Grid>
 </Page>

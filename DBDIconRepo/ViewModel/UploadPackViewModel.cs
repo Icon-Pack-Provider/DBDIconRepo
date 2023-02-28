@@ -3,12 +3,17 @@ using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
+using IconInfo;
+using IconInfo.Icon;
+using IconInfo.Information;
+using IconInfo.Internal;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -31,6 +36,7 @@ public partial class UploadPackViewModel : ObservableObject
     [ObservableProperty]
     string workingDirectory = string.Empty;
 
+    //This will only now handle upload new pack, not existing one.
     [RelayCommand]
     private void SetWorkingDirectory()
     {
@@ -50,56 +56,151 @@ public partial class UploadPackViewModel : ObservableObject
 
         //Check working directory
         DirectoryInfo folder = new(browse.SelectedPath);
-        var files = folder.GetFiles("*", SearchOption.AllDirectories);
-        bool validFolder = false;
-        foreach (var file in files)
+        //Is this empty folder?
+        if (folder.GetFiles().Length < 1) return;
+        //Check if there's a trace of .git
+        var findDotGit = folder.GetDirectories(".git");
+        if (findDotGit.Length > 0 && findDotGit.FirstOrDefault() is DirectoryInfo dotGitFolder) 
         {
-            if (file.Name == ".banner.png")
-            {
-                validFolder = true;
-                IsBannerNowExist = true;
-                PreviewOption = PackPreviewOption.Banner;
-                continue;
-            }
-            try
-            {
-                var identify = IconTypeIdentify.FromPath(file.FullName);
-                if (identify is UnknownIcon)
-                    continue;
-                if (identify is not UnknownIcon)
-                {
-                    validFolder = true;
-                    break;
-                }
-            }
-            catch { }
-            try
-            {
-                var identify2 = IconTypeIdentify.FromFile(file.Name);
-                if (identify2 is UnknownIcon)
-                    continue;
-                if (identify2 is not UnknownIcon)
-                {
-                    validFolder = true;
-                    break;
-                }
-            }
-            catch {  }
-            continue;
-        }
-        if (!validFolder)
-        {
-            CurrentPage = UploadPages.InvalidWorkDirectory;
+            //Throw error
+            DialogHelper.Show("This folder is already exist as other icon packs," +
+                "\r\nplease use update pack instead");
             return;
         }
 
-        WorkingDirectory = browse.SelectedPath;
+        WorkingDirectory = folder.FullName;
         CurrentPage = UploadPages.Preparing;
-        PrepareWorkingFolder().Await(() =>
+        //Let uploader select which icons to upload:
+        DetermineUploadableItems().Await(() =>
         {
-            CurrentPage = UploadPages.FillDetail;
+            CurrentPage = UploadPages.SelectIcons;
         });
     }
+
+    #region Select icons
+    [ObservableProperty]
+    private ObservableCollection<IUploadableItem> uploadables = new();
+
+    private bool IsMainFolderExist(string folderName)
+    {
+        foreach (var item in Uploadables)
+        {
+            if (item is UploadableFolder folder && folder.Name == folderName)
+                return true;
+        }
+        return false;
+    }
+
+    [RelayCommand]
+    public async Task DetermineUploadableItems()
+    {
+        Uploadables = new();
+        DirectoryInfo dir = new(WorkingDirectory);
+        var files = dir.GetFiles("*.*", SearchOption.AllDirectories);
+        foreach (var file in files)
+        {
+            if (file.FullName.Contains(".banner.png"))
+            { 
+                continue; 
+            }
+            if (file.Extension != ".png")
+                continue;
+            if (IconTypeIdentify.FromFile(file.FullName) is IBasic icon)
+            {
+                if (icon is UnknownIcon)
+                    continue;
+                string mainFolder = IconTypeIdentify.GetMainFolderFromType(icon);
+                if (!IsMainFolderExist(mainFolder))
+                {
+                    bool isFound = Info.Folders.TryGetValue(mainFolder, out MainFolder foundedMain);
+                    await Application.Current.Dispatcher.InvokeAsync(async () =>
+                    {
+                        Uploadables.Add(new UploadableFolder()
+                        {
+                            Name = mainFolder,
+                            DisplayName = foundedMain.Name
+                        });
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
+                }
+                if (Uploadables.FirstOrDefault(find => find.Name == mainFolder) is UploadableFolder mainUploadFolder)
+                {
+                    //Subfolder
+                    IUploadableItem? toWorkOn = mainUploadFolder; //This will sure change to subfolder if its exist
+                    IFolder? isFolder = icon as IFolder;
+                    if (isFolder is not null && !string.IsNullOrEmpty(isFolder.Folder))
+                    {
+                        if (!mainUploadFolder.SubItems.Any(sub => sub.Name == isFolder.Folder))
+                        {
+                            //No subfolder, add:
+                            var subFolderInfo = Info.SubFolders[isFolder.Folder];
+                            await Application.Current.Dispatcher.InvokeAsync(async () =>
+                            {
+                                mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
+                                {
+                                    Name = subFolderInfo.Folder,
+                                    DisplayName = subFolderInfo.Name,
+                                    SubItems = new()
+                                });
+                            }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                            System.Windows.Threading.DispatcherPriority.Send :
+                            System.Windows.Threading.DispatcherPriority.Background);
+                            
+                        }
+                        toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
+                    }
+                    await Application.Current.Dispatcher.InvokeAsync(async () =>
+                    {
+                        (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
+                        {
+                            Name = icon.File,
+                            DisplayName = icon.Name,
+                            FilePath = file.FullName
+                        });
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);                    
+                }
+            }
+            continue;
+        }
+    }
+
+    private void SetCollapseState(bool state, ObservableCollection<IUploadableItem>? sub = null)
+    {
+        if (sub is null)
+            sub = Uploadables;
+        foreach (var item in sub)
+        {
+            if (item is UploadableFile)
+                continue;
+            if (item is UploadableFolder folder && folder.SubItems is not null && folder.SubItems.Count > 0)
+                SetCollapseState(state, folder.SubItems);
+            item.IsExpand = state;
+        }
+    }
+
+    [RelayCommand] private void CollapseAllFolder() => SetCollapseState(false);
+    [RelayCommand] private void ExpandAllFolder() => SetCollapseState(true);
+
+    private void SetSelectionState(bool state, ObservableCollection<IUploadableItem>? sub = null)
+    {
+        if (sub is null)
+            sub = Uploadables;
+        foreach (var item in sub)
+        {
+            if (item is UploadableFolder folder && folder.SubItems is not null && folder.SubItems.Count > 0)
+                SetSelectionState(state, folder.SubItems);
+            item.IsSelected = state;
+        }
+    }
+    [RelayCommand] private void SelectAllItem() => SetSelectionState(true);
+    [RelayCommand] private void UnSelectAllItem() => SetSelectionState(false);
+
+    [RelayCommand] private void FinishSelection() => CurrentPage = UploadPages.FillDetail;
+    [RelayCommand] private void CancelSelectionRevert() => CurrentPage = UploadPages.SetWorkDirectory;
+    #endregion
 
     #region Preparing page
 
@@ -525,6 +626,7 @@ public partial class UploadPackViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowOnSetWorkDirectory))]
     [NotifyPropertyChangedFor(nameof(ShowOnInvalidWorkDirectory))]
+    [NotifyPropertyChangedFor(nameof(ShowOnSelectIcons))]
     [NotifyPropertyChangedFor(nameof(ShowOnSetWorkDirectoryAndInvalidWorkDirectory))]
     [NotifyPropertyChangedFor(nameof(ShowOnPreparingPack))]
     [NotifyPropertyChangedFor(nameof(ShowOnFillDetail))]
@@ -537,6 +639,10 @@ public partial class UploadPackViewModel : ObservableObject
 
     public Visibility ShowOnInvalidWorkDirectory
         => CurrentPage == UploadPages.InvalidWorkDirectory
+        ? Visibility.Visible : Visibility.Collapsed;
+
+    public Visibility ShowOnSelectIcons
+        => CurrentPage == UploadPages.SelectIcons
         ? Visibility.Visible : Visibility.Collapsed;
 
     public Visibility ShowOnPreparingPack
@@ -554,13 +660,124 @@ public partial class UploadPackViewModel : ObservableObject
     public Visibility ShowOnSetWorkDirectoryAndInvalidWorkDirectory
         => CurrentPage <= UploadPages.InvalidWorkDirectory
         ? Visibility.Visible : Visibility.Collapsed;
+
     #endregion
+}
+
+public interface IUploadableItem
+{
+    /// <summary>
+    /// Use as folder path eg. Perks, CharPortraits
+    /// </summary>
+    string Name { get; set; }
+    /// <summary>
+    /// Explain what it was eg.Perks icon, Portrait icons etc.
+    /// </summary>
+    string DisplayName { get; set; }
+    bool? IsSelected { get; set; }
+    bool IsExpand { get; set; }
+    UploadableFolder? Parent { get; }
+}
+
+public partial class UploadableFolder : ObservableObject, IUploadableItem
+{
+    [ObservableProperty]
+    private string name = "";
+
+    [ObservableProperty]
+    private string displayName = "";
+
+    [ObservableProperty]
+    private bool? isSelected = true;
+
+    [ObservableProperty]
+    private bool isExpand = true;
+
+    public string SubFolderDisplay
+        => $"{(Parent is not null ? "\\" : "")}{(Parent is not null ? Parent.Name : "")}";
+
+    partial void OnIsSelectedChanged(bool? value)
+    {
+        if (Parent is not null)
+            Parent.NotifyChildSelectionChanged();
+        //Update child to match
+        if (value is null)
+            return;
+        foreach (var child in SubItems)
+        {
+            child.IsSelected = value;
+        }
+    }
+
+    [ObservableProperty]
+    private ObservableCollection<IUploadableItem> subItems = new();
+
+    UploadableFolder? parent = null;
+    public UploadableFolder? Parent
+    {
+        get => parent;
+        private set => parent = value;
+    }
+
+    public UploadableFolder(UploadableFolder? root = null)
+    {
+        this.parent = root;
+    }
+
+    internal void NotifyChildSelectionChanged()
+    {
+        var bools = SubItems.Select(i => i.IsSelected).Distinct().ToList();
+        if (bools.Count <= 1)
+            IsSelected = bools[0];
+        else
+            IsSelected = null;
+    }
+}
+
+public partial class UploadableFile : ObservableObject, IUploadableItem
+{
+    [ObservableProperty]
+    private string name = "";
+
+    [ObservableProperty]
+    private string displayName = "";
+
+    [ObservableProperty]
+    private string filePath = "";
+
+    [ObservableProperty]
+    private bool? isSelected = true;
+
+    [ObservableProperty]
+    private bool isExpand = true;
+
+    partial void OnIsSelectedChanged(bool? value)
+    {
+        if (Parent is not null)
+        {
+            //Notify parent
+            Parent.NotifyChildSelectionChanged();
+        }
+    }
+
+    UploadableFolder? parent = null;
+    public UploadableFolder? Parent
+    {
+        get => parent;
+        private set => parent = value;
+    }
+
+    public UploadableFile(UploadableFolder? root = null)
+    {
+        parent = root;
+    }
 }
 
 public enum UploadPages
 {
     SetWorkDirectory,
     InvalidWorkDirectory,
+    SelectIcons,
     Preparing,
     FillDetail,
     Uploading
