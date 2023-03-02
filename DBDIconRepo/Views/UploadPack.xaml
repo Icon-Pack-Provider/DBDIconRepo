@@ -38,22 +38,18 @@
         <cv:FilePathToLocalImageConverter x:Key="fileToLocalImage"/>
         <cv:UploadableFileOrFolderConverter x:Key="fileOrFolder"/>
         <cv:EnumPreviewOptionToIntConverter x:Key="PreviewOptionToInt"/>
-
+        
+        <Image x:Key="menuIconLoader" x:Shared="False"
+               Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}" x:Key="menuForAdding">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
-                                                             Value="True">
+                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}" Value="True">
                     <Setter Property="ItemsSource" Value="{Binding SubItems}"/>
                     <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource nullableBoolForcedVisibility}}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
-                                                             Value="False">
-                    <Setter Property="Icon">
-                        <Setter.Value>
-                            <Image Width="48" Height="48" 
-                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
-                        </Setter.Value>
-                    </Setter>
+                             Value="False">
+                    <Setter Property="Icon" Value="{StaticResource menuIconLoader}"/>
                     <Setter Property="Command" Value="{Binding DataContext.AddThisIconAsFixedIconsCommand, Source={x:Reference rootPage}}"/>
                     <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
                     <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
@@ -316,6 +312,7 @@
                                      LabelPosition="Default" Click="OpenAttachedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:MenuFlyout>
+                                <!--Fix icon only show on last one-->
                                 <MenuItem Header="Icons" ItemsSource="{Binding Uploadables}"
                                           ItemContainerStyle="{StaticResource menuForAdding}">
                                     <MenuItem.Icon>
