@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\bannerHolder.png" />
     <None Remove="Resources\pfpHolder.ico" />
     <None Remove="Resources\pfpHolder.png" />
   </ItemGroup>
@@ -64,6 +65,9 @@
 	<ItemGroup>
 		<Page Remove="Properties\DesignTimeResources.xaml" />
 		<None Remove="Properties\DesignTimeResources.xaml" />
+		<Resource Include="Resources\bannerHolder.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
 		<Page Include="Properties\DesignTimeResources.xaml">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>

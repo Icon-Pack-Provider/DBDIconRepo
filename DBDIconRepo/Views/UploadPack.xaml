@@ -6,12 +6,37 @@
       xmlns:local="clr-namespace:DBDIconRepo.Views"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+      xmlns:cv="clr-namespace:DBDIconRepo.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UploadPack">
     <Page.DataContext>
         <vm:UploadPackViewModel x:Name="ViewModel"/>
     </Page.DataContext>
+    <Page.Resources>
+        <DataTemplate x:Key="IconPackIconDisplay">
+            <Image Width="100" Height="100" Source="{Binding ImagePreviewSource}">
+                <ToolTipService.ToolTip>
+                    <TextBlock Text="{Binding Tooltip.Name}"/>
+                </ToolTipService.ToolTip>
+            </Image>
+        </DataTemplate>
+        <DataTemplate x:Key="IconPackBannerDisplay">
+            <Image Height="112" Margin="-2" Source="{Binding ImagePreviewSource}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="PackPlaceholderBannerDisplay">
+            <Image Height="112" Margin="-2" Source="pack://application:,,,/Resources/bannerHolder.png"/>
+        </DataTemplate>
+        <local:IconPreviewTemplateSelector 
+            x:Key="iconPreviewTemplateSelector"
+            LocalIconDisplay="{StaticResource IconPackIconDisplay}"
+            LocalBannerDisplay="{StaticResource IconPackBannerDisplay}"
+            PlaceholderBannerDisplay="{StaticResource PackPlaceholderBannerDisplay}"/>
+
+        <cv:BoolToVisibility x:Key="boolToVisibility"/>
+        <cv:FilePathToLocalImageConverter x:Key="fileToLocalImage"/>
+        <cv:UploadableFileOrFolderConverter x:Key="fileOrFolder"/>
+    </Page.Resources>
 
     <Grid Margin="-12">
         <!-- First page -->
@@ -59,7 +84,7 @@
                     <StackPanel Orientation="Horizontal">
                         <CheckBox IsChecked="{Binding IsSelected}">
                             <CheckBox.Content>
-                                <TextBlock>
+                                <TextBlock VerticalAlignment="Center">
                                     <Run Text="{Binding DisplayName}"/><LineBreak/>
                                     <Run FontSize="12" Text="{Binding Path=DataContext.WorkingDirectory,
                                         RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/><Run Text="{Binding SubFolderDisplay, Mode=OneWay}"/>\<Run FontSize="12" Text="{Binding Name}"/>
@@ -73,7 +98,7 @@
                     <StackPanel Orientation="Horizontal">
                         <CheckBox IsChecked="{Binding IsSelected}">
                             <CheckBox.Content>
-                                <TextBlock>
+                                <TextBlock VerticalAlignment="Center">
                                     <Run Text="{Binding DisplayName}"/><LineBreak/>
                                     <Run FontSize="12" Text="{Binding FilePath}"/>
                                 </TextBlock>
@@ -151,16 +176,37 @@
                          Text="{Binding RepoDescription, Mode=TwoWay}"
                          ui:ControlHelper.PlaceholderText="enter a short description about this pack here"/>
 
-                <StackPanel Orientation="Vertical" Grid.Row="3">
-                    <ComboBox ui:ControlHelper.Header="Pack preview"
-                              IsSynchronizedWithCurrentItem="True"
+                <StackPanel Orientation="Horizontal" Grid.Row="3">
+                    <ComboBox IsSynchronizedWithCurrentItem="True"
                               IsEnabled="{Binding CanSelectPreviewOption}"
                               SelectedIndex="{Binding PreviewOption, Mode=TwoWay}">
+                        <ui:ControlHelper.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Pack preview" VerticalAlignment="Center"/>
+                                <Button VerticalAlignment="Center" Margin="5" Padding="0" Background="Transparent">
+                                    <ui:FontIcon Glyph="&#xE11B;" FontSize="12" />
+                                    <Button.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                        </ToolTip>
+                                    </Button.ToolTip>
+                                    <ui:FlyoutService.Flyout>
+                                        <ui:Flyout Placement="BottomEdgeAlignedLeft">
+                                            <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                        </ui:Flyout>
+                                    </ui:FlyoutService.Flyout>
+                                </Button>
+                            </StackPanel>
+                        </ui:ControlHelper.Header>
                         <ComboBoxItem Selector.IsSelected="True" Content="User defined set of icons"/>
                         <ComboBoxItem Content="Fixed set of icons"/>
                         <ComboBoxItem Content="Banner"/>
                     </ComboBox>
-                    <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                    <Button Content="{Binding BannerLocatorContext}"
+                            Margin="5,0" d:Content="Set banner"
+                            VerticalAlignment="Bottom"
+                            Visibility="{Binding ShowBannerLocatorButton}"
+                            Command="{Binding GrabPathForPackBannerCommand}"/>                    
                 </StackPanel>
 
                 <!--Preview-->
@@ -176,11 +222,107 @@
                     <Rectangle Width="480" Fill="DimGray" Opacity="0.5"
                                Grid.RowSpan="5"/>
                     <!--Banner preview-->
-                    <Rectangle Fill="Red" Height="100" Margin="5"/>
-                    <TextBlock Text="{Binding RepoDisplayName}" Grid.Row="1" HorizontalAlignment="Center"                               
+                    <ui:ListView ScrollViewer.CanContentScroll="False"
+                                 MinHeight="112"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                 HorizontalContentAlignment="Center"
+                                 IsSelectionEnabled="False" Focusable="False"
+                                 ItemTemplateSelector="{StaticResource iconPreviewTemplateSelector}"
+                                 ItemsSource="{Binding PreviewSources, Mode=OneWay}">
+                        <ui:ListView.ItemContainerStyle>
+                            <Style TargetType="ui:ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="6"/>
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </ui:ListView.ItemContainerStyle>
+                        <ui:ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"/>
+                            </ItemsPanelTemplate>
+                        </ui:ListView.ItemsPanel>
+                    </ui:ListView>
+
+                    <TextBlock Text="{Binding RepoDisplayName}" Grid.Row="1" HorizontalAlignment="Center"    
+                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                FontSize="20" FontWeight="Bold"
                                Margin="5,12"/>
                 </Grid>
+                <StackPanel Grid.Row="4" Orientation="Vertical"
+                            Margin="490,12,0,0"
+                            Visibility="{Binding ShowOnFixedIconPreviewOption}">
+                    <ui:AppBarButton Label="Add" Icon="Add" IsEnabled="{Binding AllowAddingFixedIcon}"
+                                     LabelPosition="Default" Click="OpenAttachedFlyout">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:MenuFlyout>
+                                <MenuItem Header="Icons:" ItemsSource="{Binding Uploadables}">
+                                    <MenuItem.ItemContainerStyle>
+                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
+                                                             Value="True">
+                                                    <Setter Property="ItemsSource" Value="{Binding SubItems}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
+                                                             Value="False">
+                                                    <Setter Property="Icon">
+                                                        <Setter.Value>
+                                                            <Image Width="48" Height="48" 
+                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="Command" Value="{Binding DataContext.AddThisIconAsFixedIconsCommand,
+                                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/>
+                                                    <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            
+                                            <Setter Property="Header" Value="{Binding DisplayName}"/>                                            
+                                            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
+                                        </Style>
+                                    </MenuItem.ItemContainerStyle>
+                                </MenuItem>
+                            </ui:MenuFlyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </ui:AppBarButton>
+                    <ui:AppBarButton Label="Add random" 
+                                     IsEnabled="{Binding AllowAddingFixedIcon}"
+                                     Command="{Binding AddRandomFixedIconsCommand}" 
+                                     Icon="Refresh" LabelPosition="Default"/>
+                    <ui:AppBarButton Label="Remove" Icon="Remove" LabelPosition="Default" 
+                                     Visibility="{Binding ShowOnFixedIconsHaveRemovableIcon}"
+                                     Click="OpenAttachedFlyout">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:MenuFlyout>
+                                <MenuItem Header="Icons:" ItemsSource="{Binding FixedIcons}">
+                                    <MenuItem.ItemContainerStyle>
+                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
+                                                             Value="False">
+                                                    <Setter Property="Icon">
+                                                        <Setter.Value>
+                                                            <Image Width="48" Height="48" 
+                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="Command" Value="{Binding DataContext.RemoveThisIconFromFixedIconsCommand,
+                                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/>
+                                                    <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            
+                                            <Setter Property="Header" Value="{Binding DisplayName}"/>                                            
+                                            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
+                                        </Style>
+                                    </MenuItem.ItemContainerStyle>
+                                </MenuItem>
+                            </ui:MenuFlyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </ui:AppBarButton>
+                </StackPanel>
                 
                 <StackPanel Orientation="Vertical" 
                             Grid.Row="5"

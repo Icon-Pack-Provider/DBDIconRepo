@@ -3,15 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
+using GameFinder.Common;
 using IconInfo;
-using IconInfo.Icon;
 using IconInfo.Information;
 using IconInfo.Internal;
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using Ookii.Dialogs.Wpf;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -27,6 +25,11 @@ namespace DBDIconRepo.ViewModel;
 
 public partial class UploadPackViewModel : ObservableObject
 {
+    public UploadPackViewModel()
+    {
+        InitializeFillInfoPage();
+    }
+
     public OctokitService Git => Singleton<OctokitService>.Instance;
     public Setting Config => SettingManager.Instance;
 
@@ -57,7 +60,7 @@ public partial class UploadPackViewModel : ObservableObject
         //Check working directory
         DirectoryInfo folder = new(browse.SelectedPath);
         //Is this empty folder?
-        if (folder.GetFiles().Length < 1) return;
+        if (folder.GetFiles("*.png", SearchOption.AllDirectories).Length < 1) return;
         //Check if there's a trace of .git
         var findDotGit = folder.GetDirectories(".git");
         if (findDotGit.Length > 0 && findDotGit.FirstOrDefault() is DirectoryInfo dotGitFolder) 
@@ -80,6 +83,46 @@ public partial class UploadPackViewModel : ObservableObject
     #region Select icons
     [ObservableProperty]
     private ObservableCollection<IUploadableItem> uploadables = new();
+
+    private IUploadableItem? Find(string name, ObservableCollection<IUploadableItem> subitems = null)
+    {
+        if (subitems is null)
+            subitems = Uploadables;
+        foreach (var item in subitems)
+        {
+            if (item is UploadableFolder sub)
+            {
+                var res = Find(name, sub.SubItems);
+                if (res is not null)
+                    return res;
+                continue;
+            }
+            if (item.IsSelected == false)
+                continue;
+            if (item.Name == name)
+                return item;
+        }
+        return null;
+    }
+
+    private UploadableFile RandomIcon(ObservableCollection<IUploadableItem> subitems = null)
+    {
+        if (subitems is null)
+            subitems = Uploadables;
+reroll:
+        int index = Random.Shared.Next(0, subitems.Count);
+        if (subitems[index] is UploadableFolder folder)
+        {
+            if (subitems[index].IsSelected.HasValue && subitems[index].IsSelected == false)
+                goto reroll;
+            return RandomIcon(folder.SubItems);
+        }
+        if (subitems[index].IsSelected.HasValue && subitems[index].IsSelected == false)
+            goto reroll;
+        else if (subitems[index] is UploadableFile file)
+            return file;
+        return new();
+    }
 
     private bool IsMainFolderExist(string folderName)
     {
@@ -198,7 +241,14 @@ public partial class UploadPackViewModel : ObservableObject
     [RelayCommand] private void SelectAllItem() => SetSelectionState(true);
     [RelayCommand] private void UnSelectAllItem() => SetSelectionState(false);
 
-    [RelayCommand] private void FinishSelection() => CurrentPage = UploadPages.FillDetail;
+    [RelayCommand]
+    private void FinishSelection()
+    {
+        CurrentPage = UploadPages.FillDetail;
+        //Update icons preview
+        FillPreviewSourcesWithUserSetting();
+    }
+
     [RelayCommand] private void CancelSelectionRevert() => CurrentPage = UploadPages.SetWorkDirectory;
     #endregion
 
@@ -336,6 +386,20 @@ public partial class UploadPackViewModel : ObservableObject
     #endregion
 
     #region Filling page
+    private void InitializeFillInfoPage()
+    {
+        if (FixedIcons is null)
+            FixedIcons = new();
+        FixedIcons.CollectionChanged += UpdateProperties;
+    }
+
+    private void UpdateProperties(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(ShowOnFixedIconsHaveRemovableIcon));
+        OnPropertyChanged(nameof(IsFixedIconFull));
+        OnPropertyChanged(nameof(AllowAddingFixedIcon));
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(RepositoryOnGitName))]
     string repoDisplayName = string.Empty;
@@ -352,6 +416,8 @@ public partial class UploadPackViewModel : ObservableObject
                 if (RepoDisplayName[i] >= 'a' && RepoDisplayName[i] <= 'z')
                     bd.Append(RepoDisplayName[i]);
                 else if (RepoDisplayName[i] >= 'A' && RepoDisplayName[i] <= 'Z')
+                    bd.Append(RepoDisplayName[i]);
+                else if (RepoDisplayName[i] >= '0' && RepoDisplayName[i] <= '9')
                     bd.Append(RepoDisplayName[i]);
                 else
                 {
@@ -370,6 +436,9 @@ public partial class UploadPackViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PreviewOptionExplainer))]
+    [NotifyPropertyChangedFor(nameof(ShowBannerLocatorButton))]
+    [NotifyPropertyChangedFor(nameof(BannerLocatorContext))]
+    [NotifyPropertyChangedFor(nameof(ShowOnFixedIconPreviewOption))]
     PackPreviewOption previewOption = PackPreviewOption.UserDefined;
     //Gray out selection if it's banner and it's exist a file
     //Ungray the selection if the file is gone
@@ -377,6 +446,20 @@ public partial class UploadPackViewModel : ObservableObject
     //Hacky way to monitor the preview option
     partial void OnPreviewOptionChanged(PackPreviewOption value)
     {
+        //Update Preview sources
+        switch (value)
+        {
+            case PackPreviewOption.UserDefined:
+                FillPreviewSourcesWithUserSetting();
+                break;
+            case PackPreviewOption.Fixed:
+                FillPreviewSourcesWithFixedIcons();
+                break;
+            case PackPreviewOption.Banner:
+                FillPreviewSourcesWithSingleBanner();
+                break;
+        }
+        //Update banner text explainer event
         if (value == PackPreviewOption.Banner)
         {
             //Sub to event
@@ -388,6 +471,109 @@ public partial class UploadPackViewModel : ObservableObject
             //Unsub events
             Messenger.Default.Send(new MonitorForAppFocusMessage(false),
                 MessageToken.RequestSubToAppActivateEvent);
+        }
+    }
+
+    public Visibility ShowOnFixedIconPreviewOption => PreviewOption == PackPreviewOption.Fixed ? Visibility.Visible : Visibility.Collapsed;
+
+    private void FillPreviewSourcesWithUserSetting()
+    {
+        PreviewSources = new();
+        var userPrefs = SettingManager.Instance.PerkPreviewSelection;
+        foreach (var item in userPrefs)
+        {
+            if (Find(item.File) is UploadableFile result)
+            {
+                PreviewSources.Add(new LocalSourceDisplay(result.FilePath));
+            }
+        }
+        if (PreviewSources.Count < 4)
+        {
+            while (PreviewSources.Count != 4)
+            {
+                var rand = RandomIcon().FilePath;
+                if (!PreviewSources.Any(i => i.URL != rand))
+                    PreviewSources.Add(new LocalSourceDisplay(rand));
+            }
+        }
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowOnFixedIconsHaveRemovableIcon))]
+    [NotifyPropertyChangedFor(nameof(IsFixedIconFull))]
+    [NotifyPropertyChangedFor(nameof(AllowAddingFixedIcon))]
+    private ObservableCollection<IUploadableItem> fixedIcons = new();
+
+    public bool IsFixedIconFull => FixedIcons.Count >= 4;
+    public bool AllowAddingFixedIcon => !IsFixedIconFull;
+    public Visibility ShowOnFixedIconsHaveRemovableIcon => FixedIcons.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    private void FillPreviewSourcesWithFixedIcons()
+    {
+        PreviewSources = new();
+        foreach (var icon in FixedIcons)
+        {
+            PreviewSources.Add(new LocalSourceDisplay((icon as UploadableFile).FilePath));
+        }
+    }
+
+    private void FillPreviewSourcesWithSingleBanner()
+    {
+        PreviewSources = new();
+        if (Uploadables.FirstOrDefault(icon => icon.DisplayName == "Icon pack banner") is UploadableFile banner)
+        {
+            PreviewSources.Add(new LocalSourceDisplay(banner.FilePath));
+        }
+        else
+        {
+            //Fill with placeholder
+            PreviewSources.Add(new PlaceholderSourceDisplay());
+        }
+    }
+
+    [RelayCommand]
+    private void AddRandomFixedIcons()
+    {
+    roll_again:
+        var rand = RandomIcon();
+        if (FixedIcons.Any(icon => icon.Name == rand.Name))
+            goto roll_again;
+        PreviewSources.Add(new LocalSourceDisplay(rand.FilePath));
+        FixedIcons.Add(rand);
+    }
+
+    [RelayCommand]
+    private void AddThisIconAsFixedIcons(IUploadableItem selected)
+    {
+        if (selected is not UploadableFile)
+            return;
+        FixedIcons.Add(selected);
+        FillPreviewSourcesWithFixedIcons();
+    }
+
+    [RelayCommand]
+    private void RemoveThisIconFromFixedIcons(IUploadableItem selected)
+    {
+        if (selected is not UploadableFile)
+            return;
+        if (!FixedIcons.Any(icon => Equals(icon, selected)))
+            return;
+        FixedIcons.Remove(selected);
+        FillPreviewSourcesWithFixedIcons();
+    }
+
+
+    public Visibility ShowBannerLocatorButton => PreviewOption == PackPreviewOption.Banner ? Visibility.Visible : Visibility.Collapsed;
+
+    public string BannerLocatorContext
+    {
+        get
+        {
+            if (Uploadables.FirstOrDefault(i => i.DisplayName == "Icon pack banner") is IUploadableItem item)
+            {
+                return "Change banner";
+            }
+            return "Set banner";
         }
     }
 
@@ -428,11 +614,52 @@ public partial class UploadPackViewModel : ObservableObject
                 case PackPreviewOption.Fixed: return "Show pack preview based on creator option";
                 case PackPreviewOption.Banner: return "Show pack preview using banner" +
                         "\r\nBanner display only support image resolution 1280x300" +
-                        "\r\nBanner has to be .png file image type" +
-                        "\r\nPut the banner on selected folder and name it \".banner\"";
+                        "\r\nBanner has to be .png file image type";
                 default: return string.Empty;
             }
         }
+    }
+
+    [ObservableProperty]
+    ObservableCollection<IDisplayItem>? previewSources = new();
+
+    [RelayCommand]
+    private void GrabPathForPackBanner()
+    {
+        if (!OperatingSystem.IsWindows())
+            return;
+        if (!OperatingSystem.IsWindowsVersionAtLeast(7, 0))
+            return;
+        VistaOpenFileDialog browse = new()
+        {
+            Filter = "PNG Image|*.png",
+            FilterIndex = 0,
+            Multiselect = false,
+            ShowReadOnly = true,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            Title = "Select banner image to upload"
+        };
+        browse.FileOk += (sender, e) =>
+        {
+            if (e.Cancel) return;
+            if (Uploadables.FirstOrDefault(file => file.DisplayName == "Icon pack banner") is IUploadableItem item)
+            {
+                (item as UploadableFile).FilePath = (sender as VistaOpenFileDialog).FileName;
+            }
+            Uploadables.Add(new UploadableFile()
+            {
+                DisplayName = "Icon pack banner",
+                FilePath = (sender as VistaOpenFileDialog).FileName,
+                IsSelected = true
+            });
+
+            FillPreviewSourcesWithSingleBanner();
+            OnPropertyChanged(nameof(BannerLocatorContext));
+        };
+        var result = browse.ShowDialog();
+        if (!result.HasValue) return;
+        if (!result.Value) return;
     }
 
     [RelayCommand]

@@ -1,4 +1,6 @@
 ﻿using DBDIconRepo.ViewModel;
+using ModernWpf.Controls.Primitives;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,6 +14,11 @@ public partial class UploadPack : Page
     public UploadPack()
     {
         InitializeComponent();
+    }
+
+    private void OpenAttachedFlyout(object sender, RoutedEventArgs e)
+    {
+        FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
     }
 }
 
