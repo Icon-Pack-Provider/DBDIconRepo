@@ -316,22 +316,36 @@
                                      LabelPosition="Default" Click="OpenAttachedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:MenuFlyout>
-                                <MenuItem Header="Icons:" ItemsSource="{Binding Uploadables}"
-                                          ItemContainerStyle="{StaticResource menuForAdding}"/>
+                                <MenuItem Header="Icons" ItemsSource="{Binding Uploadables}"
+                                          ItemContainerStyle="{StaticResource menuForAdding}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE155;"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Random icon" Command="{Binding AddRandomFixedIconsCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:SymbolIcon Symbol="Refresh"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
                             </ui:MenuFlyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </ui:AppBarButton>
-                    <ui:AppBarButton Label="Add random" 
-                                     IsEnabled="{Binding AllowAddingFixedIcon}"
-                                     Command="{Binding AddRandomFixedIconsCommand}" 
-                                     Icon="Refresh" LabelPosition="Default"/>
                     <ui:AppBarButton Label="Remove" Icon="Remove" LabelPosition="Default" 
                                      Visibility="{Binding ShowOnFixedIconsHaveRemovableIcon}"
                                      Click="OpenAttachedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:MenuFlyout>
                                 <MenuItem Header="Icons:" ItemsSource="{Binding FixedIcons}"
-                                          ItemContainerStyle="{StaticResource menuForRemoving}"/>
+                                          ItemContainerStyle="{StaticResource menuForRemoving}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE155;"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="All" Command="{Binding RemoveAllFixedIconsCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE106;"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
                             </ui:MenuFlyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </ui:AppBarButton>

@@ -591,6 +591,12 @@ reroll:
         FillPreviewSourcesWithFixedIcons();
     }
 
+    [RelayCommand]
+    private void RemoveAllFixedIcons()
+    {
+        FixedIcons.Clear();
+        FillPreviewSourcesWithFixedIcons();
+    }
 
     public Visibility ShowBannerLocatorButton => PreviewOption == PackPreviewOption.Banner ? Visibility.Visible : Visibility.Collapsed;
 
