@@ -12,6 +12,7 @@ using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -83,6 +84,28 @@ public partial class UploadPackViewModel : ObservableObject
     #region Select icons
     [ObservableProperty]
     private ObservableCollection<IUploadableItem> uploadables = new();
+
+    [ObservableProperty] private Visibility thisWillHavePerks = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHavePortraits = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHavePowers = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHaveItems = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHaveAddons = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHaveStatus = Visibility.Collapsed;
+    [ObservableProperty] private Visibility thisWillHaveOfferings = Visibility.Collapsed;
+
+    partial void OnCurrentPageChanged(UploadPages value)
+    {
+        if (value != UploadPages.FillDetail)
+            return;
+        //Update list of available icons on pack
+        ThisWillHavePerks = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "Perks" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHavePortraits = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "CharPortraits" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHavePowers = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "Powers" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHaveItems = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "items" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHaveAddons = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "ItemAddons" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHaveStatus = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "StatusEffects" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+        ThisWillHaveOfferings = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "Favors" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private IUploadableItem? Find(string name, ObservableCollection<IUploadableItem> subitems = null)
     {
@@ -402,6 +425,7 @@ reroll:
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(RepositoryOnGitName))]
+    [NotifyCanExecuteChangedFor(nameof(UploadNewIconPackCommand))]
     string repoDisplayName = string.Empty;
 
     public string RepositoryOnGitName
@@ -439,6 +463,7 @@ reroll:
     [NotifyPropertyChangedFor(nameof(ShowBannerLocatorButton))]
     [NotifyPropertyChangedFor(nameof(BannerLocatorContext))]
     [NotifyPropertyChangedFor(nameof(ShowOnFixedIconPreviewOption))]
+    [NotifyCanExecuteChangedFor(nameof(UploadNewIconPackCommand))]
     PackPreviewOption previewOption = PackPreviewOption.UserDefined;
     //Gray out selection if it's banner and it's exist a file
     //Ungray the selection if the file is gone
@@ -492,7 +517,7 @@ reroll:
             while (PreviewSources.Count != 4)
             {
                 var rand = RandomIcon().FilePath;
-                if (!PreviewSources.Any(i => i.URL != rand))
+                if (!PreviewSources.Any(i => i.URL == rand))
                     PreviewSources.Add(new LocalSourceDisplay(rand));
             }
         }
@@ -502,6 +527,7 @@ reroll:
     [NotifyPropertyChangedFor(nameof(ShowOnFixedIconsHaveRemovableIcon))]
     [NotifyPropertyChangedFor(nameof(IsFixedIconFull))]
     [NotifyPropertyChangedFor(nameof(AllowAddingFixedIcon))]
+    [NotifyCanExecuteChangedFor(nameof(UploadNewIconPackCommand))]
     private ObservableCollection<IUploadableItem> fixedIcons = new();
 
     public bool IsFixedIconFull => FixedIcons.Count >= 4;
@@ -515,6 +541,7 @@ reroll:
         {
             PreviewSources.Add(new LocalSourceDisplay((icon as UploadableFile).FilePath));
         }
+        UploadNewIconPackCommand.NotifyCanExecuteChanged();
     }
 
     private void FillPreviewSourcesWithSingleBanner()
@@ -523,6 +550,7 @@ reroll:
         if (Uploadables.FirstOrDefault(icon => icon.DisplayName == "Icon pack banner") is UploadableFile banner)
         {
             PreviewSources.Add(new LocalSourceDisplay(banner.FilePath));
+            UploadNewIconPackCommand.NotifyCanExecuteChanged();
         }
         else
         {
@@ -540,6 +568,7 @@ reroll:
             goto roll_again;
         PreviewSources.Add(new LocalSourceDisplay(rand.FilePath));
         FixedIcons.Add(rand);
+        FillPreviewSourcesWithFixedIcons();
     }
 
     [RelayCommand]
@@ -580,6 +609,7 @@ reroll:
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSelectPreviewOption))]
     [NotifyPropertyChangedFor(nameof(ShowIfBannerStillNotExist))]
+    [NotifyCanExecuteChangedFor(nameof(UploadNewIconPackCommand))]
     bool isBannerNowExist;
 
     public bool CanSelectPreviewOption => !IsBannerNowExist;
@@ -593,7 +623,13 @@ reroll:
 
     public void CheckForBannerExistance()
     {
-        FileInfo banner = new(Path.Join(Path.Combine(WorkingDirectory, "Temp"), ".banner.png"));
+        var item = Uploadables.FirstOrDefault(i => i.DisplayName == "Icon pack banner");
+        if (item is not UploadableFile)
+        {
+            IsBannerNowExist = false;
+            return;
+        }
+        FileInfo banner = new((item as UploadableFile).FilePath);
         IsBannerNowExist = banner.Exists;
         if (IsBannerNowExist == false)
             IsWaitingForReturn = false;
@@ -604,10 +640,7 @@ reroll:
         get
         {
             if (IsBannerNowExist)
-                return "A preview option is locked to banner" +
-                    "\r\nRemove .banner file to select other option";
-            if (IsWaitingForReturn)
-                return "Awaiting for the return with a banner";
+                return "A preview option is now locked to banner";
             switch (PreviewOption)
             {
                 case PackPreviewOption.UserDefined: return "Show pack preview based on user setting";
@@ -647,19 +680,31 @@ reroll:
             {
                 (item as UploadableFile).FilePath = (sender as VistaOpenFileDialog).FileName;
             }
-            Uploadables.Add(new UploadableFile()
+            else
             {
-                DisplayName = "Icon pack banner",
-                FilePath = (sender as VistaOpenFileDialog).FileName,
-                IsSelected = true
-            });
+                Uploadables.Add(new UploadableFile()
+                {
+                    DisplayName = "Icon pack banner",
+                    FilePath = (sender as VistaOpenFileDialog).FileName,
+                    IsSelected = true
+                });
 
+            }            
             FillPreviewSourcesWithSingleBanner();
             OnPropertyChanged(nameof(BannerLocatorContext));
+            OnPropertyChanged(nameof(CanUploadPack));
         };
         var result = browse.ShowDialog();
         if (!result.HasValue) return;
         if (!result.Value) return;
+    }
+
+    [RelayCommand]
+    private void RemoveBanner()
+    {
+        Uploadables.Remove(Uploadables.First(i => i.DisplayName == "Icon pack banner"));
+        FillPreviewSourcesWithSingleBanner();
+        UploadNewIconPackCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand]
@@ -691,7 +736,22 @@ reroll:
     public Visibility IsNotUploadingPackRightNow
         => UploadingPack ? Visibility.Collapsed : Visibility.Visible;
 
-    [RelayCommand]
+    private bool CanUploadPack
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(RepoDisplayName))
+                return false;
+            if (PreviewOption == PackPreviewOption.Fixed && FixedIcons.Count != 4)
+                return false;
+            CheckForBannerExistance();
+            if (PreviewOption == PackPreviewOption.Banner && !IsBannerNowExist)
+                return false;
+            return true;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUploadPack))]
     private async Task UploadNewIconPack()
     {
         UploadingPack = true;

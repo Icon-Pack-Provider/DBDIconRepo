@@ -34,6 +34,7 @@
             PlaceholderBannerDisplay="{StaticResource PackPlaceholderBannerDisplay}"/>
 
         <cv:BoolToVisibility x:Key="boolToVisibility"/>
+        <cv:NullableBoolToVisibility x:Key="nullableBoolForcedVisibility"/>
         <cv:FilePathToLocalImageConverter x:Key="fileToLocalImage"/>
         <cv:UploadableFileOrFolderConverter x:Key="fileOrFolder"/>
         <cv:EnumPreviewOptionToIntConverter x:Key="PreviewOptionToInt"/>
@@ -43,6 +44,7 @@
                 <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
                                                              Value="True">
                     <Setter Property="ItemsSource" Value="{Binding SubItems}"/>
+                    <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource nullableBoolForcedVisibility}}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
                                                              Value="False">
@@ -54,11 +56,11 @@
                     </Setter>
                     <Setter Property="Command" Value="{Binding DataContext.AddThisIconAsFixedIconsCommand, Source={x:Reference rootPage}}"/>
                     <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+                    <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
                 </DataTrigger>
             </Style.Triggers>
 
             <Setter Property="Header" Value="{Binding DisplayName}"/>
-            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
         </Style>
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}"
                x:Key="menuForRemoving">
@@ -72,6 +74,10 @@
             </Setter>
             <Setter Property="Command" Value="{Binding DataContext.RemoveThisIconFromFixedIconsCommand, Source={x:Reference rootPage}}"/>
             <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+        </Style>
+        <Style TargetType="ui:FontIcon">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <Setter Property="Margin" Value="2,0"/>
         </Style>
     </Page.Resources>
 
@@ -216,25 +222,8 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="3">
                     <ComboBox IsSynchronizedWithCurrentItem="True"
                               IsEnabled="{Binding CanSelectPreviewOption}"
-                              SelectedIndex="{Binding PreviewOption, Mode=TwoWay, Converter={StaticResource PreviewOptionToInt}}">
-                        <ui:ControlHelper.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Pack preview" VerticalAlignment="Center"/>
-                                <Button VerticalAlignment="Center" Margin="5" Padding="0" Background="Transparent">
-                                    <ui:FontIcon Glyph="&#xE11B;" FontSize="12" />
-                                    <Button.ToolTip>
-                                        <ToolTip>
-                                            <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-                                        </ToolTip>
-                                    </Button.ToolTip>
-                                    <ui:FlyoutService.Flyout>
-                                        <ui:Flyout Placement="BottomEdgeAlignedLeft">
-                                            <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-                                        </ui:Flyout>
-                                    </ui:FlyoutService.Flyout>
-                                </Button>
-                            </StackPanel>
-                        </ui:ControlHelper.Header>
+                              SelectedIndex="{Binding PreviewOption, Mode=TwoWay, Converter={StaticResource PreviewOptionToInt}}"
+                              ui:ControlHelper.Header="Pack preview">
                         <ComboBoxItem Selector.IsSelected="True" Content="User defined set of icons"/>
                         <ComboBoxItem Content="Fixed set of icons"/>
                         <ComboBoxItem Content="Banner"/>
@@ -243,7 +232,25 @@
                             Margin="5,0" d:Content="Set banner"
                             VerticalAlignment="Bottom"
                             Visibility="{Binding ShowBannerLocatorButton}"
-                            Command="{Binding GrabPathForPackBannerCommand}"/>                    
+                            Command="{Binding GrabPathForPackBannerCommand}"/>
+                    <Button Content="Remove banner"
+                            Visibility="{Binding IsBannerNowExist, Converter={StaticResource boolToVisibility}}"
+                            VerticalAlignment="Bottom"
+                            Margin="5,0"
+                            Command="{Binding RemoveBannerCommand}"/>
+                    <Button VerticalAlignment="Bottom" Margin="5,0">
+                        <ui:FontIcon Glyph="&#xE11B;" />
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <ui:FlyoutService.Flyout>
+                            <ui:Flyout Placement="BottomEdgeAlignedLeft">
+                                <TextBlock Text="{Binding PreviewOptionExplainer}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                            </ui:Flyout>
+                        </ui:FlyoutService.Flyout>
+                    </Button>
                 </StackPanel>
 
                 <!--Preview-->
@@ -257,7 +264,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Rectangle Width="480" Fill="DimGray" Opacity="0.5"
-                               Grid.RowSpan="5"/>
+                               Grid.RowSpan="5" Margin="-12,-6"/>
                     <!--Banner preview-->
                     <ui:ListView ScrollViewer.CanContentScroll="False"
                                  MinHeight="112"
@@ -286,6 +293,21 @@
                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                                FontSize="20" FontWeight="Bold"
                                Margin="5,12"/>
+
+                    <TextBlock HorizontalAlignment="Left" Grid.Row="2" FontSize="14" Margin="12,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
+                                Author: <Hyperlink><Run Text="{Binding Config.GitUsername}"/></Hyperlink>
+                    </TextBlock>
+
+                    <StackPanel Orientation="Horizontal" Margin="12,4" Grid.Row="3">
+                        <TextBlock Text="Content: " FontSize="14" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <ui:FontIcon Glyph="&#xE18A;" FontFamily="Segoe MDL2 Assets" Margin="0,0,4,0" ToolTip="This icon pack contain perks icon" Visibility="{Binding ThisWillHavePerks}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain portraits icon" Visibility="{Binding ThisWillHavePortraits}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain killer powers icon" Visibility="{Binding ThisWillHavePowers}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain survivor items icon" Visibility="{Binding ThisWillHaveItems}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain power/item addons icon" Visibility="{Binding ThisWillHaveAddons}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain status effects icon" Visibility="{Binding ThisWillHaveStatus}"/>
+                        <ui:FontIcon Glyph="" FontFamily="Segoe MDL2 Assets" ToolTip="This icon pack contain offerings icon" Visibility="{Binding ThisWillHaveOfferings}"/>
+                    </StackPanel>
                 </Grid>
                 <StackPanel Grid.Row="4" Orientation="Vertical"
                             Margin="490,12,0,0"
