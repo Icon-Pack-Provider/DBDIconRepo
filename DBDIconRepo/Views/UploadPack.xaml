@@ -7,7 +7,7 @@
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       xmlns:cv="clr-namespace:DBDIconRepo.Converters"
-      mc:Ignorable="d" 
+      mc:Ignorable="d" Name="rootPage"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UploadPack">
     <Page.DataContext>
@@ -36,6 +36,43 @@
         <cv:BoolToVisibility x:Key="boolToVisibility"/>
         <cv:FilePathToLocalImageConverter x:Key="fileToLocalImage"/>
         <cv:UploadableFileOrFolderConverter x:Key="fileOrFolder"/>
+        <cv:EnumPreviewOptionToIntConverter x:Key="PreviewOptionToInt"/>
+
+        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}" x:Key="menuForAdding">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
+                                                             Value="True">
+                    <Setter Property="ItemsSource" Value="{Binding SubItems}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
+                                                             Value="False">
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Width="48" Height="48" 
+                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Command" Value="{Binding DataContext.AddThisIconAsFixedIconsCommand, Source={x:Reference rootPage}}"/>
+                    <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+                </DataTrigger>
+            </Style.Triggers>
+
+            <Setter Property="Header" Value="{Binding DisplayName}"/>
+            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
+        </Style>
+        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}"
+               x:Key="menuForRemoving">
+            <Setter Property="Header" Value="{Binding DisplayName}"/>
+            <Setter Property="Visibility" Value="{Binding IsSelected,Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
+            <Setter Property="Icon">
+                <Setter.Value>
+                    <Image Width="48" Height="48" 
+                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Command" Value="{Binding DataContext.RemoveThisIconFromFixedIconsCommand, Source={x:Reference rootPage}}"/>
+            <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
+        </Style>
     </Page.Resources>
 
     <Grid Margin="-12">
@@ -179,7 +216,7 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="3">
                     <ComboBox IsSynchronizedWithCurrentItem="True"
                               IsEnabled="{Binding CanSelectPreviewOption}"
-                              SelectedIndex="{Binding PreviewOption, Mode=TwoWay}">
+                              SelectedIndex="{Binding PreviewOption, Mode=TwoWay, Converter={StaticResource PreviewOptionToInt}}">
                         <ui:ControlHelper.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Pack preview" VerticalAlignment="Center"/>
@@ -257,33 +294,8 @@
                                      LabelPosition="Default" Click="OpenAttachedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:MenuFlyout>
-                                <MenuItem Header="Icons:" ItemsSource="{Binding Uploadables}">
-                                    <MenuItem.ItemContainerStyle>
-                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
-                                                             Value="True">
-                                                    <Setter Property="ItemsSource" Value="{Binding SubItems}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
-                                                             Value="False">
-                                                    <Setter Property="Icon">
-                                                        <Setter.Value>
-                                                            <Image Width="48" Height="48" 
-                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                    <Setter Property="Command" Value="{Binding DataContext.AddThisIconAsFixedIconsCommand,
-                                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/>
-                                                    <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                            
-                                            <Setter Property="Header" Value="{Binding DisplayName}"/>                                            
-                                            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
-                                        </Style>
-                                    </MenuItem.ItemContainerStyle>
-                                </MenuItem>
+                                <MenuItem Header="Icons:" ItemsSource="{Binding Uploadables}"
+                                          ItemContainerStyle="{StaticResource menuForAdding}"/>
                             </ui:MenuFlyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </ui:AppBarButton>
@@ -296,29 +308,8 @@
                                      Click="OpenAttachedFlyout">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:MenuFlyout>
-                                <MenuItem Header="Icons:" ItemsSource="{Binding FixedIcons}">
-                                    <MenuItem.ItemContainerStyle>
-                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource DefaultMenuItemStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=., Converter={StaticResource fileOrFolder}}"
-                                                             Value="False">
-                                                    <Setter Property="Icon">
-                                                        <Setter.Value>
-                                                            <Image Width="48" Height="48" 
-                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                    <Setter Property="Command" Value="{Binding DataContext.RemoveThisIconFromFixedIconsCommand,
-                                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/>
-                                                    <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                            
-                                            <Setter Property="Header" Value="{Binding DisplayName}"/>                                            
-                                            <Setter Property="Visibility" Value="{Binding IsSelected, Converter={StaticResource boolToVisibility}}"/>
-                                        </Style>
-                                    </MenuItem.ItemContainerStyle>
-                                </MenuItem>
+                                <MenuItem Header="Icons:" ItemsSource="{Binding FixedIcons}"
+                                          ItemContainerStyle="{StaticResource menuForRemoving}"/>
                             </ui:MenuFlyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </ui:AppBarButton>
