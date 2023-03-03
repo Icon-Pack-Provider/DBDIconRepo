@@ -62,12 +62,7 @@
                x:Key="menuForRemoving">
             <Setter Property="Header" Value="{Binding DisplayName}"/>
             <Setter Property="Visibility" Value="{Binding IsSelected,Mode=OneWay, Converter={StaticResource boolToVisibility}}"/>
-            <Setter Property="Icon">
-                <Setter.Value>
-                    <Image Width="48" Height="48" 
-                                                           Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Icon" Value="{StaticResource menuIconLoader}"/>
             <Setter Property="Command" Value="{Binding DataContext.RemoveThisIconFromFixedIconsCommand, Source={x:Reference rootPage}}"/>
             <Setter Property="CommandParameter" Value="{Binding Path=.}"/>
         </Style>
@@ -214,7 +209,17 @@
                          Grid.Row="1" Margin="0,5"
                          Text="{Binding RepoDescription, Mode=TwoWay}"
                          ui:ControlHelper.PlaceholderText="enter a short description about this pack here"/>
-
+                
+                <StackPanel Grid.Row="2" Orientation="Vertical"
+                            Margin="0,4,0,8">
+                    <CheckBox Content="Allow pack addtional infos"
+                              IsChecked="{Binding AllowPackMetadata, Mode=TwoWay}"/>
+                    <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
+                        Allow app to put other files beside icons onto repo
+                        <LineBreak/>such as pack.json and .banner.png
+                    </TextBlock>
+                </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" Grid.Row="3">
                     <ComboBox IsSynchronizedWithCurrentItem="True"
                               IsEnabled="{Binding CanSelectPreviewOption}"
@@ -222,7 +227,7 @@
                               ui:ControlHelper.Header="Pack preview">
                         <ComboBoxItem Selector.IsSelected="True" Content="User defined set of icons"/>
                         <ComboBoxItem Content="Fixed set of icons"/>
-                        <ComboBoxItem Content="Banner"/>
+                        <ComboBoxItem Content="Banner" Visibility="{Binding CanSetBannerAsPackPreview}"/>
                     </ComboBox>
                     <Button Content="{Binding BannerLocatorContext}"
                             Margin="5,0" d:Content="Set banner"
@@ -360,15 +365,14 @@
                     <StackPanel Orientation="Horizontal" 
                                 Visibility="{Binding IsUploadingPackRightNow}">
                         <ui:ProgressRing Width="32" Height="32"/>
-                        <TextBlock Text="Uplading..." VerticalAlignment="Center" Margin="4,0"/>
+                        <TextBlock Text="Uplading..." VerticalAlignment="Center" Margin="4,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Disabled"
                                   HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock Text="{Binding UploadProgresses}"/>
+                        <TextBlock Text="{Binding UploadProgresses}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                     </ScrollViewer>
                 </StackPanel>
             </Grid>
-        </ScrollViewer>
-        
+        </ScrollViewer>        
     </Grid>
 </Page>

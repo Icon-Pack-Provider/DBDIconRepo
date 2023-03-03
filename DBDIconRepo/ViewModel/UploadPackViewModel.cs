@@ -107,6 +107,26 @@ public partial class UploadPackViewModel : ObservableObject
         ThisWillHaveOfferings = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "Favors" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    private IEnumerable<string> GetAllSelectedPaths(ObservableCollection<IUploadableItem> subitems = null)
+    {
+        if (subitems == null)
+            subitems = Uploadables;
+
+        foreach (var item in subitems)
+        {
+            if (item is UploadableFile file && !Equals(file.IsSelected, false))
+            {
+                yield return file.FilePath;
+            }
+            else if (item is UploadableFolder sub && !Equals(sub.IsSelected, false))
+            {
+                foreach (var si in GetAllSelectedPaths(sub.SubItems))
+                    yield return si;
+            }
+        }
+    }
+
+
     private IUploadableItem? Find(string name, ObservableCollection<IUploadableItem> subitems = null)
     {
         if (subitems is null)
@@ -170,6 +190,9 @@ reroll:
                 continue; 
             }
             if (file.Extension != ".png")
+                continue;
+            //NoLicense not supported
+            if (file.FullName.Contains("NoLicense"))
                 continue;
             if (IconTypeIdentify.FromFile(file.FullName) is IBasic icon)
             {
@@ -720,6 +743,7 @@ reroll:
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSetBannerAsPackPreview))]
     bool allowPackMetadata;
 
     public Visibility CanSetBannerAsPackPreview
@@ -757,18 +781,60 @@ reroll:
         }
     }
 
+    private async Task<bool> IsRepoAlreadyExist()
+    {
+        try
+        {
+            var existanceCheck = await OctokitService.Instance.GitHubClientInstance.Repository.Get(Config.GitUsername, RepositoryOnGitName);
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private string GetPotentiallyWorkingDirectory() 
+        => Path.Join(SettingManager.Instance.CacheAndDisplayDirectory,
+            "Upload",
+            SettingManager.Instance.GitUsername,
+            RepositoryOnGitName);
+
+    private bool IsRepoAlreadyExistLocally()
+    {
+        string path = GetPotentiallyWorkingDirectory();
+        return Directory.Exists(path);
+    }
+
     [RelayCommand(CanExecute = nameof(CanUploadPack))]
     private async Task UploadNewIconPack()
     {
+        //Check if there's already cached project?
+        bool isExistLocally = IsRepoAlreadyExistLocally();
+        if (isExistLocally)
+        {
+            DialogHelper.Show("Please change the repository name or switch to update mode", "This repository already exist!");
+            return;
+        }
+        //Check if it's already on git?
+        bool isExistOnline = await IsRepoAlreadyExist();
+        if (isExistOnline)
+        {
+            DialogHelper.Show("Please change the repository name or switch to update mode", "This repository already exist!");
+            return;
+        }
+        //Just to be safe
+        if (Git.IsAnonymous)
+        {
+            DialogHelper.Show("Please login to GitHub to continue!", "How are you even got here?");
+            return;
+        }
+
         UploadingPack = true;
-        UploadProgresses.Insert(0, "\r\nMoving files");
-        var work = new DirectoryInfo(WorkingDirectory);
-        //Move everything out of working directory
-        var actualWorkFolder = new DirectoryInfo(WorkingDirectory);        
-        var temporalMove = new DirectoryInfo(Path.Combine(WorkingDirectory, "Temp"));
-        
-        var toGit = new DirectoryInfo(Path.Combine(WorkingDirectory, "Git"));
-        toGit.Create();
+        //Slightly changes: Copy everything instead of make changes to user selected folder
+        var gitWorkFolder = new DirectoryInfo(GetPotentiallyWorkingDirectory());
+        if (!gitWorkFolder.Exists)
+            gitWorkFolder.Create();
         //Local repo
         /* git init
          * git add README.md
@@ -777,37 +843,65 @@ reroll:
          * git remote add origin 
          * git push -u origin main */
         //Create local repo
-        UploadProgresses.Insert(0, $"\r\nCreating local repository at {toGit.FullName}");
-        Repository.Init(toGit.FullName);
-        using Repository localRepo = new(toGit.FullName);
-        //Move everything into initalized repo
-        var allStages = new List<string>();
+        UploadProgresses.Insert(0, $"\r\nCreating local repository at {gitWorkFolder.FullName}");
+        Repository.Init(gitWorkFolder.FullName);
+        using Repository localRepo = new(gitWorkFolder.FullName);
+        //Copy everything into initalized repo
+        var iconStages = new List<string>();
+        var bannerStages = new List<string>();
 
         await Task.Run(() =>
         {
-            var rootFolders = temporalMove.GetDirectories();
-            foreach (var folder in rootFolders)
+            var toGit = GetAllSelectedPaths().ToList();
+            foreach (var file in toGit)
             {
-                folder.MoveTo(Path.Combine(toGit.FullName, folder.Name));
-                allStages.AddRange(folder.GetFiles().Select(file => file.FullName));
-                UploadProgresses.Insert(0, $"\r\nMoving folder {folder.Name} to {Path.Combine(toGit.FullName, folder.Name)}");
-            }
-            var rootFiles = temporalMove.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-            foreach (var file in rootFiles)
-            {
-                file.MoveTo(Path.Join(toGit.FullName, file.Name));
-                UploadProgresses.Insert(0, $"\r\nMoving file {file.Name} to {Path.Combine(toGit.FullName, file.Name)}");
-                if (file.Name.Contains(".banner")
-                    || file.Name.Contains("pack.json"))
+                StringBuilder destination = new(gitWorkFolder.FullName);
+                if (destination[destination.Length - 1] != '\\')
+                    destination.Append('\\');
+                //Is it a banner?
+                if (file.Contains(".banner"))
+                {
+                    //Is it even selected as banner?
+                    if (PreviewOption != PackPreviewOption.Banner)
+                        continue;
+                    destination.Append(".banner.png");
+                    FileInfo t2 = new(destination.ToString());
+                    if (!t2.Directory.Exists)
+                        t2.Directory.Create();
+                    File.Copy(file, t2.FullName, true);
+                    //Stage
+                    bannerStages.Add(destination.ToString());
                     continue;
-                allStages.Add(file.FullName);
+                }
+                //Identify icon info
+                var info = IconTypeIdentify.FromPath(file);
+                //Then root 
+                destination.Append(IconTypeIdentify.GetMainFolderFromType(info));
+                destination.Append('\\');
+                //Then subfolder, if exist
+                if (info is IFolder sub)
+                {
+                    destination.Append(sub.Folder);
+                    destination.Append('\\');
+                }
+                //Filename
+                destination.Append(info.File);
+                destination.Append(".png");
+                //Copy
+                //Confirm destination
+                FileInfo target = new(destination.ToString());
+                if (!target.Directory.Exists)
+                    target.Directory.Create();
+                File.Copy(file, target.FullName, true);
+                //Then stage
+                iconStages.Add(destination.ToString());
             }
         });
         //Staging icons only
         await Task.Run(() =>
         {
             UploadProgresses.Insert(0, "\r\nStaging all icons as change made");
-            Commands.Stage(localRepo, allStages);
+            Commands.Stage(localRepo, iconStages);
         });
         //Commit
         var email = await Git.GitHubClientInstance.User.Email.GetAll();
@@ -819,6 +913,22 @@ reroll:
             UploadProgresses.Insert(0, "\r\nCommit changes with message \"Initial icons upload\"");
             localRepo.Commit("Initial icons upload", author, author);
         });
+        //Work on banner separately:
+        if (PreviewOption == PackPreviewOption.Banner)
+        {
+            //Stage
+            await Task.Run(() =>
+            {
+                UploadProgresses.Insert(0, "\r\nStaging banner into repo");
+                Commands.Stage(localRepo, bannerStages);
+            });
+            //Commit
+            await Task.Run(() =>
+            {
+                UploadProgresses.Insert(0, "\r\nCommit changes with message \"Banner upload\"");
+                localRepo.Commit("Banner upload", author, author);
+            });
+        }
         //
         //Remote add
 
@@ -845,7 +955,7 @@ reroll:
         UploadProgresses.Insert(0, $"\r\nPushing (Uploading) icons to newly created repository");
         var pushOption = new PushOptions()
         {
-            CredentialsProvider = (a,b,c) => GetLibGit2SharpCredential(),
+            CredentialsProvider = (a, b, c) => GetLibGit2SharpCredential(),
             OnPushTransferProgress = (current, total, bytes) =>
             {
                 UploadProgresses.Insert(0, $"\r\nPushing (Uploading) {current}/{total} {((float)current / (float)total):00.00}%");
@@ -867,14 +977,15 @@ reroll:
 
         UploadProgresses.Insert(0, "\r\nUpload icons finished, gathering pack metadata");
         //Upload pack banner and metadata
-        var packMetaData = await IconPack.Packs.GetPack(remoteRepo);
+        var packMetaData = await IconPack.Packs.CreateOne(remoteRepo);
         packMetaData.Name = RepoDisplayName;
         packMetaData.Overrides = new()
         {
             Name = RepoDisplayName,
-            Description = RepoDescription
+            Description = RepoDescription,
+            DisplayFiles = new(GetIconOverrideOption())
         };
-        string packJsonPath = Path.Join(toGit.FullName, "pack.json");
+        string packJsonPath = Path.Join(gitWorkFolder.FullName, "pack.json");
         var writer = File.CreateText(packJsonPath);
         UploadProgresses.Insert(0, "\r\nWriting pack metadata to file");
         await writer.WriteAsync(JsonSerializer.Serialize(packMetaData, new JsonSerializerOptions()
@@ -884,7 +995,6 @@ reroll:
         //Commit 
         List<string> allMetaData = new();
         allMetaData.Add(packJsonPath);
-        allMetaData.Add(Path.Join(toGit.FullName, ".banner.png"));
         //Stage
         Commands.Stage(localRepo, allMetaData);
         //Commit
@@ -899,6 +1009,17 @@ reroll:
         UploadProgresses.Insert(0, "\r\nFinished upload pack and all metadata, switching to mainpage");
         await Task.Delay(1000);
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
+    }
+
+    private string[] GetIconOverrideOption()
+    {        
+        switch (PreviewOption)
+        {
+            case PackPreviewOption.Fixed:
+                return FixedIcons.Select(i => $"{i.Name}.png").ToArray();
+            default:
+                return Array.Empty<string>();
+        }
     }
     #endregion
     private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
