@@ -91,8 +91,13 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="Upload pack" Tag="upload"
+                <ui:NavigationViewItem Content="Upload new pack" Tag="upload"
                                    Icon="Upload" Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
+                <ui:NavigationViewItem Content="Update existing pack" Tag="update" Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE1D7;"/>
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
                                    Icon="Contact"
                                    Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
