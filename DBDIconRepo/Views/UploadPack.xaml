@@ -72,7 +72,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Margin="-12">
+    <Grid Margin="0,-12,-12,-12">
         <!-- First page -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding ShowOnSetWorkDirectoryAndInvalidWorkDirectory}">
@@ -115,30 +115,50 @@
                 <HierarchicalDataTemplate x:Key="folderTemplate"
                                           DataType="{x:Type vm:IUploadableItem}" 
                                           ItemsSource="{Binding SubItems, Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsSelected}">
-                            <CheckBox.Content>
-                                <TextBlock VerticalAlignment="Center">
-                                    <Run Text="{Binding DisplayName}"/><LineBreak/>
-                                    <Run FontSize="12" Text="{Binding Path=DataContext.WorkingDirectory,
-                                        RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/><Run Text="{Binding SubFolderDisplay, Mode=OneWay}"/>\<Run FontSize="12" Text="{Binding Name}"/>
-                                </TextBlock>
-                            </CheckBox.Content>
-                        </CheckBox>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="0,4">
+                            <Run Text="{Binding DisplayName}"/><LineBreak/>
+                            <Run FontSize="12" Text="{Binding Path=DataContext.WorkingDirectory,
+                                RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/><Run Text="{Binding SubFolderDisplay, Mode=OneWay}"/>\<Run FontSize="12" Text="{Binding Name}"/>
+                        </TextBlock>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsSelected}" MinWidth="32"/>
+                        <Button Foreground="Transparent" Background="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.ColumnSpan="2" Command="{Binding ToggleIsSelectedCommand}"/>
+                    </Grid>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate x:Key="fileTemplate"
                                           DataType="{x:Type vm:IUploadableItem}">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsSelected}">
-                            <CheckBox.Content>
-                                <TextBlock VerticalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" Margin="0,4">
                                     <Run Text="{Binding DisplayName}"/><LineBreak/>
                                     <Run FontSize="12" Text="{Binding FilePath}"/>
-                                </TextBlock>
-                            </CheckBox.Content>
-                        </CheckBox>
-                    </StackPanel>
+                        </TextBlock>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding IsSelected}" MinWidth="32"/>
+                        <Button Foreground="Transparent" Background="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.ColumnSpan="3" Command="{Binding ToggleIsSelectedCommand}"/>
+
+                        <Button Grid.Column="1" Click="OpenAttachedFlyout" Margin="8,0" Padding="2">
+                            <ui:FontIcon Glyph="&#xE18B;" FontSize="16"/>
+                            <ui:FlyoutBase.AttachedFlyout>
+                                <ui:Flyout Content="{StaticResource menuIconLoader}" Placement="BottomEdgeAlignedRight"/>
+                            </ui:FlyoutBase.AttachedFlyout>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="{StaticResource menuIconLoader}" Width="128" Height="128"
+                                         Placement="Bottom" VerticalOffset="4" HorizontalOffset="-104"/>
+                            </ToolTipService.ToolTip>
+                        </Button>
+                    </Grid>
                 </HierarchicalDataTemplate>
                 <local:UploadItemTemplator x:Key="itemTemplates"
                                            UploadableFolderTemplator="{StaticResource folderTemplate}"

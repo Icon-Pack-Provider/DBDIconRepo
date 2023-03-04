@@ -1107,6 +1107,8 @@ public partial class UploadableFolder : ObservableObject, IUploadableItem
     [ObservableProperty]
     private bool isExpand = true;
 
+    [RelayCommand] private void ToggleIsSelected() => IsSelected = !IsSelected;
+
     public string SubFolderDisplay
         => $"{(Parent is not null ? "\\" : "")}{(Parent is not null ? Parent.Name : "")}";
 
@@ -1164,6 +1166,9 @@ public partial class UploadableFile : ObservableObject, IUploadableItem
 
     [ObservableProperty]
     private bool isExpand = true;
+
+    [RelayCommand]
+    private void ToggleIsSelected() => IsSelected = !IsSelected;
 
     partial void OnIsSelectedChanged(bool? value)
     {

@@ -20,6 +20,11 @@ public partial class UploadPack : Page
     {
         FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
     }
+
+    private void OpenAttachFlyoutOnHover(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+    }
 }
 
 public class UploadItemTemplator : DataTemplateSelector
