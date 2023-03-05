@@ -61,25 +61,34 @@ public partial class UploadPackViewModel : ObservableObject
         //Check working directory
         DirectoryInfo folder = new(browse.SelectedPath);
         //Is this empty folder?
-        if (folder.GetFiles("*.png", SearchOption.AllDirectories).Length < 1) return;
+        if (folder.GetFiles("*.png", SearchOption.AllDirectories).Length < 1)
+        {
+            SelectFolderErrorMessage = "No icon found!\r\nTry other folder?";
+            CurrentPage = UploadPages.InvalidWorkDirectory;
+            return;
+        }
         //Check if there's a trace of .git
         var findDotGit = folder.GetDirectories(".git");
-        if (findDotGit.Length > 0 && findDotGit.FirstOrDefault() is DirectoryInfo dotGitFolder) 
+        if (findDotGit.Length > 0 && findDotGit.FirstOrDefault() is DirectoryInfo dotGitFolder && dotGitFolder.Exists) 
         {
             //Throw error
-            DialogHelper.Show("This folder is already exist as other icon packs," +
-                "\r\nplease use update pack instead");
+            SelectFolderErrorMessage = "This folder is already exist as other icon packs!\r\nplease use update pack instead.";
+            CurrentPage = UploadPages.InvalidWorkDirectory;
             return;
         }
 
         WorkingDirectory = folder.FullName;
         CurrentPage = UploadPages.Preparing;
+
         //Let uploader select which icons to upload:
         DetermineUploadableItems().Await(() =>
         {
             CurrentPage = UploadPages.SelectIcons;
         });
     }
+
+    [ObservableProperty]
+    private string selectFolderErrorMessage;
 
     #region Select icons
     [ObservableProperty]

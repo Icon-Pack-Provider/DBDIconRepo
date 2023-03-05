@@ -89,10 +89,8 @@
                        FontSize="24" 
                        TextAlignment="Center"
                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                       Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}">
-                No icons found on directory
-                <LineBreak/>Try other folder?
-            </TextBlock>
+                       Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}"
+                       Text="{Binding SelectFolderErrorMessage}"/>
         </StackPanel>
 
         <Grid Visibility="{Binding ShowOnPreparingPack}">
