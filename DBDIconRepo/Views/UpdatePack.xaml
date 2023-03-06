@@ -4,11 +4,99 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DBDIconRepo.Views"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UpdatePack">
 
-    <Grid>
-        
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                <ComboBoxItem>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--Repository icon?-->
+                        <Image Width="32" Height="32" Grid.Column="0"/>
+
+                        <!--Infos-->
+                        <StackPanel>
+                            <TextBlock Text="Repository name" FontWeight="Bold" FontSize="18"/>
+                            <TextBlock Text="https://www.github.com/user/repository" FontSize="14"/>
+                        </StackPanel>
+                    </Grid>
+                </ComboBoxItem>
+            </ComboBox>
+            <Button Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" Margin="6,0,0,0"
+                    VerticalAlignment="Stretch" Width="64"
+                    Grid.Column="1" ToolTip="Open this repository on GitHub">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:FontIcon Glyph="&#xE8A7;" FontSize="24" Margin="5"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+
+        <!--Infos-->
+        <Grid Grid.Row="1" Margin="0,8">
+            <!--Step 1: Select folder to update:-->
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed">
+                <Button HorizontalAlignment="Left"
+                    Command="{Binding SetWorkingDirectoryCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:FontIcon Glyph="&#xE197;" FontSize="24"/>
+                        <TextBlock Text="Locate folder with new icons" HorizontalAlignment="Left" Margin="4,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                   Visibility="{Binding ShowOnSetWorkDirectory}"/>
+                    </StackPanel>
+                </Button>
+                <TextBlock HorizontalAlignment="Left" FontSize="18" 
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}">
+                    No icons found on directory! Try other folder?
+                </TextBlock>
+            </StackPanel>
+            
+            <!--Step 1.1 Check if it's same folder, clone repo etc.-->
+            <!--Step 2 Let uploader select folder-->
+            <!--TODO: Copy treeview from upload page-->            
+            <!--Step 2.1 Check for changes-->
+            
+            <!--Step 3 Ask for input of commit message-->
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox>
+                    <ui:ControlHelper.PlaceholderText>
+                        Update title message. Eg. "Add stuff"
+                    </ui:ControlHelper.PlaceholderText>
+                </TextBox>
+                <TextBox AcceptsReturn="True" AcceptsTab="True"
+                         Grid.Row="1" Margin="0,4"
+                         Height="128">
+                    <ui:ControlHelper.PlaceholderText>
+                        Further elaborate on update title
+                        Eg. A list of added icons
+                    </ui:ControlHelper.PlaceholderText>
+                </TextBox>
+                <Button Grid.Row="2" Content="Update"/>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>
