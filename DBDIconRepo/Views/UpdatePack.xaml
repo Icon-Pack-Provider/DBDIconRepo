@@ -5,9 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DBDIconRepo.Views"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UpdatePack">
+    <Page.DataContext>
+        <vm:UpdatePackViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -52,9 +56,8 @@
         <!--Infos-->
         <Grid Grid.Row="1" Margin="0,8">
             <!--Step 1: Select folder to update:-->
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed">
-                <Button HorizontalAlignment="Left"
-                    Command="{Binding SetWorkingDirectoryCommand}">
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="{Binding ShowOnSetNewIconsDirectory}">
+                <Button HorizontalAlignment="Left" Command="{Binding SetWorkingDirectoryCommand}">
                     <StackPanel Orientation="Horizontal">
                         <ui:FontIcon Glyph="&#xE197;" FontSize="24"/>
                         <TextBlock Text="Locate folder with new icons" HorizontalAlignment="Left" Margin="4,0"
@@ -65,7 +68,7 @@
                 </Button>
                 <TextBlock HorizontalAlignment="Left" FontSize="18" 
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                           Visibility="{Binding ShowOnInvalidWorkDirectory, Mode=OneWay}">
+                           Visibility="{Binding ShowOnInvalidIconDirectory, Mode=OneWay}">
                     No icons found on directory! Try other folder?
                 </TextBlock>
             </StackPanel>
@@ -76,7 +79,8 @@
             <!--Step 2.1 Check for changes-->
             
             <!--Step 3 Ask for input of commit message-->
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                  Visibility="{Binding ShowOnCommitMessage}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
