@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
+using DBDIconRepo.Helper.Uploadable;
 using DBDIconRepo.Model;
+using DBDIconRepo.Model.Uploadable;
 using DBDIconRepo.Service;
-using GameFinder.Common;
 using IconInfo;
 using IconInfo.Information;
 using IconInfo.Internal;
@@ -12,7 +13,6 @@ using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -116,185 +116,92 @@ public partial class UploadPackViewModel : ObservableObject
         ThisWillHaveOfferings = Uploadables.Any(folder => folder is UploadableFolder && folder.Name == "Favors" && folder.IsSelected != false) ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private IEnumerable<string> GetAllSelectedPaths(ObservableCollection<IUploadableItem> subitems = null)
-    {
-        if (subitems == null)
-            subitems = Uploadables;
-
-        foreach (var item in subitems)
-        {
-            if (item is UploadableFile file && !Equals(file.IsSelected, false))
-            {
-                yield return file.FilePath;
-            }
-            else if (item is UploadableFolder sub && !Equals(sub.IsSelected, false))
-            {
-                foreach (var si in GetAllSelectedPaths(sub.SubItems))
-                    yield return si;
-            }
-        }
-    }
-
-
-    private IUploadableItem? Find(string name, ObservableCollection<IUploadableItem> subitems = null)
-    {
-        if (subitems is null)
-            subitems = Uploadables;
-        foreach (var item in subitems)
-        {
-            if (item is UploadableFolder sub)
-            {
-                var res = Find(name, sub.SubItems);
-                if (res is not null)
-                    return res;
-                continue;
-            }
-            if (item.IsSelected == false)
-                continue;
-            if (item.Name == name)
-                return item;
-        }
-        return null;
-    }
-
-    private UploadableFile RandomIcon(ObservableCollection<IUploadableItem> subitems = null)
-    {
-        if (subitems is null)
-            subitems = Uploadables;
-reroll:
-        int index = Random.Shared.Next(0, subitems.Count);
-        if (subitems[index] is UploadableFolder folder)
-        {
-            if (subitems[index].IsSelected.HasValue && subitems[index].IsSelected == false)
-                goto reroll;
-            return RandomIcon(folder.SubItems);
-        }
-        if (subitems[index].IsSelected.HasValue && subitems[index].IsSelected == false)
-            goto reroll;
-        else if (subitems[index] is UploadableFile file)
-            return file;
-        return new();
-    }
-
-    private bool IsMainFolderExist(string folderName)
-    {
-        foreach (var item in Uploadables)
-        {
-            if (item is UploadableFolder folder && folder.Name == folderName)
-                return true;
-        }
-        return false;
-    }
-
     [RelayCommand]
     public async Task DetermineUploadableItems()
     {
         Uploadables = new();
         DirectoryInfo dir = new(WorkingDirectory);
-        var files = dir.GetFiles("*.*", SearchOption.AllDirectories);
+        var files = dir.GetFiles("*.png", SearchOption.AllDirectories);
         foreach (var file in files)
         {
             if (file.FullName.Contains(".banner.png"))
-            { 
-                continue; 
-            }
-            if (file.Extension != ".png")
+            {
+                Uploadables.Add(new UploadableFile()
+                {
+                    DisplayName = "Icon pack banner",
+                    FilePath = file.FullName,
+                    Name = ".banner"
+                });
                 continue;
+            }
             //NoLicense not supported
             if (file.FullName.Contains("NoLicense"))
                 continue;
-            if (IconTypeIdentify.FromFile(file.FullName) is IBasic icon)
+            if (IconTypeIdentify.FromFile(file.FullName) is not IBasic icon)
+                continue;
+            if (icon is UnknownIcon)
+                continue;
+            string mainFolder = IconTypeIdentify.GetMainFolderFromType(icon);
+            if (!Uploadables.IsMainFolderExist(mainFolder))
             {
-                if (icon is UnknownIcon)
-                    continue;
-                string mainFolder = IconTypeIdentify.GetMainFolderFromType(icon);
-                if (!IsMainFolderExist(mainFolder))
+                bool isFound = Info.Folders.TryGetValue(mainFolder, out MainFolder foundedMain);
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
-                    bool isFound = Info.Folders.TryGetValue(mainFolder, out MainFolder foundedMain);
-                    await Application.Current.Dispatcher.InvokeAsync(async () =>
+                    Uploadables.Add(new UploadableFolder()
                     {
-                        Uploadables.Add(new UploadableFolder()
-                        {
-                            Name = mainFolder,
-                            DisplayName = foundedMain.Name
-                        });
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);
-                }
-                if (Uploadables.FirstOrDefault(find => find.Name == mainFolder) is UploadableFolder mainUploadFolder)
+                        Name = mainFolder,
+                        DisplayName = foundedMain.Name
+                    });
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
+            }
+            if (Uploadables.FirstOrDefault(find => find.Name == mainFolder) is UploadableFolder mainUploadFolder)
+            {
+                //Subfolder
+                IUploadableItem? toWorkOn = mainUploadFolder; //This will sure change to subfolder if its exist
+                IFolder? isFolder = icon as IFolder;
+                if (isFolder is not null && !string.IsNullOrEmpty(isFolder.Folder))
                 {
-                    //Subfolder
-                    IUploadableItem? toWorkOn = mainUploadFolder; //This will sure change to subfolder if its exist
-                    IFolder? isFolder = icon as IFolder;
-                    if (isFolder is not null && !string.IsNullOrEmpty(isFolder.Folder))
+                    if (!mainUploadFolder.SubItems.Any(sub => sub.Name == isFolder.Folder))
                     {
-                        if (!mainUploadFolder.SubItems.Any(sub => sub.Name == isFolder.Folder))
+                        //No subfolder, add:
+                        var subFolderInfo = Info.SubFolders[isFolder.Folder];
+                        await Application.Current.Dispatcher.InvokeAsync(async () =>
                         {
-                            //No subfolder, add:
-                            var subFolderInfo = Info.SubFolders[isFolder.Folder];
-                            await Application.Current.Dispatcher.InvokeAsync(async () =>
+                            mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
                             {
-                                mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
-                                {
-                                    Name = subFolderInfo.Folder,
-                                    DisplayName = subFolderInfo.Name,
-                                    SubItems = new()
-                                });
-                            }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                            System.Windows.Threading.DispatcherPriority.Send :
-                            System.Windows.Threading.DispatcherPriority.Background);
-                            
-                        }
-                        toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
+                                Name = subFolderInfo.Folder,
+                                DisplayName = subFolderInfo.Name,
+                                SubItems = new()
+                            });
+                        }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                        System.Windows.Threading.DispatcherPriority.Send :
+                        System.Windows.Threading.DispatcherPriority.Background);
+
                     }
-                    await Application.Current.Dispatcher.InvokeAsync(async () =>
-                    {
-                        (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
-                        {
-                            Name = icon.File,
-                            DisplayName = icon.Name,
-                            FilePath = file.FullName
-                        });
-                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                    System.Windows.Threading.DispatcherPriority.Send :
-                    System.Windows.Threading.DispatcherPriority.Background);                    
+                    toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
                 }
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
+                {
+                    (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
+                    {
+                        Name = icon.File,
+                        DisplayName = icon.Name,
+                        FilePath = file.FullName
+                    });
+                }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                System.Windows.Threading.DispatcherPriority.Send :
+                System.Windows.Threading.DispatcherPriority.Background);
             }
             continue;
         }
     }
 
-    private void SetCollapseState(bool state, ObservableCollection<IUploadableItem>? sub = null)
-    {
-        if (sub is null)
-            sub = Uploadables;
-        foreach (var item in sub)
-        {
-            if (item is UploadableFile)
-                continue;
-            if (item is UploadableFolder folder && folder.SubItems is not null && folder.SubItems.Count > 0)
-                SetCollapseState(state, folder.SubItems);
-            item.IsExpand = state;
-        }
-    }
-
-    [RelayCommand] private void CollapseAllFolder() => SetCollapseState(false);
-    [RelayCommand] private void ExpandAllFolder() => SetCollapseState(true);
-
-    private void SetSelectionState(bool state, ObservableCollection<IUploadableItem>? sub = null)
-    {
-        if (sub is null)
-            sub = Uploadables;
-        foreach (var item in sub)
-        {
-            if (item is UploadableFolder folder && folder.SubItems is not null && folder.SubItems.Count > 0)
-                SetSelectionState(state, folder.SubItems);
-            item.IsSelected = state;
-        }
-    }
-    [RelayCommand] private void SelectAllItem() => SetSelectionState(true);
-    [RelayCommand] private void UnSelectAllItem() => SetSelectionState(false);
+    [RelayCommand] private void CollapseAllFolder() => Uploadables.SetExpansionState(false);
+    [RelayCommand] private void ExpandAllFolder() => Uploadables.SetExpansionState(true);
+    [RelayCommand] private void SelectAllItem() => Uploadables.SetSelectionState(true);
+    [RelayCommand] private void UnSelectAllItem() => Uploadables.SetSelectionState(false);
 
     [RelayCommand]
     private void FinishSelection()
@@ -539,7 +446,7 @@ reroll:
         var userPrefs = SettingManager.Instance.PerkPreviewSelection;
         foreach (var item in userPrefs)
         {
-            if (Find(item.File) is UploadableFile result)
+            if (Uploadables.SearchFile(item.File) is UploadableFile result)
             {
                 PreviewSources.Add(new LocalSourceDisplay(result.FilePath));
             }
@@ -548,7 +455,7 @@ reroll:
         {
             while (PreviewSources.Count != 4)
             {
-                var rand = RandomIcon().FilePath;
+                var rand = Uploadables.GetRandomIcon().FilePath;
                 if (!PreviewSources.Any(i => i.URL == rand))
                     PreviewSources.Add(new LocalSourceDisplay(rand));
             }
@@ -595,7 +502,7 @@ reroll:
     private void AddRandomFixedIcons()
     {
     roll_again:
-        var rand = RandomIcon();
+        var rand = Uploadables.GetRandomIcon();
         if (FixedIcons.Any(icon => icon.Name == rand.Name))
             goto roll_again;
         PreviewSources.Add(new LocalSourceDisplay(rand.FilePath));
@@ -861,7 +768,7 @@ reroll:
 
         await Task.Run(() =>
         {
-            var toGit = GetAllSelectedPaths().ToList();
+            var toGit = Uploadables.GetAllSelectedPaths().ToList();
             foreach (var file in toGit)
             {
                 StringBuilder destination = new(gitWorkFolder.FullName);
@@ -1085,120 +992,6 @@ reroll:
         ? Visibility.Visible : Visibility.Collapsed;
 
     #endregion
-}
-
-public interface IUploadableItem
-{
-    /// <summary>
-    /// Use as folder path eg. Perks, CharPortraits
-    /// </summary>
-    string Name { get; set; }
-    /// <summary>
-    /// Explain what it was eg.Perks icon, Portrait icons etc.
-    /// </summary>
-    string DisplayName { get; set; }
-    bool? IsSelected { get; set; }
-    bool IsExpand { get; set; }
-    UploadableFolder? Parent { get; }
-}
-
-public partial class UploadableFolder : ObservableObject, IUploadableItem
-{
-    [ObservableProperty]
-    private string name = "";
-
-    [ObservableProperty]
-    private string displayName = "";
-
-    [ObservableProperty]
-    private bool? isSelected = true;
-
-    [ObservableProperty]
-    private bool isExpand = true;
-
-    [RelayCommand] private void ToggleIsSelected() => IsSelected = !IsSelected;
-
-    public string SubFolderDisplay
-        => $"{(Parent is not null ? "\\" : "")}{(Parent is not null ? Parent.Name : "")}";
-
-    partial void OnIsSelectedChanged(bool? value)
-    {
-        if (Parent is not null)
-            Parent.NotifyChildSelectionChanged();
-        //Update child to match
-        if (value is null)
-            return;
-        foreach (var child in SubItems)
-        {
-            child.IsSelected = value;
-        }
-    }
-
-    [ObservableProperty]
-    private ObservableCollection<IUploadableItem> subItems = new();
-
-    UploadableFolder? parent = null;
-    public UploadableFolder? Parent
-    {
-        get => parent;
-        private set => parent = value;
-    }
-
-    public UploadableFolder(UploadableFolder? root = null)
-    {
-        this.parent = root;
-    }
-
-    internal void NotifyChildSelectionChanged()
-    {
-        var bools = SubItems.Select(i => i.IsSelected).Distinct().ToList();
-        if (bools.Count <= 1)
-            IsSelected = bools[0];
-        else
-            IsSelected = null;
-    }
-}
-
-public partial class UploadableFile : ObservableObject, IUploadableItem
-{
-    [ObservableProperty]
-    private string name = "";
-
-    [ObservableProperty]
-    private string displayName = "";
-
-    [ObservableProperty]
-    private string filePath = "";
-
-    [ObservableProperty]
-    private bool? isSelected = true;
-
-    [ObservableProperty]
-    private bool isExpand = true;
-
-    [RelayCommand]
-    private void ToggleIsSelected() => IsSelected = !IsSelected;
-
-    partial void OnIsSelectedChanged(bool? value)
-    {
-        if (Parent is not null)
-        {
-            //Notify parent
-            Parent.NotifyChildSelectionChanged();
-        }
-    }
-
-    UploadableFolder? parent = null;
-    public UploadableFolder? Parent
-    {
-        get => parent;
-        private set => parent = value;
-    }
-
-    public UploadableFile(UploadableFolder? root = null)
-    {
-        parent = root;
-    }
 }
 
 public enum UploadPages

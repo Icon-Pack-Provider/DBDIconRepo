@@ -1,6 +1,5 @@
-﻿using DBDIconRepo.ViewModel;
+﻿using DBDIconRepo.Model.Uploadable;
 using ModernWpf.Controls.Primitives;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
