@@ -87,6 +87,25 @@ public partial class OctokitService : ObservableObject
         return Array.Empty<byte>();
     }
 
+    public LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
+    {
+        if (IsAnonymous)
+            throw new Exception();
+        return new LibGit2Sharp.UsernamePasswordCredentials()
+        {
+            Username = LoginUsername,
+            Password = new SecureSettingService().GetSecurePassword()
+        };
+    }
+    /*private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
+    {
+        return new LibGit2Sharp.UsernamePasswordCredentials()
+        {
+            Username = Config.GitUsername,
+            Password = new SecureSettingService().GetSecurePassword()
+        };
+    }*/
+
     public static OctokitService Instance 
         => Singleton<OctokitService>.Instance;
 }

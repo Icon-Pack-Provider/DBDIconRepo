@@ -212,12 +212,7 @@ public partial class UpdatePackViewModel : ObservableObject
             if (file.FullName.Contains(".banner.png"))
             {
                 //New banner?
-                NewPotentialIcons.Add(new UploadableFile()
-                {
-                    DisplayName = "Icon pack banner",
-                    FilePath = file.FullName,
-                    Name = ".banner"
-                });
+                NewPotentialIcons.AddOrUpdateBanner(file.FullName);
                 continue;
             }
             //NoLicense not supported, for now...
@@ -436,20 +431,11 @@ public partial class UpdatePackViewModel : ObservableObject
         //Push
         repository.Network.Push(onlineRemote, "HEAD", @$"refs/heads/{selected.Repository.DefaultBranch}", new PushOptions
         {
-            CredentialsProvider = (a,b,c) => GetLibGit2SharpCredential()
+            CredentialsProvider = (a,b,c) => OctokitService.Instance.GetLibGit2SharpCredential()
         });
         DialogHelper.Show("Update pack completed!");
         await Task.Delay(1000);
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
-    }
-
-    private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
-    {
-        return new LibGit2Sharp.UsernamePasswordCredentials()
-        {
-            Username = Config.GitUsername,
-            Password = new SecureSettingService().GetSecurePassword()
-        };
     }
 }
 

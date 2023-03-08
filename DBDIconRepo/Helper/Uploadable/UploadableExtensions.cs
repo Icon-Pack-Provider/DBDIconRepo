@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DBDIconRepo.Helper.Uploadable;
 
@@ -161,5 +162,37 @@ public static class UploadableExtensions
                 SetSelectionState(folder.SubItems, state);
             item.IsSelected = state;
         }
+    }
+
+    const string bannerText = "Icon pack banner";
+    public static void AddOrUpdateBanner(this ObservableCollection<IUploadableItem> root, string bannerPath)
+    {
+        if (root.FirstOrDefault(i => i.DisplayName == bannerText) is not UploadableFile file)
+        {
+            root.Add(new UploadableFile()
+            {
+                Name = ".banner",
+                DisplayName = bannerText,
+                FilePath = bannerPath,
+                IsSelected = true,
+                IsExpand = true
+            });
+            return;
+        }
+        file.FilePath = bannerPath;
+    }
+
+    public static bool IsBannerExist(this ObservableCollection<IUploadableItem> root)
+    {
+        if (root.FirstOrDefault(i => i.DisplayName == bannerText) is UploadableFile file)
+            return true;
+        return false;
+    }
+
+    public static IUploadableItem? GetBanner(this ObservableCollection<IUploadableItem> root)
+    {
+        if (root.FirstOrDefault(i => i.DisplayName == bannerText) is UploadableFile file)
+            return file;
+        return null;
     }
 }

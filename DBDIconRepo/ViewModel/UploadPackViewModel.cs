@@ -126,12 +126,7 @@ public partial class UploadPackViewModel : ObservableObject
         {
             if (file.FullName.Contains(".banner.png"))
             {
-                Uploadables.Add(new UploadableFile()
-                {
-                    DisplayName = "Icon pack banner",
-                    FilePath = file.FullName,
-                    Name = ".banner"
-                });
+                Uploadables.AddOrUpdateBanner(file.FullName);
                 continue;
             }
             //NoLicense not supported
@@ -213,139 +208,6 @@ public partial class UploadPackViewModel : ObservableObject
     [RelayCommand] private void CancelSelectionRevert() => CurrentPage = UploadPages.SetWorkDirectory;
     #endregion
 
-    #region Preparing page
-
-    public async Task PrepareWorkingFolder()
-    {
-        //Ask to sort directory
-        do
-        {
-            IsWaitingForPermissionToMoveResponse = PermissionToSort == SortFolderPermissionResponse.Waiting;
-            TextDisplayWhileWaitingForPermissionToMoveResponse += '.';
-            if (TextDisplayWhileWaitingForPermissionToMoveResponse.Length > 3)
-                TextDisplayWhileWaitingForPermissionToMoveResponse = "";
-            await Task.Delay(750);
-        }
-        while (PermissionToSort == SortFolderPermissionResponse.Waiting);
-        IsWaitingForPermissionToMoveResponse = false;
-        if (PermissionToSort == SortFolderPermissionResponse.Allow)
-        {
-            IsSorting = true;
-            SortWorkingFolder().Await(() =>
-            {
-                IsSorting = false;
-            });
-        }
-    }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowWhileSorting))]
-    bool isSorting = false;
-
-    [ObservableProperty]
-    int sortMaxProgress = 1;
-
-    [ObservableProperty]
-    int sortCurrentProgress;
-
-    public Visibility ShowWhileSorting => IsSorting == true ? Visibility.Visible : Visibility.Collapsed;
-
-    [ObservableProperty]
-    string sortingProgress = "";
-
-    [RelayCommand]
-    private async Task SortWorkingFolder()
-    {
-        //Move files into a new folder inside workingfolder name "NotIcons"
-        //Sort folder
-        await Task.Run(async () =>
-        {
-            var allFiles = Directory.GetFiles(WorkingDirectory, "*.*", SearchOption.AllDirectories);
-            var allDirs = Directory.GetDirectories(WorkingDirectory);
-            var tempIcons = new DirectoryInfo(Path.Combine(WorkingDirectory, "Temp"));
-            var notIcons = new DirectoryInfo(Path.Combine(WorkingDirectory, "NotIcon"));
-            if (!tempIcons.Exists)
-                tempIcons.Create();
-            if (!notIcons.Exists)
-                notIcons.Create();
-            SortMaxProgress = allFiles.Length;
-            for (int i = 0; i < allFiles.Length; i++)
-            {
-                SortCurrentProgress = i;
-                string? file = allFiles[i];
-                SortingProgress = $"Sorting files {i}/{allFiles.Length}\r\n{file}";
-                var info = new FileInfo(file);
-                var name = Path.GetFileNameWithoutExtension(file);
-                if (info.Extension != ".png")
-                {
-                    string newPath = file.Replace(WorkingDirectory, notIcons.FullName);
-                    await Task.Run(() =>
-                    {
-                        SortingProgress = $"Moving {file} to\r\n{newPath}";
-                        File.Move(file, newPath);
-                    });
-                    continue;
-                }
-                if (info.Name.StartsWith(".banner"))
-                {
-                    string newPath = file.Replace(workingDirectory, tempIcons.FullName);
-                    await Task.Run(() =>
-                    {
-                        SortingProgress = $"Moving {file} to\r\n{newPath}";
-                        File.Move(file, newPath);
-                    });
-                    continue;
-                }
-                var moved = await IconManager.OrganizeIcon(tempIcons.FullName, file);
-                if (!moved)
-                {
-                    string newPath = file.Replace(WorkingDirectory, notIcons.FullName);
-                    await Task.Run(() =>
-                    {
-                        SortingProgress = $"Moving {file} to\r\n{newPath}";
-                        File.Move(file, newPath);
-                    });
-                }
-            }
-            //Delete empty directories
-            for (int i = 0; i < allDirs.Length; i++)
-            {
-                if (allDirs[i].EndsWith("Temp"))
-                    continue; //TODO:Move to update mode instead of upload mode?
-                else if (allDirs[i].EndsWith("NotIcon"))
-                    continue;
-                else if (allDirs[i].EndsWith("Git"))
-                    continue; //TODO:Move to update mode instead of upload mode?
-                DirectoryInfo dir = new(allDirs[i]);
-                if (dir.EnumerateFiles().Count() < 1)
-                    Directory.Delete(allDirs[i], true);
-            }
-        });
-    }
-
-    [ObservableProperty]
-    SortFolderPermissionResponse permissionToSort = SortFolderPermissionResponse.Waiting;
-
-    [ObservableProperty]
-    bool isWaitingForPermissionToMoveResponse;
-
-    public Visibility ShowWhileWaitingForPermissionToMoveResponse
-        => IsWaitingForPermissionToMoveResponse ? Visibility.Visible : Visibility.Collapsed;
-
-    [ObservableProperty]
-    string textDisplayWhileWaitingForPermissionToMoveResponse = "";
-
-    [RelayCommand]
-    private void ResponseAllowToMove() => PermissionToSort = SortFolderPermissionResponse.Allow;
-    [RelayCommand]
-    private void ResponseAllowNotToMove()
-    {
-        //TODO: Instead of cancel everything, copy everything that is icons to AppFolder (IconRepository) on app data and upload from there
-        Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
-    }
-
-    #endregion
-
     #region Filling page
     private void InitializeFillInfoPage()
     {
@@ -422,19 +284,6 @@ public partial class UploadPackViewModel : ObservableObject
                 FillPreviewSourcesWithSingleBanner();
                 break;
         }
-        //Update banner text explainer event
-        if (value == PackPreviewOption.Banner)
-        {
-            //Sub to event
-            Messenger.Default.Send(new MonitorForAppFocusMessage(() => CheckForBannerExistance(), () => { IsWaitingForReturn = true; }), 
-                MessageToken.RequestSubToAppActivateEvent);
-        }
-        else
-        {
-            //Unsub events
-            Messenger.Default.Send(new MonitorForAppFocusMessage(false),
-                MessageToken.RequestSubToAppActivateEvent);
-        }
     }
 
     public Visibility ShowOnFixedIconPreviewOption => PreviewOption == PackPreviewOption.Fixed ? Visibility.Visible : Visibility.Collapsed;
@@ -485,14 +334,14 @@ public partial class UploadPackViewModel : ObservableObject
     private void FillPreviewSourcesWithSingleBanner()
     {
         PreviewSources = new();
-        if (Uploadables.FirstOrDefault(icon => icon.DisplayName == "Icon pack banner") is UploadableFile banner)
+        if (Uploadables.IsBannerExist())
         {
+            var banner = Uploadables.GetBanner() as UploadableFile;
             PreviewSources.Add(new LocalSourceDisplay(banner.FilePath));
             UploadNewIconPackCommand.NotifyCanExecuteChanged();
         }
-        else
-        {
-            //Fill with placeholder
+        else //Fill with placeholder
+        {            
             PreviewSources.Add(new PlaceholderSourceDisplay());
         }
     }
@@ -561,10 +410,6 @@ public partial class UploadPackViewModel : ObservableObject
     public Visibility ShowIfBannerStillNotExist
         => IsBannerNowExist ? Visibility.Collapsed : Visibility.Visible;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PreviewOptionExplainer))]
-    bool isWaitingForReturn;
-
     public void CheckForBannerExistance()
     {
         var item = Uploadables.FirstOrDefault(i => i.DisplayName == "Icon pack banner");
@@ -575,8 +420,6 @@ public partial class UploadPackViewModel : ObservableObject
         }
         FileInfo banner = new((item as UploadableFile).FilePath);
         IsBannerNowExist = banner.Exists;
-        if (IsBannerNowExist == false)
-            IsWaitingForReturn = false;
     }
 
     public string PreviewOptionExplainer
@@ -681,19 +524,15 @@ public partial class UploadPackViewModel : ObservableObject
     public Visibility IsNotUploadingPackRightNow
         => UploadingPack ? Visibility.Collapsed : Visibility.Visible;
 
-    private bool CanUploadPack
+    private bool CanUploadPack()
     {
-        get
-        {
-            if (string.IsNullOrEmpty(RepoDisplayName))
-                return false;
-            if (PreviewOption == PackPreviewOption.Fixed && FixedIcons.Count != 4)
-                return false;
-            CheckForBannerExistance();
-            if (PreviewOption == PackPreviewOption.Banner && !IsBannerNowExist)
-                return false;
-            return true;
-        }
+        if (string.IsNullOrEmpty(RepoDisplayName))
+            return false;
+        if (PreviewOption == PackPreviewOption.Fixed && FixedIcons.Count != 4)
+            return false;
+        if (PreviewOption == PackPreviewOption.Banner && !IsBannerNowExist)
+            return false;
+        return true;
     }
 
     private async Task<bool> IsRepoAlreadyExist()
@@ -870,7 +709,7 @@ public partial class UploadPackViewModel : ObservableObject
         UploadProgresses.Insert(0, $"\r\nPushing (Uploading) icons to newly created repository");
         var pushOption = new PushOptions()
         {
-            CredentialsProvider = (a, b, c) => GetLibGit2SharpCredential(),
+            CredentialsProvider = (a, b, c) => OctokitService.Instance.GetLibGit2SharpCredential(),
             OnPushTransferProgress = (current, total, bytes) =>
             {
                 UploadProgresses.Insert(0, $"\r\nPushing (Uploading) {current}/{total} {((float)current / (float)total):00.00}%");
@@ -952,14 +791,6 @@ public partial class UploadPackViewModel : ObservableObject
         return $"{main}/{sub}{(!string.IsNullOrEmpty(sub) ? "/" : "")}{info.File}.png";
     }
     #endregion
-    private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
-    {
-        return new LibGit2Sharp.UsernamePasswordCredentials()
-        {
-            Username = Config.GitUsername,
-            Password = new SecureSettingService().GetSecurePassword()
-        };
-    }
 
     private IEnumerable<string> getPackTopic()
     {
