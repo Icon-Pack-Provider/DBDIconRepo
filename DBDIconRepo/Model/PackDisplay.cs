@@ -205,7 +205,7 @@ public partial class PackDisplay : ObservableObject
             }
             foreach (var icon in Info.Overrides.DisplayFiles)
             {
-                var url = Packs.GetPackItemOnGit(info, icon);
+                var url = Packs.GetPackItemOnGit(Info, icon);
                 if (url is null)
                     continue;
                 var newIcon = new IconDisplay(URL.GetIconAsGitRawContent(Info.Repository, icon));

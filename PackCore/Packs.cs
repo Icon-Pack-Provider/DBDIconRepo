@@ -77,6 +77,13 @@ public static class Packs
         if (OctokitService.Instance is null)
             return null;
 
+        //Is this actually an icon pack repo?
+        if (!repo.Topics.Contains("dbd-icon-pack"))
+            return null;
+
+        if (repo.Fork) //No fork allow
+            return null;
+
         //Directory confirmation
         if (!Directory.Exists(WorkingDirectory))
             Directory.CreateDirectory(WorkingDirectory);
@@ -167,7 +174,8 @@ public static class Packs
                 Owner = repo.Owner.Login
             },
 
-            ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo))
+            ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo)),
+            Overrides = previous .Overrides ?? null
         };
         if (info.ContentInfo.Files is null || 
             (info.ContentInfo.Files is not null && info.ContentInfo.Files.Count < 1))
@@ -304,34 +312,49 @@ public static class Packs
     }
 
     public static async Task ClonePackToCacheFolder(Pack? info, Action<ICloningProgress> progress)
+        => await ClonePackTo(info, GetPackCacheClonedFolder(info), progress);
+
+    public static async Task ClonePackTo(this Pack? pack, DirectoryInfo destination, Action<ICloningProgress>? progress = null)
     {
-        bool isDotGitExist = IsRepoCloneDirectoryDotGitExist(info.Repository);
-        nukeAndClone:
+        if (!destination.Exists)
+            destination.Create();
+        var dirs = destination.GetDirectories(".git");
+        bool isDotGitExist = dirs.Length > 0 && dirs[0].Exists;
+
+    nukeAndClone:
         if (!isDotGitExist)
         {
             //Delete directory, and clone
-            var directory = GetRepoCloneDirectory(info.Repository);
-            if (directory.Exists)
-                directory.Delete(true); //Delete everything inside, prevent clone error
-            directory.Create();
+            if (destination.Exists)
+                destination.Delete(true); //Delete everything inside, prevent clone error
+            destination.Create();
             await Task.Run(() =>
             {
-                LibGit2Sharp.Repository.Clone(info.Repository.CloneUrl, directory.FullName, new LibGit2Sharp.CloneOptions()
+                LibGit2Sharp.Repository.Clone(pack.Repository.CloneUrl, destination.FullName, new LibGit2Sharp.CloneOptions()
                 {
-                    CredentialsProvider = (_url, _usr, _crd) => OctokitService.GetLibGitCredential(info.Repository.Owner),
+                    CredentialsProvider = (_url, _usr, _crd) => OctokitService.GetLibGitCredential(pack.Repository.Owner),
                     IsBare = false,
-                    OnProgress = (serverProc) => Report.ServerProgress(serverProc, info.Repository.Name, progress),
-                    OnTransferProgress = (transfer) => Report.TransferProgress(info.Repository.Name, transfer, progress),
-                    OnCheckoutProgress = (path, complete, total) => Report.CheckoutProgress(info.Repository.Name, progress, path, complete, total)
+                    OnProgress = (serverProc) => Report.ServerProgress(serverProc, pack.Repository.Name, progress),
+                    OnTransferProgress = (transfer) => Report.TransferProgress(pack.Repository.Name, transfer, progress),
+                    OnCheckoutProgress = (path, complete, total) => Report.CheckoutProgress(pack.Repository.Name, progress, path, complete, total)
                 });
             });
-            progress?.Invoke(new EOver(info.Repository.Name));
+            progress?.Invoke(new EOver(pack.Repository.Name));
             return;
         }
         else
         {
             //Check if it's latest and reset if it's not match repo
-            var dir = GetRepoFetchHead(info.Repository);
+            /*var cloneDir = GetRepoCloneDirectory(owner, repo);
+        string path = Path.Combine(cloneDir.FullName, ".git");
+        path = Path.Join(path, Terms.LastFetchFilename);
+        return new(path);*/
+            var step0 = destination.GetDirectories(".git").FirstOrDefault();
+            if (step0 is null)
+                goto nukeAndClone;
+            var dir = step0.GetFiles(Terms.LastFetchFilename).FirstOrDefault();
+            if (dir is null)
+                goto nukeAndClone;            
             if (!dir.Exists)
             {
                 isDotGitExist = false; //Force false to force clone
@@ -340,21 +363,20 @@ public static class Packs
             if (dir.LastWriteTimeUtc < (DateTime.UtcNow + TimeSpan.FromDays(1)))
             {
                 //Less than 1 day clone, probably new. Return 
-                progress?.Invoke(new EOver(info.Repository.Name));
+                progress?.Invoke(new EOver(pack.Repository.Name));
                 return;
             }
             await Task.Run(() =>
             {
-                var directory = GetRepoCloneDirectory(info.Repository);
-                using var libGitRepo = new LibGit2Sharp.Repository(directory.FullName);
+                using var libGitRepo = new LibGit2Sharp.Repository(destination.FullName);
                 //Reset folder to match remote
-                var mainbranch = libGitRepo.Branches[$"origin/{info.Repository.DefaultBranch}"];
+                var mainbranch = libGitRepo.Branches[$"origin/{pack.Repository.DefaultBranch}"];
                 libGitRepo.Reset(LibGit2Sharp.ResetMode.Hard, mainbranch.Tip);
             });
             //Report its done fetching
-            progress?.Invoke(new EOver(info.Repository.Name));
+            progress?.Invoke(new EOver(pack.Repository.Name));
         }
-    }    
+    }
 
     public static DirectoryInfo GetPackCacheClonedFolder(Pack? info)
     {

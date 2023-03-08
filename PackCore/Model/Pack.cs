@@ -99,7 +99,8 @@ public partial class PackRepositoryInfo : ObservableObject
 {
     public PackRepositoryInfo() { }
     public PackRepositoryInfo(Repository repo)
-    {
+    { //Find out how it keep getting main instead of master
+        
         ID = repo.Id;
         Name = repo.Name;
         Owner = repo.Owner.Login;

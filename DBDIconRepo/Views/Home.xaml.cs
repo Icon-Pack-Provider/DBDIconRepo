@@ -68,8 +68,21 @@ public class IconPreviewTemplateSelector : DataTemplateSelector
 {
     public DataTemplate IconDisplay { get; set; }
     public DataTemplate BannerDisplay { get; set; }
+    public DataTemplate LocalIconDisplay { get; set; }
+    public DataTemplate LocalBannerDisplay { get; set; }
+    public DataTemplate PlaceholderBannerDisplay { get; set; }
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
+        if (item is Model.LocalSourceDisplay local)
+        {
+            if (local.URL.Contains(".banner"))
+                return LocalBannerDisplay;
+            return LocalIconDisplay;
+        }
+        else if (item is Model.PlaceholderSourceDisplay)
+        {
+            return PlaceholderBannerDisplay;
+        }
         if (item is Model.IconDisplay)
             return IconDisplay;
         else

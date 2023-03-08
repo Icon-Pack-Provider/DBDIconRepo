@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\bannerHolder.png" />
     <None Remove="Resources\pfpHolder.ico" />
     <None Remove="Resources\pfpHolder.png" />
   </ItemGroup>
@@ -40,17 +41,18 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="FluentWPF" Version="0.10.2" />
+    <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.5.0" />
+    <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.5.0" />
     <PackageReference Include="IconInfo" Version="6.6.0.3" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="MdXaml" Version="1.16.2" />
+    <PackageReference Include="MdXaml" Version="1.17.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
-    <PackageReference Include="Octokit" Version="4.0.3" />
+    <PackageReference Include="Octokit" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameFinder\GameFinder.csproj" />
     <ProjectReference Include="..\PackCore\IconPack.csproj" />
     <ProjectReference Include="..\SelectionListing\SelectionListing.csproj" />
   </ItemGroup>
@@ -64,6 +66,9 @@
 	<ItemGroup>
 		<Page Remove="Properties\DesignTimeResources.xaml" />
 		<None Remove="Properties\DesignTimeResources.xaml" />
+		<Resource Include="Resources\bannerHolder.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
 		<Page Include="Properties\DesignTimeResources.xaml">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>

@@ -1,7 +1,6 @@
-﻿using DBDIconRepo.Model;
-using GameFinder.RegistryUtils;
-using GameFinder.StoreHandlers;
-using System.Runtime.InteropServices;
+﻿using GameFinder.StoreHandlers.EGS;
+using GameFinder.StoreHandlers.Steam;
+using System;
 
 namespace DBDIconRepo.Helper;
 
@@ -10,7 +9,11 @@ public static class GameLocator
     const int SteamDBDID = 381210;
     public static string FindDBDOnSteam()
     {
-        var handler = new Steam();
+        //Not support on other platform beside Windows
+        if (!OperatingSystem.IsWindows())
+            return string.Empty;
+
+        var handler = new SteamHandler();
 
         var dbd = handler.FindOneGameById(SteamDBDID, out string[] errors);
         if (dbd is not null)
@@ -23,7 +26,11 @@ public static class GameLocator
     const string EpigDBDID = "611482b8586142cda48a0786eb8a127c:467a7bed47ec44d9b1c9da0c2dae58f7:Brill";
     public static string FindDBDOnEpig()
     {
-        var handler = new EGS();
+        //Not support on other platform beside Windows
+        if (!OperatingSystem.IsWindows())
+            return string.Empty;
+
+        var handler = new EGSHandler();
         if (handler is null)
             return string.Empty;
 
