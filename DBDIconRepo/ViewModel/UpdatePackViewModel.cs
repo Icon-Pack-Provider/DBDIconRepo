@@ -100,7 +100,6 @@ public partial class UpdatePackViewModel : ObservableObject
         }
         else if (SelectedRepository > -1 && CurrentPage > UpdatePages.SetNewIconsDirectory)
         {
-            //TODO:Reset inputs of selections and commit messages
             CurrentPage = UpdatePages.SetNewIconsDirectory;
         }
     }
@@ -305,12 +304,6 @@ public partial class UpdatePackViewModel : ObservableObject
                 "Upload",
                 UserPacks[SelectedRepository]?.Repository?.Owner,
                 UserPacks[SelectedRepository]?.Repository?.Name);
-    }
-
-    private bool IsRepoAlreadyExistLocally()
-    {
-        string path = GetPotentiallyWorkingDirectory();
-        return Directory.Exists(path);
     }
 
     [RelayCommand]
