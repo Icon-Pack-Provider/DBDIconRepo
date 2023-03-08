@@ -156,44 +156,43 @@ public partial class UploadPackViewModel : ObservableObject
                 System.Windows.Threading.DispatcherPriority.Send :
                 System.Windows.Threading.DispatcherPriority.Background);
             }
-            if (Uploadables.FirstOrDefault(find => find.Name == mainFolder) is UploadableFolder mainUploadFolder)
+            if (Uploadables.FirstOrDefault(find => find.Name == mainFolder) is not UploadableFolder mainUploadFolder)
+                continue;
+            //Subfolder
+            IUploadableItem? toWorkOn = mainUploadFolder; //This will sure change to subfolder if its exist
+            IFolder? isFolder = icon as IFolder;
+            if (isFolder is not null && !string.IsNullOrEmpty(isFolder.Folder))
             {
-                //Subfolder
-                IUploadableItem? toWorkOn = mainUploadFolder; //This will sure change to subfolder if its exist
-                IFolder? isFolder = icon as IFolder;
-                if (isFolder is not null && !string.IsNullOrEmpty(isFolder.Folder))
+                if (!mainUploadFolder.SubItems.Any(sub => sub.Name == isFolder.Folder))
                 {
-                    if (!mainUploadFolder.SubItems.Any(sub => sub.Name == isFolder.Folder))
+                    //No subfolder, add:
+                    var subFolderInfo = Info.SubFolders[isFolder.Folder];
+                    await Application.Current.Dispatcher.InvokeAsync(async () =>
                     {
-                        //No subfolder, add:
-                        var subFolderInfo = Info.SubFolders[isFolder.Folder];
-                        await Application.Current.Dispatcher.InvokeAsync(async () =>
+                        mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
                         {
-                            mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
-                            {
-                                Name = subFolderInfo.Folder,
-                                DisplayName = subFolderInfo.Name,
-                                SubItems = new()
-                            });
-                        }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                        System.Windows.Threading.DispatcherPriority.Send :
-                        System.Windows.Threading.DispatcherPriority.Background);
+                            Name = subFolderInfo.Folder,
+                            DisplayName = subFolderInfo.Name,
+                            SubItems = new()
+                        });
+                    }, SettingManager.Instance.SacrificingAppResponsiveness ?
+                    System.Windows.Threading.DispatcherPriority.Send :
+                    System.Windows.Threading.DispatcherPriority.Background);
 
-                    }
-                    toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
                 }
-                await Application.Current.Dispatcher.InvokeAsync(async () =>
-                {
-                    (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
-                    {
-                        Name = icon.File,
-                        DisplayName = icon.Name,
-                        FilePath = file.FullName
-                    });
-                }, SettingManager.Instance.SacrificingAppResponsiveness ?
-                System.Windows.Threading.DispatcherPriority.Send :
-                System.Windows.Threading.DispatcherPriority.Background);
+                toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
             }
+            await Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
+                {
+                    Name = icon.File,
+                    DisplayName = icon.Name,
+                    FilePath = file.FullName
+                });
+            }, SettingManager.Instance.SacrificingAppResponsiveness ?
+            System.Windows.Threading.DispatcherPriority.Send :
+            System.Windows.Threading.DispatcherPriority.Background);
             continue;
         }
     }

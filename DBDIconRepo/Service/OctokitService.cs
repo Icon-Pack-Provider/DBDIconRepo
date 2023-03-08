@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +12,15 @@ namespace DBDIconRepo.Service;
 public partial class OctokitService : ObservableObject
 {
     public GitHubClient? GitHubClientInstance { get; private set; }
+
+    [ObservableProperty]
+    ReadOnlyObservableCollection<Repository>? userRepositories = null;
+
+    public async Task GetUserRepos()
+    {
+        ObservableCollection<Repository> userRepos = new(await GitHubClientInstance.Repository.GetAllForCurrent());
+        UserRepositories = new(userRepos);
+    }
 
     [ObservableProperty]
     private bool isAnonymous;

@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DBDIconRepo.Views"
       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:u="clr-namespace:DBDIconRepo.Model.Uploadable"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       xmlns:cv="clr-namespace:DBDIconRepo.Converters"
       mc:Ignorable="d" Name="rootPage"
@@ -111,12 +112,13 @@
             </Grid.RowDefinitions>
             <Grid.Resources>
                 <HierarchicalDataTemplate x:Key="folderTemplate"
-                                          DataType="{x:Type vm:IUploadableItem}" 
+                                          DataType="{x:Type u:IUploadableItem}" 
                                           ItemsSource="{Binding SubItems, Mode=OneWay}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="12"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Margin="0,4">
                             <Run Text="{Binding DisplayName}"/><LineBreak/>
@@ -130,12 +132,13 @@
                     </Grid>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate x:Key="fileTemplate"
-                                          DataType="{x:Type vm:IUploadableItem}">
+                                          DataType="{x:Type u:IUploadableItem}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="12"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock VerticalAlignment="Center" Margin="0,4">
                                     <Run Text="{Binding DisplayName}"/><LineBreak/>

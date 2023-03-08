@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModernWpf.Controls.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,10 @@ namespace DBDIconRepo.Views
         {
             InitializeComponent();
         }
+        private void OpenAttachedFlyout(object sender, RoutedEventArgs e)
+        {
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
     }
 }
