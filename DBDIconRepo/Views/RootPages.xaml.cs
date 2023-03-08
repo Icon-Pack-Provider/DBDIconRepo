@@ -179,6 +179,7 @@ public partial class RootPages
             case "history":
                 contentFrame.Navigate(new History());
                 ViewModel.CurrentPageName = "History";
+                break;
             case "update":
                 if (AnonymousWarned())
                     break;

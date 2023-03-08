@@ -13,6 +13,9 @@
         fw:AcrylicWindow.Enabled="True"
         fw:AcrylicWindow.TitleBarMode="Default"
         fw:AcrylicWindow.AcrylicWindowStyle="Normal"
+        fw:AcrylicWindow.ExtendViewIntoTitleBar="True"
+        ui:TitleBar.ExtendViewIntoTitleBar="True"
+        ui:TitleBar.IsIconVisible="True"
         mc:Ignorable="d"
         Title="Dead by daylight: Icon repo" Height="720" Width="1024" Icon="\Resources\app.ico">
     <Window.DataContext>
@@ -35,7 +38,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Image x:Name="BackgroundUI" Source="{Binding BackgroundImage, Converter={StaticResource imageEncoder}, Mode=OneWay}"
-               Grid.RowSpan="2" Margin="-10"
+               Grid.RowSpan="3" Margin="-4"
                MinWidth="1024" Stretch="UniformToFill" StretchDirection="Both"
                MinHeight="768"/>
         <!--Pane imitator/The easier way than modify a whole NavigationView resources-->
