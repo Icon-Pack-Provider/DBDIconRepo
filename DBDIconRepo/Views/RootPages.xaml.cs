@@ -1,4 +1,4 @@
-﻿using DBDIconRepo.Dialog;
+using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
@@ -176,6 +176,9 @@ public partial class RootPages
                 if (!ViewModel.GitService.IsAnonymous)
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
+            case "history":
+                contentFrame.Navigate(new History());
+                ViewModel.CurrentPageName = "History";
             case "update":
                 if (AnonymousWarned())
                     break;

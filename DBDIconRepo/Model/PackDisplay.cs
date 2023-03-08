@@ -14,6 +14,7 @@ using IconPack;
 using System.Threading.Tasks;
 using DBDIconRepo.Service;
 using IconInfo.Internal;
+using DBDIconRepo.Model.History;
 
 namespace DBDIconRepo.Model;
 
@@ -63,6 +64,7 @@ public partial class PackDisplay : ObservableObject
     private void OpenPackDetailWindow()
     {
         Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
+        HistoryLogger.SaveHistory(new HistoryViewPack(Info));
     }
 
     [RelayCommand]
@@ -106,6 +108,8 @@ public partial class PackDisplay : ObservableObject
                 $"{MessageToken.REPOSITORYDOWNLOADREPORTTOKEN}{Info.Repository.Name}");
         });
         IconManager.Install(SettingManager.Instance.DBDInstallationPath, installationPick.Where(i => i.IsSelected == true).ToList(), Info);
+        //Save history
+        HistoryLogger.SaveHistory(new HistoryInstallPack(Info, installationPick));
     }
 
     [RelayCommand]

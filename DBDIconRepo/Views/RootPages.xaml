@@ -89,6 +89,11 @@
                         <ui:FontIcon Glyph="&#xE1CE;"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="History" Tag="history">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE81C;"/>
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem Content="Upload new pack" Tag="upload"
