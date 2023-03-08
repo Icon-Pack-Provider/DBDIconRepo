@@ -39,6 +39,28 @@ public static class IconTypeIdentify
             : new UnknownIcon(name);
     }
 
+    public static string GetMainFolderFromType(IBasic icon)
+    {
+        switch (icon)
+        {
+            case Portrait po: return "CharPortraits";
+            case DailyRitual da: return "DailyRituals";
+            case Offering of: return "Favors";
+            case HelpLoading he: return "HelpLoading";
+            case Addon ad: return "ItemAddons";
+            case Item it: return "items";
+            case AuricCellPack au: return "Packs";
+            case Power po: return "Powers";
+            case StatusEffect st: return "StatusEffects";
+            case Perk pe: return "Perks";
+            case Archive ar: return "Archive";
+            case Help he: return "Help";
+            case StoreBackground st: return "StoreBackgrounds";
+            case Emblem em: return "Emblems";
+            default: return string.Empty;
+        }
+    }
+
     public static BasePreview FromBasicInfo(string path, PackRepositoryInfo repo)
     {
         try

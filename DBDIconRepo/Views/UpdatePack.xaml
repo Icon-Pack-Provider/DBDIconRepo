@@ -1,0 +1,234 @@
+﻿<Page x:Class="DBDIconRepo.Views.UpdatePack"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DBDIconRepo.Views"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:u="clr-namespace:DBDIconRepo.Model.Uploadable"
+      xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
+      xmlns:ip="clr-namespace:IconPack.Model;assembly=IconPack"
+      xmlns:cv="clr-namespace:DBDIconRepo.Converters"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="UpdatePack">
+    <Page.DataContext>
+        <vm:UpdatePackViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+    <Page.Resources>
+        <cv:FilePathToLocalImageConverter x:Key="fileToLocalImage"/>
+        
+        <Image x:Key="menuIconLoader" x:Shared="False"
+               Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
+    </Page.Resources>
+
+    <Grid Margin="0,-12,0,-12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.RowSpan="2" Panel.ZIndex="1000" d:Visibility="Collapsed" Visibility="{Binding ShowOnLoadOrNoRepos}">
+            <Rectangle Fill="{DynamicResource AcrylicBackgroundFillColorBaseBrush}"/>
+
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ui:ProgressRing IsActive="{Binding IsLoadingRepos}" Width="64"
+                                 Height="64"/>
+                <TextBlock Text="Load your repositories..." FontSize="18" Visibility="{Binding ShowOnLoadRepos}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <TextBlock Text="No repository" FontSize="18" Visibility="{Binding ShowOnNoRepos}" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            </StackPanel>
+        </Grid>
+        
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox SelectedIndex="{Binding SelectedRepository}" 
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                      ItemsSource="{Binding UserPacks}" MinHeight="48">
+                <ui:ControlHelper.PlaceholderText>
+                    Select repository to update
+                </ui:ControlHelper.PlaceholderText>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type ip:Pack}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--Repository icon?-->
+                            <Image Width="32" Height="32" Grid.Column="0"/>
+
+                            <!--Infos-->
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock Text="{Binding Repository.CloneUrl}" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" Margin="6,0,0,0"
+                    VerticalAlignment="Stretch" Width="64" IsEnabled="{Binding CanOpenRepositoryOnGit}"
+                    Grid.Column="1" ToolTip="Open this repository on GitHub"
+                    Command="{Binding OpenGitRepositoryCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:FontIcon Glyph="&#xE8A7;" FontSize="24" Margin="5"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+
+        <!--Infos-->
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <!--Step 1: Select folder to update:-->
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="{Binding ShowOnSetNewIconsDirectory}">
+                <Button HorizontalAlignment="Left" Command="{Binding SetNewIconDirectoryCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:FontIcon Glyph="&#xE197;" FontSize="24"/>
+                        <TextBlock Text="Locate folder with new icons" HorizontalAlignment="Left" Margin="4,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                   Visibility="{Binding ShowOnSetWorkDirectory}"/>
+                    </StackPanel>
+                </Button>
+                <TextBlock HorizontalAlignment="Left" FontSize="18" 
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           Visibility="{Binding ShowOnInvalidIconDirectory, Mode=OneWay}"
+                           Text="{Binding SelectFolderErrorMessage}"/>
+                <TextBlock HorizontalAlignment="Left" FontSize="18" 
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                           Visibility="{Binding ShowWhileCloningRepository, Mode=OneWay}"
+                           Text="{Binding CloningProgressText}"/>
+            </StackPanel>
+            
+            <!--Step 1.1 Check if it's same folder, clone repo etc.-->
+            <!--Step 2 Let uploader select folder-->
+
+            <Grid Visibility="{Binding ShowOnSelectNewIcons}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.Resources>
+                    <HierarchicalDataTemplate x:Key="folderTemplate"
+                                          DataType="{x:Type u:IUploadableItem}" 
+                                          ItemsSource="{Binding SubItems, Mode=OneWay}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="12"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="0,4">
+                            <Run Text="{Binding DisplayName}"/><LineBreak/>
+                            <Run FontSize="12" Text="{Binding Path=DataContext.WorkingDirectory,
+                                RelativeSource={RelativeSource AncestorType={x:Type Page}}}"/><Run Text="{Binding SubFolderDisplay, Mode=OneWay}"/>\<Run FontSize="12" Text="{Binding Name}"/>
+                            </TextBlock>
+                            <CheckBox Grid.Column="1" IsChecked="{Binding IsSelected}" MinWidth="32"/>
+                            <Button Foreground="Transparent" Background="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.ColumnSpan="2" Command="{Binding ToggleIsSelectedCommand}"/>
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate x:Key="fileTemplate"
+                                              DataType="{x:Type u:IUploadableItem}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="12"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center" Margin="0,4">
+                                    <Run Text="{Binding DisplayName}"/><LineBreak/>
+                                    <Run FontSize="12" Text="{Binding FilePath}"/>
+                            </TextBlock>
+                            <CheckBox Grid.Column="2" IsChecked="{Binding IsSelected}" MinWidth="32"/>
+                            <Button Foreground="Transparent" Background="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.ColumnSpan="3" Command="{Binding ToggleIsSelectedCommand}"/>
+
+                            <Button Grid.Column="1" Click="OpenAttachedFlyout" Margin="8,0" Padding="2">
+                                <ui:FontIcon Glyph="&#xE18B;" FontSize="16"/>
+                                <ui:FlyoutBase.AttachedFlyout>
+                                    <ui:Flyout Content="{StaticResource menuIconLoader}" Placement="BottomEdgeAlignedRight"/>
+                                </ui:FlyoutBase.AttachedFlyout>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="{StaticResource menuIconLoader}" Width="128" Height="128"
+                                         Placement="Bottom" VerticalOffset="4" HorizontalOffset="-104"/>
+                                </ToolTipService.ToolTip>
+                            </Button>
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                    <local:UploadItemTemplator x:Key="itemTemplates"
+                                               UploadableFolderTemplator="{StaticResource folderTemplate}"
+                                               UploadableItemTemplator="{StaticResource fileTemplate}"/>
+                </Grid.Resources>
+                <TreeView ItemsSource="{Binding NewPotentialIcons}" ItemTemplateSelector="{StaticResource itemTemplates}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="IsExpanded" Value="{Binding IsExpand, Mode=TwoWay}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+
+                <ui:CommandBar Grid.Row="1" DefaultLabelPosition="Right" Margin="0,0,-12,0">
+                    <ui:CommandBar.Content>
+                        <ui:CommandBar DefaultLabelPosition="Right">
+                            <ui:AppBarButton Label="Select other folder" Icon="Back" Command="{Binding GoBackToSetIconDirectoryCommand}"/>
+                        </ui:CommandBar>
+                    </ui:CommandBar.Content>
+                    <ui:AppBarButton Label="Expand all" Command="{Binding ExpandAllFolderCommand}">
+                        <ui:AppBarButton.Icon>
+                            <ui:FontIcon Glyph="&#xE740;"/>
+                        </ui:AppBarButton.Icon>
+                    </ui:AppBarButton>
+                    <ui:AppBarButton Label="Collapsed all" Command="{Binding CollapseAllFolderCommand}">
+                        <ui:AppBarButton.Icon>
+                            <ui:FontIcon Glyph="&#xE73F;"/>
+                        </ui:AppBarButton.Icon>
+                    </ui:AppBarButton>
+                    <ui:AppBarSeparator/>
+                    <ui:AppBarButton Label="Select all" Icon="SelectAll" Command="{Binding SelectAllItemCommand}"/>
+                    <ui:AppBarButton Label="Deselect all" Icon="ClearSelection" Command="{Binding UnSelectAllItemCommand}"/>
+                    <ui:AppBarSeparator/>
+                    <ui:AppBarButton Label="Refresh" Icon="Refresh" Command="{Binding DetermineIconsCommand}"/>
+                    <ui:AppBarSeparator/>
+                    <ui:AppBarButton Label="Continue" Icon="Forward" Command="{Binding FinishSelectionCommand}"/>
+                </ui:CommandBar>
+            </Grid>
+            <!--Step 2.1 Check for changes-->
+            
+            <!--Step 3 Ask for input of commit message-->
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                  Visibility="{Binding ShowOnCommitMessage}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding CommitTitle, UpdateSourceTrigger=PropertyChanged}">
+                    <ui:ControlHelper.PlaceholderText>
+                        Update title message. Eg. "Add stuff"
+                    </ui:ControlHelper.PlaceholderText>
+                </TextBox>
+                <TextBox AcceptsReturn="True" AcceptsTab="True"
+                         Text="{Binding CommitDetail, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Row="1" Margin="0,4"
+                         Height="128">
+                    <ui:ControlHelper.PlaceholderText>
+                        Further elaborate on update title
+                        Eg. A list of added icons
+                    </ui:ControlHelper.PlaceholderText>
+                </TextBox>
+                <Button Grid.Row="2" Content="Update" Command="{Binding PushUpdatePackCommand}"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

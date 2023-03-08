@@ -27,4 +27,13 @@ public partial class App : Application
         StarService.Instance.InitializeStarService();
         base.OnStartup(e);
     }
+
+    public static bool IsDevelopmentBuild()
+    {
+#if DEBUG 
+        return true;
+#else
+        return false;
+#endif
+    }
 }

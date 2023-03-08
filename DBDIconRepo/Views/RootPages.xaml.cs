@@ -84,6 +84,8 @@ public partial class RootPages
 
     private void SwitchPageHandler(RootPages recipient, SwitchToOtherPageMessage message)
     {
+        if (message.Page == "home")
+            homeSelection.IsSelected = true;
         SwitchPage(message.Page);
     }
 
@@ -174,23 +176,37 @@ public partial class RootPages
                 if (!ViewModel.GitService.IsAnonymous)
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
+            case "update":
+                if (AnonymousWarned())
+                    break;
+                contentFrame.Navigate(new UpdatePack());
+                ViewModel.CurrentPageName = "Update existing pack";
+                break;
             case "upload":
-                if (ViewModel.GitService.IsAnonymous)
-                {
-                    homeSelection.IsSelected = true;
-                    DialogHelper.Show("I am not letting you in without login to GitHub!", 
-                        "I don't know how did you manage to do this, but", 
-                        DialogSymbol.Error);
-                    if (contentFrame.Content.GetType().Name != nameof(Home))
-                        contentFrame.Navigate(new Home());
-                    ViewModel.CurrentPageName = "Home";
-                    return;
-                }
+                if (AnonymousWarned())
+                    break;
                 contentFrame.Navigate(new UploadPack());
                 ViewModel.CurrentPageName = "Upload new pack";
                 break;
         }
     }
+
+    private bool AnonymousWarned()
+    {
+        if (ViewModel.GitService.IsAnonymous)
+        {
+            homeSelection.IsSelected = true;
+            DialogHelper.Show("I am not letting you in without login to GitHub!",
+                "I don't know how did you manage to do this, but",
+                DialogSymbol.Error);
+            if (contentFrame.Content.GetType().Name != nameof(Home))
+                contentFrame.Navigate(new Home());
+            ViewModel.CurrentPageName = "Home";
+            return true;
+        }
+        return false;
+    }
+
     private void DeactivatedEvent(object? sender, System.EventArgs e)
     {
         callOnDeactivated?.Invoke();

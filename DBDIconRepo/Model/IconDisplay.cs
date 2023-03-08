@@ -22,7 +22,7 @@ public partial class IconDisplay : OnlineSourceDisplay
             type = "portrait";
         else if (urlparse.Contains("dailyritualicon"))
             type = "daily";
-        else if (urlparse.Contains("emblemIcon"))
+        else if (urlparse.Contains("emblemicon"))
             type = "emblem";
         else if (urlparse.Contains("iconfavors"))
             type = "offering";
