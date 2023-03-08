@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -17,7 +18,10 @@ public partial class HistoryViewModel : HomeViewModel
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NoHistoryMadeYet))]
     ObservableCollection<IHistoryItem>? histories = new();
+
+    public Visibility NoHistoryMadeYet => Histories.Count < 1 ? Visibility.Visible : Visibility.Collapsed;
 
     private bool _isInitialize = false;
     public void Initialize()
@@ -27,5 +31,10 @@ public partial class HistoryViewModel : HomeViewModel
 
         //Load history
         Histories = HistoryLogger.LoadHistory();
+        IsGettingPacks = Visibility.Collapsed;
+        OnPropertyChanged(nameof(NoHistoryMadeYet));
     }
+
+    [ObservableProperty]
+    private Visibility isGettingPacks = Visibility.Visible;
 }
