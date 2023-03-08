@@ -14,6 +14,7 @@ using IconPack;
 using System.Threading.Tasks;
 using DBDIconRepo.Service;
 using IconInfo.Internal;
+using DBDIconRepo.Model.History;
 
 namespace DBDIconRepo.Model;
 

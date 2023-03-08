@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Model;
+using DBDIconRepo.Model.History;
 using IconPack.Model;
 using System;
 using System.Collections.Generic;
@@ -55,64 +56,10 @@ public static class HistoryLogger
 
 
         using var writer = new StreamWriter($"{dir.FullName}\\{item.Action}_{item.Victim}");
-        string json = JsonSerializer.Serialize(item, new JsonSerializerOptions()
+        string json = JsonSerializer.Serialize<IHistoryItem>(item, new JsonSerializerOptions()
         {
             WriteIndented = true
         });
         writer.Write(json);
     }
-}
-
-public partial class HistoryInstallPack : HistoryViewPack
-{
-    [ObservableProperty]
-    //Keep only Root/Folder/[sub]/Filename
-    private List<string?> installedIcons = new();
-
-    public HistoryInstallPack(Pack? pack, IList<IPackSelectionItem> installed) : base(pack)
-    {
-        InstalledIcons = new(installed.Where(i => i.IsSelected == true).Select(i => i.Info?.File));
-    }
-
-    public HistoryInstallPack() { }
-}
-
-public partial class HistoryViewPack : ObservableObject, IHistoryItem
-{
-    [ObservableProperty]
-    private long victim;
-
-    [ObservableProperty]
-    private HistoryType action;
-
-    [ObservableProperty]
-    private DateTime time;
-
-    public HistoryViewPack(Pack? pack)
-    {
-        Victim = pack.Repository.ID;
-        Action = HistoryType.ViewDetail;
-        Time = DateTime.Now;
-    }
-
-    public HistoryViewPack() { }
-}
-
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "HistoryType")]
-[JsonDerivedType(typeof(HistoryInstallPack), nameof(HistoryInstallPack))]
-[JsonDerivedType(typeof(HistoryViewPack), nameof(HistoryViewPack))]
-public interface IHistoryItem
-{
-    DateTime Time { get; set; }
-    /// <summary>
-    /// Repository ID
-    /// </summary>
-    long Victim { get; set; }
-    HistoryType Action { get; set; }
-}
-
-public enum HistoryType
-{
-    ViewDetail,
-    Install
 }
