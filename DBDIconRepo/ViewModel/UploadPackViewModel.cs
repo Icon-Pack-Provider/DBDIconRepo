@@ -789,7 +789,7 @@ public partial class UploadPackViewModel : ObservableObject
                     continue;
                 }
                 //Identify icon info
-                var info = IconTypeIdentify.FromPath(file);
+                var info = IconTypeIdentify.FromFile(file);
                 //Then root 
                 destination.Append(IconTypeIdentify.GetMainFolderFromType(info));
                 destination.Append('\\');
@@ -898,20 +898,20 @@ public partial class UploadPackViewModel : ObservableObject
         {
             Name = RepoDisplayName,
             Description = RepoDescription,
-            DisplayFiles = new(GetIconOverrideOption())
+            DisplayFiles = new(GetIconOverrideOption()),
         };
+        //LibGit2Sharp limitation;unable to init with default branch 💀
+        packMetaData.Repository.DefaultBranch = "master";
         string packJsonPath = Path.Join(gitWorkFolder.FullName, "pack.json");
-        var writer = File.CreateText(packJsonPath);
-        UploadProgresses.Insert(0, "\r\nWriting pack metadata to file");
-        await writer.WriteAsync(JsonSerializer.Serialize(packMetaData, new JsonSerializerOptions()
+        var json = JsonSerializer.Serialize(packMetaData, new JsonSerializerOptions()
         {
             WriteIndented = true
-        }));
-        //Commit 
-        List<string> allMetaData = new();
-        allMetaData.Add(packJsonPath);
+        });
+        File.WriteAllText(packJsonPath, json);
+        UploadProgresses.Insert(0, "\r\nWriting pack metadata to file");
+        
         //Stage
-        Commands.Stage(localRepo, allMetaData);
+        Commands.Stage(localRepo, new string[] { packJsonPath });
         //Commit
         localRepo.Commit("Additional pack meta data", author, author);
         //Push
@@ -922,6 +922,7 @@ public partial class UploadPackViewModel : ObservableObject
         });
         //Kick user to other page
         UploadProgresses.Insert(0, "\r\nFinished upload pack and all metadata, switching to mainpage");
+        DialogHelper.Show("Pack uploaded!");
         await Task.Delay(1000);
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
     }
@@ -931,10 +932,24 @@ public partial class UploadPackViewModel : ObservableObject
         switch (PreviewOption)
         {
             case PackPreviewOption.Fixed:
-                return FixedIcons.Select(i => $"{i.Name}.png").ToArray();
+                return FixedIcons.Select(i => GetFullPathName(i)).ToArray();
             default:
                 return Array.Empty<string>();
         }
+    }
+
+    private string GetFullPathName(IUploadableItem i)
+    {
+        if (i is not UploadableFile file)
+            return string.Empty;
+        var info = IconTypeIdentify.FromFile(file.Name);
+        if (info is UnknownIcon)
+            return string.Empty;
+        string main = IconTypeIdentify.GetMainFolderFromType(info);
+        string sub = string.Empty;
+        if (info is IFolder folder)
+            sub = folder.Folder;
+        return $"{main}/{sub}{(!string.IsNullOrEmpty(sub) ? "/" : "")}{info.File}.png";
     }
     #endregion
     private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()

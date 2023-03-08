@@ -174,7 +174,8 @@ public static class Packs
                 Owner = repo.Owner.Login
             },
 
-            ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo))
+            ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo)),
+            Overrides = previous .Overrides ?? null
         };
         if (info.ContentInfo.Files is null || 
             (info.ContentInfo.Files is not null && info.ContentInfo.Files.Count < 1))

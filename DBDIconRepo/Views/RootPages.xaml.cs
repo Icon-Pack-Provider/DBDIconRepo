@@ -84,6 +84,8 @@ public partial class RootPages
 
     private void SwitchPageHandler(RootPages recipient, SwitchToOtherPageMessage message)
     {
+        if (message.Page == "home")
+            homeSelection.IsSelected = true;
         SwitchPage(message.Page);
     }
 

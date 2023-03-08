@@ -6,13 +6,12 @@ using DBDIconRepo.Helper.Uploadable;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Uploadable;
 using DBDIconRepo.Service;
-using DBDIconRepo.Strings;
 using IconInfo;
-using IconInfo.Icon;
 using IconInfo.Information;
 using IconInfo.Internal;
 using IconPack;
 using IconPack.Model;
+using LibGit2Sharp;
 using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -169,7 +168,7 @@ public partial class UpdatePackViewModel : ObservableObject
 
     public async Task CheckAndCloneRepository()
     {
-        var selected = UserPacks[SelectedRepository];
+        Pack selected = UserPacks[SelectedRepository];
         DirectoryInfo cloned =
             new(Path.Combine(SettingManager.Instance.CacheAndDisplayDirectory,
             "Upload",
@@ -234,7 +233,7 @@ public partial class UpdatePackViewModel : ObservableObject
             if (!NewPotentialIcons.IsMainFolderExist(mainFolder))
             {
                 bool isFound = Info.Folders.TryGetValue(mainFolder, out MainFolder foundedMain);
-                await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () =>
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     NewPotentialIcons.Add(new UploadableFolder()
                     {
@@ -257,7 +256,7 @@ public partial class UpdatePackViewModel : ObservableObject
                 {
                     //No subfolder, add:
                     var subFolderInfo = Info.SubFolders[isFolder.Folder];
-                    await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () =>
+                    await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         mainUploadFolder.SubItems.Add(new UploadableFolder(mainUploadFolder)
                         {
@@ -272,9 +271,9 @@ public partial class UpdatePackViewModel : ObservableObject
                 }
                 toWorkOn = mainUploadFolder.SubItems.FirstOrDefault(sub => sub.Name == isFolder.Folder);
             }
-            await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () =>
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                (toWorkOn as UploadableFolder).SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
+                (toWorkOn as UploadableFolder)?.SubItems.Add(new UploadableFile((toWorkOn as UploadableFolder))
                 {
                     Name = icon.File,
                     DisplayName = icon.Name,
@@ -301,12 +300,157 @@ public partial class UpdatePackViewModel : ObservableObject
     [RelayCommand] private void SelectAllItem() => NewPotentialIcons.SetSelectionState(true);
     [RelayCommand] private void UnSelectAllItem() => NewPotentialIcons.SetSelectionState(false);
 
-    [RelayCommand]
-    private void FinishSelection()
+    private string GetPotentiallyWorkingDirectory()
     {
+        if (UserPacks is null || UserPacks.Count < 1)
+            return string.Empty;
+        if (SelectedRepository <= 0 || SelectedRepository >= UserPacks.Count)
+            return string.Empty;
+        return Path.Join(SettingManager.Instance.CacheAndDisplayDirectory,
+                "Upload",
+                UserPacks[SelectedRepository]?.Repository?.Owner,
+                UserPacks[SelectedRepository]?.Repository?.Name);
+    }
+
+    private bool IsRepoAlreadyExistLocally()
+    {
+        string path = GetPotentiallyWorkingDirectory();
+        return Directory.Exists(path);
+    }
+
+    [RelayCommand]
+    private async void FinishSelection()
+    {
+        //Check for changes, then go to next page if there's actually any changes
+        //Just to be safe
+        if (Git.IsAnonymous)
+        {
+            DialogHelper.Show("Please login to GitHub to continue!", "How are you even got here?");
+            return;
+        }
+
+        //Copy new selected files to git
+        var gitWorkFolder = new DirectoryInfo(GetPotentiallyWorkingDirectory());
+
+        var files = NewPotentialIcons.GetAllSelectedPaths().ToList();
+        await Task.Run(() =>
+        {
+            foreach (var file in files)
+            {
+                StringBuilder journey = new(gitWorkFolder.FullName);
+                if (journey[journey.Length - 1] != '\\')
+                    journey.Append('\\');
+                //Update banner?
+                if (file.Contains(".banner"))
+                {
+                    journey.Append(".banner.png");
+                    FileInfo destination = new(journey.ToString());
+                    if (destination.Directory?.Exists == false)
+                        destination.Directory.Create();
+                    File.Copy(file, destination.FullName);
+                    continue;
+                }
+                //Identify icon
+                var info = IconTypeIdentify.FromFile(file);
+                if (info is null)
+                    continue;
+                if (info is UnknownIcon)
+                    continue;
+                //Root folder append
+                journey.Append(IconTypeIdentify.GetMainFolderFromType(info));
+                journey.Append('\\');
+                //Append subfolder if exist
+                if (info is IFolder sub)
+                {
+                    journey.Append(sub.Folder);
+                    journey.Append('\\');
+                }
+                //Filename
+                journey.Append(info.File);
+                journey.Append(".png");
+                //Copy
+                FileInfo target = new(journey.ToString());
+                if (target.Directory?.Exists == false)
+                    target.Directory.Create();
+                File.Copy(file, target.FullName, true);
+            }
+        });
+        //Check if all of these actually changes
+        using var repository = new Repository(gitWorkFolder.FullName);
+        var status = repository.RetrieveStatus();
+        if (!status.IsDirty)
+        {
+            DialogHelper.Show("Icon is already up to date with selected folder.");
+            return;
+        }
+
+        //Stage everything
+        var stages = new List<string>();
+        foreach (var item in status)
+        {
+            switch (item.State)
+            {
+                case FileStatus.Nonexistent:
+                case FileStatus.Unaltered:
+                case FileStatus.Unreadable:
+                case FileStatus.Ignored:
+                case FileStatus.Conflicted:
+                    continue;
+                default:
+                    stages.Add(item.FilePath);
+                    break;
+            }
+        }
+
+        Commands.Stage(repository, stages);
+
+        //
         CurrentPage = UpdatePages.CommitMessage;
     }
 
+    [ObservableProperty]
+    string commitTitle = string.Empty;
+
+    [ObservableProperty]
+    string commitDetail = string.Empty;
+
+    [RelayCommand]
+    public async Task PushUpdatePack()
+    {
+        Pack? selected = UserPacks[SelectedRepository];
+        var gitWorkFolder = new DirectoryInfo(GetPotentiallyWorkingDirectory());
+        using var repository = new Repository(gitWorkFolder.FullName);
+
+        //Commit
+        var email = await Git.GitHubClientInstance.User.Email.GetAll();
+        var first = email.FirstOrDefault();
+        if (first is null) return;
+
+        var author = new Signature(Config.GitUsername, first.Email, DateTimeOffset.Now);
+        await Task.Run(() =>
+        {
+            repository.Commit($"{CommitTitle}\r\n{CommitDetail}", author, author);
+        });
+
+        var onlineRemote = repository.Network.Remotes.FirstOrDefault();
+        //Push
+        repository.Network.Push(onlineRemote, "HEAD", @$"refs/heads/{selected.Repository.DefaultBranch}", new PushOptions
+        {
+            CredentialsProvider = (a,b,c) => GetLibGit2SharpCredential()
+        });
+        DialogHelper.Show("Update pack completed!");
+        await Task.Delay(1000);
+        Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
+    }
+
+    private LibGit2Sharp.UsernamePasswordCredentials GetLibGit2SharpCredential()
+    {
+        return new LibGit2Sharp.UsernamePasswordCredentials()
+        {
+            Username = Config.GitUsername,
+            Password = new SecureSettingService().GetSecurePassword()
+        };
+    }
 }
 
 public enum UpdatePages

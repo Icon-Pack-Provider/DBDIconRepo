@@ -22,7 +22,7 @@
                Source="{Binding FilePath, Converter={StaticResource fileToLocalImage}}"/>
     </Page.Resources>
 
-    <Grid Margin="0,-12,-12,-12">
+    <Grid Margin="0,-12,0,-12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -178,7 +178,7 @@
                     </TreeView.ItemContainerStyle>
                 </TreeView>
 
-                <ui:CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+                <ui:CommandBar Grid.Row="1" DefaultLabelPosition="Right" Margin="0,0,-12,0">
                     <ui:CommandBar.Content>
                         <ui:CommandBar DefaultLabelPosition="Right">
                             <ui:AppBarButton Label="Select other folder" Icon="Back" Command="{Binding GoBackToSetIconDirectoryCommand}"/>
@@ -213,12 +213,13 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBox>
+                <TextBox Text="{Binding CommitTitle, UpdateSourceTrigger=PropertyChanged}">
                     <ui:ControlHelper.PlaceholderText>
                         Update title message. Eg. "Add stuff"
                     </ui:ControlHelper.PlaceholderText>
                 </TextBox>
                 <TextBox AcceptsReturn="True" AcceptsTab="True"
+                         Text="{Binding CommitDetail, UpdateSourceTrigger=PropertyChanged}"
                          Grid.Row="1" Margin="0,4"
                          Height="128">
                     <ui:ControlHelper.PlaceholderText>
@@ -226,7 +227,7 @@
                         Eg. A list of added icons
                     </ui:ControlHelper.PlaceholderText>
                 </TextBox>
-                <Button Grid.Row="2" Content="Update"/>
+                <Button Grid.Row="2" Content="Update" Command="{Binding PushUpdatePackCommand}"/>
             </Grid>
         </Grid>
     </Grid>

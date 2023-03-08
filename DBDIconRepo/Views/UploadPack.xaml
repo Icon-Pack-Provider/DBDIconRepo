@@ -247,8 +247,8 @@
                               SelectedIndex="{Binding PreviewOption, Mode=TwoWay, Converter={StaticResource PreviewOptionToInt}}"
                               ui:ControlHelper.Header="Pack preview">
                         <ComboBoxItem Selector.IsSelected="True" Content="User defined set of icons"/>
-                        <ComboBoxItem Content="Fixed set of icons"/>
-                        <ComboBoxItem Content="Banner" Visibility="{Binding CanSetBannerAsPackPreview}"/>
+                        <ComboBoxItem Content="Fixed set of icons" IsEnabled="{Binding AllowPackMetadata}"/>
+                        <ComboBoxItem Content="Banner" IsEnabled="{Binding AllowPackMetadata}"/>
                     </ComboBox>
                     <Button Content="{Binding BannerLocatorContext}"
                             Margin="5,0" d:Content="Set banner"
