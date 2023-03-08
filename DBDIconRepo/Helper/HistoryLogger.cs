@@ -53,13 +53,12 @@ public static class HistoryLogger
             return;
         //Check disk
         var dir = GetHistoryDirectory();
-        var entries = dir.GetFiles();
-        if (entries.FirstOrDefault(entry => Equals(entry.NameOnly(), item.Victim.Repository.ID.ToString())) is FileInfo file)
-        {
+        var entries = dir.GetFiles(item.Victim.Repository.ID.ToString());
+        if (entries.FirstOrDefault() is FileInfo file)
             file.Delete();
-        }
 
-        using var writer = file.CreateText();
+
+        using var writer = new StreamWriter($"{dir.FullName}\\{item.Victim.Repository.ID}");
         string json = JsonSerializer.Serialize(item, item.GetType(), new JsonSerializerOptions()
         {
             WriteIndented = true

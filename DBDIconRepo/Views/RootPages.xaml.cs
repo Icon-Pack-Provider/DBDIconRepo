@@ -175,7 +175,7 @@ public partial class RootPages
                     ViewModel.CurrentPageName = $"{ViewModel.Config.GitUsername}'s favorites";
                 break;
             case "history":
-                contentFrame.Navigate(new HistoryPage());
+                contentFrame.Navigate(new History());
                 ViewModel.CurrentPageName = "Install history";
                 break;
             case "upload":
