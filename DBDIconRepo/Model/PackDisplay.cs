@@ -63,12 +63,7 @@ public partial class PackDisplay : ObservableObject
     private void OpenPackDetailWindow()
     {
         Messenger.Default.Send(new RequestViewPackDetailMessage(Info), MessageToken.REQUESTVIEWPACKDETAIL);
-        HistoryLogger.SaveHistory(new HistoryViewPack()
-        {
-            Action = HistoryType.ViewDetail,
-            Time = DateTime.Now,
-            Victim = Info
-        });
+        HistoryLogger.SaveHistory(new HistoryViewPack(Info));
     }
 
     [RelayCommand]
@@ -113,13 +108,7 @@ public partial class PackDisplay : ObservableObject
         });
         IconManager.Install(SettingManager.Instance.DBDInstallationPath, installationPick.Where(i => i.IsSelected == true).ToList(), Info);
         //Save history
-        HistoryLogger.SaveHistory(new HistoryInstallPack()
-        {
-            Action = HistoryType.Install,
-            InstalledIcons = installationPick.Where(i => i.IsSelected == true).ToList(),
-            Time= DateTime.Now,
-            Victim = Info
-        });
+        HistoryLogger.SaveHistory(new HistoryInstallPack(Info, installationPick));
     }
 
     [RelayCommand]

@@ -29,7 +29,7 @@ public partial class HistoryViewModel : HomeViewModel
         if (_isInitialize) { return; }
         _isInitialize = true;
 
-        //Load history
+        //Load history        
         Histories = HistoryLogger.LoadHistory();
         IsGettingPacks = Visibility.Collapsed;
         OnPropertyChanged(nameof(NoHistoryMadeYet));
