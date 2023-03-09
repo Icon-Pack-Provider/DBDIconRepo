@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -29,9 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\app.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\app.ico"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -66,9 +64,7 @@
 	<ItemGroup>
 		<Page Remove="Properties\DesignTimeResources.xaml" />
 		<None Remove="Properties\DesignTimeResources.xaml" />
-		<Resource Include="Resources\bannerHolder.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Resource>
+		<Resource Include="Resources\bannerHolder.png"/>
 		<Page Include="Properties\DesignTimeResources.xaml">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>
