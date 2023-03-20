@@ -1,12 +1,16 @@
-﻿using DBDIconRepo.Model;
+﻿using DBDIconRepo.Helper;
+using DBDIconRepo.Model;
 using DBDIconRepo.Service;
 using IconPack;
 using SelectionListing;
+using SingleInstance;
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo;
 
@@ -15,41 +19,70 @@ namespace DBDIconRepo;
 /// </summary>
 public partial class App : Application
 {
-    [DllImport("user32.dll")]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    private const int SW_RESTORE = 9;
-
     private const string AppUniqueName = "DBDIconRepository:SpaghettiOfMadness";
-    private bool _isIntantiated;
-    private Mutex? _appMutex;
+    public SingleInstanceService InstanceInfo;
+
+    public App()
+    {
+        InstanceInfo = new(AppUniqueName);
+    }
+
+    private async Task<Unit> ServerResponseAsync((string, Action<string>) receive)
+    {
+        var (message, endFunc) = receive;
+        
+        //TODO:Handle parameters
+        try
+        {
+            Uri read = new(message);
+            switch (read.Segments[0])
+            {
+                case "home":
+                    Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
+                    break;
+            }
+        }
+        catch
+        {
+
+        }
+        //eg. Page navigation
+
+        endFunc("success"); // Send response
+        return default;
+    }
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
-        //Single instance
-        _appMutex = new Mutex(true, AppUniqueName, out _isIntantiated);
-
-        if (!_isIntantiated)
+        //URI Association
+        if (!AssociationURIHelper.IsRegistered())
+            AssociationURIHelper.RegisterAppURI();
+        //Instance helper
+        bool start = InstanceInfo.TryStartSingleInstance();
+        if (start && InstanceInfo.IsFirstInstance)
         {
-            _appMutex = null;
-            // activate existing instance
-            Process current = Process.GetCurrentProcess();
-            foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+            // This is the first instance.
+            InstanceInfo.StartListenServer();
+            InstanceInfo.Received.SelectMany(ServerResponseAsync).Subscribe();
+        }
+        else
+        {
+            // This is not the first instance.
+            if (e.Args.Length == 0)
             {
-                if (process.Id != current.Id)
-                {
-                    ShowWindow(process.MainWindowHandle, SW_RESTORE);
-                    SetForegroundWindow(process.MainWindowHandle);
-                    break;
-                }
+                Current.Shutdown();
+                return;
             }
-            // exit current instance
-            Current.Shutdown();
-            return;
+            else
+            {
+                ISingleInstanceService secondInstance = new SingleInstanceService(AppUniqueName);
+                foreach (var arg in e.Args)
+                {
+                    
+                    secondInstance.SendMessageToFirstInstanceAsync(arg);
+                }
+                Current.Shutdown();
+            }
         }
         //Git
         OctokitService.Instance.InitializeGit();
@@ -68,15 +101,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        InstanceInfo.Dispose();
         base.OnExit(e);
-
-        if (_isIntantiated)
-        {
-            _appMutex.ReleaseMutex();
-        }
-
-        _appMutex.Close();
-        _appMutex = null;
     }
 
     public static bool IsDevelopmentBuild()

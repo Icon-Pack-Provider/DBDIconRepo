@@ -29,8 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\app.ico"/>
-	<Resource Include="Resources\bannerHolder.png"/>
+    <Resource Include="Resources\app.ico" />
+	<Resource Include="Resources\bannerHolder.png" />
 	<Resource Include="Resources\pfpHolder.ico" />
   </ItemGroup>
 
@@ -39,10 +39,10 @@
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.6.0" />
     <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.6.0" />
+    <PackageReference Include="HMBSbige.SingleInstance" Version="6.0.0" />
     <PackageReference Include="IconInfo" Version="6.6.0.3" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="MdXaml" Version="1.17.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1343.22" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="Octokit" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
