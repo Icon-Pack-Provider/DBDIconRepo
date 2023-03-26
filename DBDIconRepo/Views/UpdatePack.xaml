@@ -28,7 +28,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.RowSpan="2" Panel.ZIndex="1000" d:Visibility="Collapsed" Visibility="{Binding ShowOnLoadOrNoRepos}">
-            <Rectangle Fill="{DynamicResource AcrylicBackgroundFillColorBaseBrush}"/>
+            <Rectangle Fill="Transparent"/>
 
             <StackPanel Orientation="Vertical"
                         HorizontalAlignment="Center"
