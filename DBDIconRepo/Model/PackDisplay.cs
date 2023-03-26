@@ -72,8 +72,21 @@ public partial class PackDisplay : ObservableObject
     {
         if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
         {
-            DialogHelper.Show("Please check the Setting and set the Dead by Daylight installation folder", "Installation path hasn't set yet.", DialogSymbol.Error);
-            return;
+            //Try detect
+            var path = GameLocator.FindDBDOnSteam();
+            if (!string.IsNullOrEmpty(path))
+                SettingManager.Instance.DBDInstallationPath = path;
+            else
+            {
+                path = GameLocator.FindDBDOnEpig();
+                if (!string.IsNullOrEmpty(path))
+                    SettingManager.Instance.DBDInstallationPath = path;
+                else
+                {
+                    DialogHelper.Show("Please check the Setting and set the Dead by Daylight installation folder", "Installation path hasn't set yet.", DialogSymbol.Error);
+                    return;
+                }
+            }
         }
         ObservableCollection<IPackSelectionItem>? installationPick = new();
         if (SettingManager.Instance.InstallEverythingInPack)
