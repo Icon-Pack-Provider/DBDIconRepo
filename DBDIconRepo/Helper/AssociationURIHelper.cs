@@ -17,9 +17,7 @@ public static class AssociationURIHelper
         key.SetValue("", $"URL:{AppURI}");
         key.SetValue("URL Protocol", "");
 
-        string appLocation = typeof(App).Assembly.Location;
-        FileInfo fif = new(appLocation);
-        string actualExecutable = $"{fif.Directory}\\{fif.NameOnly()}.exe";
+        string actualExecutable = GetAppExecutableLocation();
         
         using var defaultIcon = key.CreateSubKey("DefaultIcon");
         defaultIcon.SetValue("", $"{actualExecutable},1");
@@ -34,8 +32,25 @@ public static class AssociationURIHelper
             return false;
         if (Registry.CurrentUser.OpenSubKey($"SOFTWARE\\Classes\\{AppURI}") is RegistryKey key)
         {
+            var executableLocation = GetAppExecutableLocation();
+            var sub = key.OpenSubKey(@"shell\open\command");
+            //Correct execution folder?
+            var setExecutableLocation = sub.GetValue("").ToString();
+            setExecutableLocation = setExecutableLocation.Substring(1);
+            if (!setExecutableLocation.StartsWith(executableLocation))
+            {
+                return false;
+            }
             return true;
         }
         return false;
+    }
+
+    public static string GetAppExecutableLocation()
+    {
+        string appLocation = typeof(App).Assembly.Location;
+        FileInfo fif = new(appLocation);
+        string actualExecutable = $"{fif.Directory}\\{fif.NameOnly()}.exe";
+        return actualExecutable;
     }
 }
