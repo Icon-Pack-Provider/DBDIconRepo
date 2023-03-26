@@ -19,11 +19,15 @@ public static class VersionHelper
     {
         var currentSplices = Version.Split('.').Select(int.Parse).ToList();
         DateTime current_r = new(currentSplices[0], currentSplices[1], currentSplices[2]);
-        int current_rev = currentSplices[3];
+        int current_rev = 0;
+        if (currentSplices.Count >= 4)
+            current_rev = currentSplices[3];
 
         var checkedSplices = version.Split('.').Select(int.Parse).ToList();
         DateTime checked_r = new(checkedSplices[0], checkedSplices[1], checkedSplices[2]);
-        int checked_rev = checkedSplices[3];
+        int checked_rev = 0;
+        if (checkedSplices.Count >= 4)
+            checked_rev = checkedSplices[3];
 
         if (!Equals(checked_r, current_r))
         {

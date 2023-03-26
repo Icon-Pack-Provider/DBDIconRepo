@@ -7,7 +7,8 @@ using System.Windows;
 using System;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using DBDIconRepo.Model;
-using Dialog;
+using DBDIconRepo.Helper;
+using System.Threading.Tasks;
 
 namespace DBDIconRepo.ViewModel;
 
@@ -62,9 +63,9 @@ public partial class AnonymousUserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void LoginToGithub()
+    private void ManuallyLoginToGithub()
     {
-        LoginOAuth login = new()
+        Login login = new()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
@@ -73,5 +74,50 @@ public partial class AnonymousUserViewModel : ObservableObject
             //Force switch to other page?
             Messenger.Default.Send(new SwitchToOtherPageMessage("loggedIn"), MessageToken.RequestMainPageChange);
         }
+    }
+
+    public static string clientID = "17e24b3ee77c8e9027ad";
+    public static string developmentTestSecret = string.Empty;
+
+    [RelayCommand]
+    private void LoginToGithub()
+    {
+        if (!AssociationURIHelper.IsRegistered())
+            AssociationURIHelper.RegisterAppURI();
+
+
+        string stateName = SettingManager.Instance.OauthStateName;
+        if (string.IsNullOrEmpty(stateName))
+        {
+#if DEBUG
+            stateName = $"DEVENV-{Environment.UserName}@{Environment.UserDomainName}.{Guid.NewGuid()}";
+#else
+            stateName = $"{Environment.UserName}@{Environment.UserDomainName}.{Guid.NewGuid()}";
+#endif
+            SettingManager.Instance.OauthStateName = stateName;
+            SettingManager.SaveSettings();
+        }
+        var request = new OauthLoginRequest(clientID)
+        {
+            Scopes = { "user", "repo" },
+            RedirectUri = new Uri("dbdiconrepo://authenticate"),
+            State = stateName,
+            AllowSignup = true
+        };
+        var uri = client.Oauth.GetGitHubLoginUrl(request);
+        URL.OpenURL(uri.ToString());
+    }
+
+    public static async Task ContinueAuthenticateAsync(AuthRequest auth)
+    {
+        if (SettingManager.Instance.OauthStateName != auth.State)
+            return;
+        var tokenRequest = new OauthTokenRequest(clientID, developmentTestSecret, auth.Code);
+        var token = await OctokitService.Instance.GitHubClientInstance.Oauth.CreateAccessToken(tokenRequest);
+        OctokitService.Instance.GitHubClientInstance.Credentials = new(token.AccessToken);
+        var me = await OctokitService.Instance.GitHubClientInstance.User.Current();
+        SecureSettingService sss = new();
+        sss.SaveSecurePassword(token.AccessToken);
+        SettingManager.Instance.GitUsername = me.Login;
     }
 }

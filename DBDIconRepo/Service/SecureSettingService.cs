@@ -32,6 +32,8 @@ public class SecureSettingService
 
     public string? GetSecurePassword()
     {
+        if (!OperatingSystem.IsWindows())
+            return string.Empty;
         var file = GetLoginFile(SettingFilename);
         var salt = GetLoginFile(Salt);
         if (!file.Exists || !salt.Exists)
@@ -45,17 +47,17 @@ public class SecureSettingService
 
     public void SaveSecurePassword(string password)
     {
+        if (!OperatingSystem.IsWindows())
+            return;
         var file = GetLoginFile(SettingFilename);
         var salt = GetLoginFile(Salt);
 
         var bytes = Encoding.UTF8.GetBytes(password);
 
-        var generatedSalt = new byte[69];
-        //FFS, this is not cryto miner!
-        using RNGCryptoServiceProvider rng = new();
-        rng.GetBytes(generatedSalt);
+        var generatedSalt = RandomNumberGenerator.GetBytes(69);
         SaveToFile(salt, generatedSalt);
 
+        
         var encrypted = ProtectedData.Protect(bytes, generatedSalt, DataProtectionScope.CurrentUser);
         SaveToFile(file, encrypted);
     }

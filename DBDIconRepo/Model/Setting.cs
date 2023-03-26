@@ -97,6 +97,9 @@ public partial class Setting : ObservableObject
     [ObservableProperty]
     string cacheAndDisplayDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Terms.AppDataFolder);
 #endif
+
+    [ObservableProperty]
+    string oauthStateName = string.Empty;
 }
 
 public enum BackgroundOption
