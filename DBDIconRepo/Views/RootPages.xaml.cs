@@ -69,20 +69,27 @@ public partial class RootPages
             return;
         if (!madeTransparent)
             madeTransparent = true;
-        if (this.Resources.Contains("NavigationViewTopPaneBackground")
-            && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
+        try
         {
-            navtop.Color = Colors.Transparent;
+            if (this.Resources.Contains("NavigationViewTopPaneBackground")
+                && this.Resources["NavigationViewTopPaneBackground"] is SolidColorBrush navtop)
+            {
+                navtop.Color = Colors.Transparent;
+            }
+            if (this.Resources.Contains("NavigationViewDefaultPaneBackground")
+                && this.Resources["NavigationViewDefaultPaneBackground"] is SolidColorBrush navbg)
+            {
+                navbg.Color = Colors.Transparent;
+            }
+            if (this.Resources.Contains("NavigationViewExpandedPaneBackground")
+                && this.Resources["NavigationViewExpandedPaneBackground"] is SolidColorBrush navex)
+            {
+                navex.Color = Colors.Transparent;
+            }
         }
-        if (this.Resources.Contains("NavigationViewDefaultPaneBackground")
-            && this.Resources["NavigationViewDefaultPaneBackground"] is SolidColorBrush navbg)
+        catch
         {
-            navbg.Color = Colors.Transparent;
-        }
-        if (this.Resources.Contains("NavigationViewExpandedPaneBackground")
-            && this.Resources["NavigationViewExpandedPaneBackground"] is SolidColorBrush navex)
-        {
-            navex.Color = Colors.Transparent;
+
         }
     }
 
@@ -146,6 +153,10 @@ public partial class RootPages
                 if (error.Message.Contains("API rate limit exceeded"))
                 {
                     this.Title = $"Dead by daylight: Icon repo | GitHub rate limit exceeded. Many function might not work properly!";
+                    ViewModel.CurrentPageName = $"{ViewModel.CurrentPageName}\r\n" +
+                    $"GitHub rate limit exceeded." +
+                    $"\r\nMany function might not work properly!" +
+                    $"\r\nPlease wait for a while and try again";
                 }
             });
         });
@@ -270,13 +281,20 @@ public partial class RootPages
             return;
         if (string.IsNullOrEmpty(ViewModel.BackgroundImage)) //No need to do its if background is blank
             return;
-        if (this.Resources["DefinedTintOpacity"] is double d)
+        try
         {
-            //Set opacity, if Light:0.75; otherwise Dark:0
-            var currentTheme = ModernWpf.ThemeManager.GetActualTheme(this);
-            ((PaneBackgroundImitator.Fill as VisualBrush)
-                .Visual as SourceChord.FluentWPF.AcrylicPanel)
-                .TintOpacity = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
+            if (this.Resources["DefinedTintOpacity"] is double d)
+            {
+                //Set opacity, if Light:0.75; otherwise Dark:0
+                var currentTheme = ModernWpf.ThemeManager.GetActualTheme(this);
+                ((PaneBackgroundImitator.Fill as VisualBrush)
+                    .Visual as SourceChord.FluentWPF.AcrylicPanel)
+                    .TintOpacity = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
+            }
+        }
+        catch
+        {
+
         }
     }
 

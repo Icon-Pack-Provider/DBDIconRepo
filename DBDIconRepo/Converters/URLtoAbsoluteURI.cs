@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 
 namespace DBDIconRepo.Converters;
 
@@ -10,6 +11,8 @@ public class URLtoAbsoluteURI : IValueConverter
     {
         if (value is string url)
         {
+            if (string.IsNullOrEmpty(url))
+                return null;
             return new Uri(url, UriKind.Absolute);
         }
         return null;

@@ -56,13 +56,19 @@ public partial class HomeViewModel : ObservableObject, IDisposable
         }).Await(() =>
         {
             GettingPacks = false;
-            CanSearch = AllAvailablePack.Count > 0;
-            ApplyFilter();
+            if (AllAvailablePack is not null)
+            {
+                CanSearch = AllAvailablePack.Count > 0;
+                ApplyFilter();
+            }
         }, (e) =>
         {
             gettingPacks = false;
-            CanSearch = AllAvailablePack.Count > 0;
-            ApplyFilter();
+            if (AllAvailablePack is not null)
+            {
+                CanSearch = AllAvailablePack.Count > 0;
+                ApplyFilter();
+            }
         });
     }
 

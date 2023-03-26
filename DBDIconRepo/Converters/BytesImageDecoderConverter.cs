@@ -28,6 +28,8 @@ public class BytesImageDecoderConverter : IValueConverter
         }
         else if (value is string path)
         {
+            if (string.IsNullOrEmpty(path))
+                return new BitmapImage();
             //Background
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -37,7 +39,7 @@ public class BytesImageDecoderConverter : IValueConverter
                 bitmap.Freeze();
             return bitmap;
         }
-        return null;
+        return new BitmapImage();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

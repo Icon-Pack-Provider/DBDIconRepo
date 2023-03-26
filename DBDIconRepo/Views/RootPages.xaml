@@ -106,7 +106,8 @@
                 <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" SelectsOnInvoked="False" x:Name="loggedInNavItem"                                       
                                        Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:BitmapIcon UriSource="{Binding UserInfo.ProfilePicUri}"/>
+                        <!--<ui:BitmapIcon UriSource="{Binding UserInfo.ProfilePicUri}"/>-->
+                        <ui:SymbolIcon Symbol="Contact"/>
                     </ui:NavigationViewItem.Icon>
                     <!--Logged in user sub items-->
                     <ui:NavigationViewItem.MenuItems>

@@ -23,9 +23,9 @@
         <DataTemplate x:Key="IconPackIconDisplay">
             <Image Width="100" Height="100">
                 <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
-                                 DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
                 </Image.Source>
                 <ToolTipService.ToolTip>
                     <TextBlock Text="{Binding Tooltip.Name}"/>
@@ -35,9 +35,9 @@
         <DataTemplate x:Key="IconPackBannerDisplay">
             <Image Height="112" Margin="-2">
                 <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
-                                 DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
                 </Image.Source>
             </Image>
         </DataTemplate>
