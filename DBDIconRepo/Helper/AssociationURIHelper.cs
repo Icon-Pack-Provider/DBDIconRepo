@@ -15,7 +15,7 @@ public static class AssociationURIHelper
             return;
         using var key = Registry.CurrentUser.CreateSubKey($"SOFTWARE\\Classes\\{AppURI}");
         key.SetValue("", $"URL:{AppURI}");
-        key.SetValue("URL Protocal", "");
+        key.SetValue("URL Protocol", "");
 
         string appLocation = typeof(App).Assembly.Location;
         FileInfo fif = new(appLocation);
