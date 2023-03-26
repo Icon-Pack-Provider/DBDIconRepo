@@ -32,19 +32,16 @@ public partial class App : Application, ISingleInstance
             var arg = args.First(a => a.Contains("authenticate"));
             if (AppURIHelper.Read(arg) is not AuthRequest auth)
                 return;
-            AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
+            Current.Dispatcher.Invoke(() =>
             {
-                Current.Dispatcher.Invoke(() =>
+                AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
                 {
 
-                });                
-            },
-            (e) =>
-            {
-                Current.Dispatcher.Invoke(() =>
+                },
+                (e) =>
                 {
                     DialogHelper.Show("Please make sure you're using latest version of the software!\r\n" +
-                        "Or using manual login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
+                        "Or using Advanced login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
                 });
             });
         }

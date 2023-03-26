@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using Octokit;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Service;
 
@@ -38,6 +39,10 @@ public partial class OctokitService : ObservableObject
         {
             IsAnonymous = true;
             LoginUsername = string.Empty;
+            if (!_firstInitializeFlag)
+                AnnounceTheUserChange(null);
+            if (_firstInitializeFlag)
+                _firstInitializeFlag = false;
             return;
         }
 
@@ -59,9 +64,28 @@ public partial class OctokitService : ObservableObject
         {
             tokenAuth = new Credentials(username, passOrToken);
             LoginUsername = username;
+            if (!_firstInitializeFlag)
+                AnnounceTheUserChange(username);
         }
         GitHubClientInstance.Credentials = tokenAuth;
         IsAnonymous = false;
+        if (_firstInitializeFlag)
+        {
+            _firstInitializeFlag = false;
+            latestLoggedUser = username;
+        }
+    }
+
+    private string? latestLoggedUser = null; //Null for anonymous
+    private bool _firstInitializeFlag = true;
+
+    private void AnnounceTheUserChange(string? user)
+    {
+        if (!Equals(latestLoggedUser, user))
+        {
+            Messenger.Default.Send(new GitUserChangedMessage(), MessageToken.GitUserChangedToken);
+        }
+        latestLoggedUser = user;
     }
 
     public async Task CacheProfilePic()

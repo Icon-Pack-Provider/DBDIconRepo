@@ -4,6 +4,7 @@ using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
+using DBDIconRepo.Service;
 using DBDIconRepo.ViewModel;
 using IconInfo.Icon;
 using ModernWpf;
@@ -26,7 +27,8 @@ public partial class RootPages
         InitializeComponent();
         Messenger.Default.Register<RootPages, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
-        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
+        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate); 
+        Messenger.Default.Register<RootPages, GitUserChangedMessage, string>(this, MessageToken.GitUserChangedToken, UserSwitched);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
         
@@ -34,10 +36,24 @@ public partial class RootPages
         ViewModel.Initialize();
     }
 
+    private void UserSwitched(RootPages recipient, GitUserChangedMessage message)
+    {
+        if (!OctokitService.Instance.IsAnonymous)
+            DialogHelper.Show($"Welcome {SettingManager.Instance.GitUsername}!\r\n" +
+                "We are working hard to fix any issues with the app and appreciate your patience.\r\n" +
+                "But we're still recommended that you restart the app to ensure optimal experience.", "Login complete!");
+        else
+            DialogHelper.Show("To ensure optimal performance, we recommend that you restart the app.\r\n" +
+                "We are working hard to fix any issues with the app and appreciate your patience.\r\n" +
+                "You can restart the app later if you prefer.", "Logout complete!");
+        ViewModel.UserInfo = null;
+        ViewModel.InitializeUserInfo();
+    }
+
     private void IsBackgroundChangedYet(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         //Replace navigation pane color to transparent
-        if (e.PropertyName == nameof(DBDIconRepo.ViewModel.RootPagesViewModel.BackgroundImage))
+        if (e.PropertyName == nameof(RootPagesViewModel.BackgroundImage))
         {
             UpdateBackgroundBasedSideNavigationPanel();
             TryUpdateAcrylicTintColor();

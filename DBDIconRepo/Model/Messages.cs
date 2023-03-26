@@ -198,3 +198,8 @@ public class DialogResponseMessage
         Response = response;
     }
 }
+
+public class GitUserChangedMessage
+{
+    public GitUserChangedMessage() { }
+}

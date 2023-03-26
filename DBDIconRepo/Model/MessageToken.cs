@@ -19,4 +19,6 @@ public class MessageToken
     public const string RequestSubToAppActivateEvent = "PleaseMonitorAppActivateDeactivate";
     public const string RequestUnSubToAppActivateEvent = "PleaseStopMonitorAppActivateDeactivate";
     public const string SendDialogResponseToken = "ResponseWithThis";
+
+    public const string GitUserChangedToken = "Yo!NewUserWhosDis?";
 }
