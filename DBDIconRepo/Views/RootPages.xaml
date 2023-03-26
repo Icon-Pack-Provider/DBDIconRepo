@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:m="clr-namespace:DBDIconRepo.Model"
         xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
         xmlns:c="clr-namespace:DBDIconRepo.Converters"
         xmlns:ui="http://schemas.modernwpf.com/2019"
@@ -30,6 +31,7 @@
         <c:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
         <c:AnonymousIconRandomizer x:Key="anonIconRandomizer"/>
         <c:BytesImageDecoderConverter x:Key="imageEncoder"/>
+        <c:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
     </Window.Resources>
 
     <Grid>
@@ -74,6 +76,7 @@
         <ui:NavigationView PaneDisplayMode="Left" 
                            IsBackEnabled="False"
                            SelectionChanged="SwitchPage"
+                           ItemInvoked="mainPane_ItemInvoked"
                            Loaded="StartupAction"
                            x:Name="mainPane"
                            Background="Transparent"
@@ -99,21 +102,52 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="Upload new pack" Tag="upload"
-                                   Icon="Upload" Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
-                <ui:NavigationViewItem Content="Update existing pack" Tag="update" Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+               
+                <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" SelectsOnInvoked="False" x:Name="loggedInNavItem"                                       
+                                       Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE1D7;"/>
+                        <ui:BitmapIcon UriSource="{Binding UserInfo.ProfilePicUri}"/>
                     </ui:NavigationViewItem.Icon>
+                    <!--Logged in user sub items-->
+                    <ui:NavigationViewItem.MenuItems>
+                        <ui:NavigationViewItem Content="Upload new pack" Tag="upload"
+                                               Icon="Upload"
+                                               Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
+                        <ui:NavigationViewItem Content="Update existing pack" Tag="update"
+                                               Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE1D7;"/>
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
+                        <ui:NavigationViewItem Content="Logout" Tag="logout_user" SelectsOnInvoked="False"
+                                               Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xF3B1;"/>
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+                    </ui:NavigationViewItem.MenuItems>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="{Binding Config.GitUsername, Mode=OneWay}" Tag="loggedIn"
-                                   Icon="Contact"
-                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource invertBoolToVisibility}}"/>
-                <ui:NavigationViewItem Content="Anonymous" Tag="login"
-                                   Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+
+                <ui:NavigationViewItem Content="Anonymous" SelectsOnInvoked="False"
+                                       Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph="{Binding GitService.IsAnonymous, Converter={StaticResource anonIconRandomizer}}"/>
                     </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.MenuItems>
+                        <ui:NavigationViewItem Content="Login" Tag="login_oauth" SelectsOnInvoked="False"
+                                               Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE8A7;"/>
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+                        <ui:NavigationViewItem Content="Advanced Login" Tag="login_token" SelectsOnInvoked="False"
+                                               Visibility="{Binding GitService.IsAnonymous, Mode=OneWay, Converter={StaticResource boolToVisibility}}">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE15E;"/>
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+                    </ui:NavigationViewItem.MenuItems>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItemSeparator/>
                 <ui:NavigationViewItem SelectsOnInvoked="False" MouseDown="OpenNewVersionLink"

@@ -7,14 +7,17 @@ using System.Windows;
 using System;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using DBDIconRepo.Model;
+using DBDIconRepo.Helper;
+using System.Threading.Tasks;
 
 namespace DBDIconRepo.ViewModel;
 
-public partial class AnonymousUserViewModel : ObservableObject
+public partial class AnonymousUserViewModel : ObservableObject, IRateInfo
 {
     GitHubClient client => OctokitService.Instance.GitHubClientInstance;
 
     public OctokitService GitService => OctokitService.Instance;
+    public Setting Config => SettingManager.Instance;
 
     [ObservableProperty]
     int? requestPerHour;
@@ -26,7 +29,7 @@ public partial class AnonymousUserViewModel : ObservableObject
     string? resetIn;
 
     [RelayCommand]
-    private void CheckRateLimit()
+    public void CheckRateLimit()
     {
         var apiInfo = client.GetLastApiInfo();
         if (apiInfo?.RateLimit is null)
@@ -48,7 +51,7 @@ public partial class AnonymousUserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async void DestructivelyCheckRateLimit()
+    public async void DestructivelyCheckRateLimit()
     {
         var rateLimit = await client.Miscellaneous.GetRateLimits();
 
@@ -61,16 +64,57 @@ public partial class AnonymousUserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void LoginToGithub()
+    private void ManuallyLoginToGithub()
     {
         Login login = new()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
-        if (login.ShowDialog() == true)
+        login.ShowDialog();
+    }
+
+    public static string clientID = "17e24b3ee77c8e9027ad";
+    public static string developmentTestSecret = string.Empty;
+
+    [RelayCommand]
+    private void LoginToGithub()
+    {
+        if (!AssociationURIHelper.IsRegistered())
+            AssociationURIHelper.RegisterAppURI();
+
+
+        string stateName = SettingManager.Instance.OauthStateName;
+        if (string.IsNullOrEmpty(stateName))
         {
-            //Force switch to other page?
-            Messenger.Default.Send(new SwitchToOtherPageMessage("loggedIn"), MessageToken.RequestMainPageChange);
+#if DEBUG
+            stateName = $"DEVENV-{Environment.UserName}@{Environment.UserDomainName}.{Guid.NewGuid()}";
+#else
+            stateName = $"{Environment.UserName}@{Environment.UserDomainName}.{Guid.NewGuid()}";
+#endif
+            SettingManager.Instance.OauthStateName = stateName;
+            SettingManager.SaveSettings();
         }
+        var request = new OauthLoginRequest(clientID)
+        {
+            Scopes = { "user", "repo" },
+            RedirectUri = new Uri("dbdiconrepo://authenticate"),
+            State = stateName,
+            AllowSignup = true
+        };
+        var uri = client.Oauth.GetGitHubLoginUrl(request);
+        URL.OpenURL(uri.ToString());
+    }
+
+    public static async Task ContinueAuthenticateAsync(AuthRequest auth)
+    {
+        if (SettingManager.Instance.OauthStateName != auth.State)
+            return;
+        var tokenRequest = new OauthTokenRequest(clientID, developmentTestSecret, auth.Code);
+        var token = await OctokitService.Instance.GitHubClientInstance.Oauth.CreateAccessToken(tokenRequest);
+        OctokitService.Instance.GitHubClientInstance.Credentials = new(token.AccessToken);
+        var me = await OctokitService.Instance.GitHubClientInstance.User.Current();
+        SettingManager.Instance.GitUsername = me.Login;
+        new SecureSettingService().SaveSecurePassword(token.AccessToken);
+        OctokitService.Instance.InitializeGit();
     }
 }

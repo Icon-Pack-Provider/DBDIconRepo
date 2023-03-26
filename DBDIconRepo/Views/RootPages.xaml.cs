@@ -1,10 +1,15 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Dialog;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Model.Preview;
+using DBDIconRepo.Service;
+using DBDIconRepo.ViewModel;
 using IconInfo.Icon;
 using ModernWpf;
 using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +27,8 @@ public partial class RootPages
         InitializeComponent();
         Messenger.Default.Register<RootPages, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
-        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
+        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate); 
+        Messenger.Default.Register<RootPages, GitUserChangedMessage, string>(this, MessageToken.GitUserChangedToken, UserSwitched);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
         
@@ -30,10 +36,24 @@ public partial class RootPages
         ViewModel.Initialize();
     }
 
+    private void UserSwitched(RootPages recipient, GitUserChangedMessage message)
+    {
+        if (!OctokitService.Instance.IsAnonymous)
+            DialogHelper.Show($"Welcome {SettingManager.Instance.GitUsername}!\r\n" +
+                "We are working hard to fix any issues with the app and appreciate your patience.\r\n" +
+                "But we're still recommended that you restart the app to ensure optimal experience.", "Login complete!");
+        else
+            DialogHelper.Show("To ensure optimal performance, we recommend that you restart the app.\r\n" +
+                "We are working hard to fix any issues with the app and appreciate your patience.\r\n" +
+                "You can restart the app later if you prefer.", "Logout complete!");
+        ViewModel.UserInfo = null;
+        ViewModel.InitializeUserInfo();
+    }
+
     private void IsBackgroundChangedYet(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         //Replace navigation pane color to transparent
-        if (e.PropertyName == nameof(DBDIconRepo.ViewModel.RootPagesViewModel.BackgroundImage))
+        if (e.PropertyName == nameof(RootPagesViewModel.BackgroundImage))
         {
             UpdateBackgroundBasedSideNavigationPanel();
             TryUpdateAcrylicTintColor();
@@ -157,14 +177,14 @@ public partial class RootPages
                 contentFrame.Navigate(new Home());
                 ViewModel.CurrentPageName = "Home";
                 break;
-            case "login":
-                contentFrame.Navigate(new PleaseLogin());
-                ViewModel.CurrentPageName = "Anonymous";
-                break;
-            case "loggedIn":
-                contentFrame.Navigate(new LetMeOut());
-                ViewModel.CurrentPageName = SettingManager.Instance.GitUsername;
-                break;
+            //case "login":
+            //    contentFrame.Navigate(new PleaseLogin());
+            //    ViewModel.CurrentPageName = "Anonymous";
+            //    break;
+            //case "loggedIn":
+            //    contentFrame.Navigate(new LetMeOut());
+            //    ViewModel.CurrentPageName = SettingManager.Instance.GitUsername;
+            //    break;
             case "setting":
                 contentFrame.Navigate(new SettingPage());
                 ViewModel.CurrentPageName = "Settings";
@@ -259,4 +279,32 @@ public partial class RootPages
                 .TintOpacity = currentTheme == ElementTheme.Dark ? 0d : 0.75d;
         }
     }
+
+    private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        if (args.InvokedItemContainer == loggedInNavItem)
+        {
+            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
+        }
+        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
+        {
+            if (nav.Tag is not string tagInfo)
+                return;
+
+            if (tagInfo.StartsWith("login") && ViewModel.UserInfo is AnonymousUserViewModel anon)
+            {
+                if (tagInfo == "login_oauth")
+                    anon.LoginToGithubCommand.Execute(null);
+                else if (tagInfo == "login_token")
+                    anon.ManuallyLoginToGithubCommand.Execute(null);
+            }
+            else if (tagInfo == "logout_user")
+            {
+                if (ViewModel.UserInfo is not UserViewModel userVM)
+                    return;
+                userVM.LogoutOfGithubCommand.Execute(null);
+            }
+        }
+    }
+
 }

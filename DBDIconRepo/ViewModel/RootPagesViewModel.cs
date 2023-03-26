@@ -3,20 +3,33 @@ using CommunityToolkit.Mvvm.Input;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Model;
 using DBDIconRepo.Service;
-using DBDIconRepo.Strings;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.ViewModel;
 
 public partial class RootPagesViewModel : ObservableObject
 {
+    [ObservableProperty]
+    IRateInfo? userInfo = null;
+
+    public void InitializeUserInfo() 
+    {
+        if (OctokitService.Instance.IsAnonymous)
+        {
+            UserInfo = new AnonymousUserViewModel();
+        }
+        else
+        {
+            UserInfo = new UserViewModel();
+        }
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShouldShowAcrylicPanel))]
     [NotifyPropertyChangedFor(nameof(ShouldShowNonAcrylicPanel))]
@@ -29,6 +42,8 @@ public partial class RootPagesViewModel : ObservableObject
     public void Initialize()
     {
         CheckIfDBDRunning();
+        //User initialize
+        InitializeUserInfo();
         //Background
         BackgroundImage = BackgroundRandomizer.Get();
         Config.PropertyChanged += MonitorSetting; //Monitor for background change
