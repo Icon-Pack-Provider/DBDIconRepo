@@ -39,6 +39,13 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                 PackDisplay pd = new(pack, compOption);
                 if (pd is null) //Somehow??
                     continue;
+                //check if this pack have anything
+                if (pd.Info.ContentInfo.Files.Count < 1)
+                    continue;
+                else if (!HasAnyContentType(pd.Info.ContentInfo))
+                {
+                    continue;
+                }
                 //Check for infos about pack repository and cache to disk
                 //Check readme
                 await Packs.CheckPackReadme(pack);
@@ -53,8 +60,23 @@ public partial class HomeViewModel : ObservableObject, IDisposable
             ApplyFilter();
         }, (e) =>
         {
-
+            gettingPacks = false;
+            CanSearch = AllAvailablePack.Count > 0;
+            ApplyFilter();
         });
+    }
+
+    bool HasAnyContentType(PackContentInfo pci)
+    {
+        if (!pci.HasAddons &&
+            !pci.HasItems &&
+            !pci.HasOfferings &&
+            !pci.HasPerks &&
+            !pci.HasPortraits &&
+            !pci.HasPowers &&
+            !pci.HasStatus)
+            return false;
+        return true;
     }
 
     public HomeViewModel() { InitializeVM(); }

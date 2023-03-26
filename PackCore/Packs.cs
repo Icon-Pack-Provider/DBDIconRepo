@@ -258,10 +258,10 @@ public static class Packs
         var bannerState = IsLocalBannerExist(info.Repository);
         if (bannerState is null)
         {
-            //Check online
-            var repoBanner = await URL.IsBannerExist(info.Repository);
+            //Check online            
+            bool? repoBanner = await URL.IsBannerExist(info.Repository);
             //Set state
-            SetLocalBanner(info.Repository, repoBanner);
+            SetLocalBanner(info.Repository, repoBanner.Value);
             //Then save the banner?
             //if (repoBanner)
             //{
@@ -287,8 +287,11 @@ public static class Packs
         ThrowHelper.APINotInitialize();
         var bannerState = IsLocalBannerExist(info.Repository);
         if (bannerState is null)
+        {
             await CheckPackBanner(info);
-        if (bannerState.Value)
+        }
+
+        if (bannerState.HasValue && bannerState.Value)
         {
             //Get banner URL
             return URL.GetBannerURL(info.Repository);
