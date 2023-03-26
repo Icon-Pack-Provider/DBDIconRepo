@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace DBDIconRepo.ViewModel;
 
-public partial class AnonymousUserViewModel : ObservableObject
+public partial class AnonymousUserViewModel : ObservableObject, IRateInfo
 {
     GitHubClient client => OctokitService.Instance.GitHubClientInstance;
 
     public OctokitService GitService => OctokitService.Instance;
+    public Setting Config => SettingManager.Instance;
 
     [ObservableProperty]
     int? requestPerHour;
@@ -28,7 +29,7 @@ public partial class AnonymousUserViewModel : ObservableObject
     string? resetIn;
 
     [RelayCommand]
-    private void CheckRateLimit()
+    public void CheckRateLimit()
     {
         var apiInfo = client.GetLastApiInfo();
         if (apiInfo?.RateLimit is null)
@@ -50,7 +51,7 @@ public partial class AnonymousUserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async void DestructivelyCheckRateLimit()
+    public async void DestructivelyCheckRateLimit()
     {
         var rateLimit = await client.Miscellaneous.GetRateLimits();
 
@@ -69,11 +70,7 @@ public partial class AnonymousUserViewModel : ObservableObject
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
-        if (login.ShowDialog() == true)
-        {
-            //Force switch to other page?
-            Messenger.Default.Send(new SwitchToOtherPageMessage("loggedIn"), MessageToken.RequestMainPageChange);
-        }
+        login.ShowDialog();
     }
 
     public static string clientID = "17e24b3ee77c8e9027ad";
@@ -116,8 +113,8 @@ public partial class AnonymousUserViewModel : ObservableObject
         var token = await OctokitService.Instance.GitHubClientInstance.Oauth.CreateAccessToken(tokenRequest);
         OctokitService.Instance.GitHubClientInstance.Credentials = new(token.AccessToken);
         var me = await OctokitService.Instance.GitHubClientInstance.User.Current();
-        SecureSettingService sss = new();
-        sss.SaveSecurePassword(token.AccessToken);
         SettingManager.Instance.GitUsername = me.Login;
+        new SecureSettingService().SaveSecurePassword(token.AccessToken);
+        OctokitService.Instance.InitializeGit();
     }
 }

@@ -36,10 +36,8 @@ public partial class App : Application, ISingleInstance
             {
                 Current.Dispatcher.Invoke(() =>
                 {
-                    DialogHelper.Show("Please restart to take change", "Login complete");
-                    Environment.Exit(-420);
-                });
-                
+
+                });                
             },
             (e) =>
             {

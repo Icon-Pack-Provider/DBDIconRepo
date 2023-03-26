@@ -42,14 +42,13 @@ public partial class Login : Window
                 if (!string.IsNullOrEmpty(isValid.Login))
                 {
                     SettingManager.Instance.GitUsername = isValid.Login;
-                    SecureSettingService saveInfo = new();
-                    saveInfo.SaveSecurePassword(passwordBox.Password);
+                    new SecureSettingService().SaveSecurePassword(passwordBox.Password);
                     OctokitService.Instance.InitializeGit();
                 }
             }
             catch
             {
-                DialogHelper.Show("Either token has no user query access, or invalid token!",
+                DialogHelper.Show("Either token has no user & repository query access, or invalid token!",
                     "Bad credentials error:", DialogSymbol.Error);
                 return;
             }            

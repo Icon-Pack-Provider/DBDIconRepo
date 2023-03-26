@@ -6,11 +6,25 @@ using System.Threading.Tasks;
 using System;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 using DBDIconRepo.Model;
+using DBDIconRepo.Helper;
+using System.IO;
+using System.Linq;
 
 namespace DBDIconRepo.ViewModel;
 
-public partial class UserViewModel : ObservableObject
+public partial class UserViewModel : ObservableObject, IRateInfo
 {
+    public UserViewModel()
+    {
+        //Check cached
+        DirectoryInfo dir = new(SettingManager.Instance.CacheAndDisplayDirectory);
+        var files = dir.GetFiles($"{GitService.LoginUsername}.*", SearchOption.AllDirectories);
+        if (files.FirstOrDefault(file => file.NameOnly() == GitService.LoginUsername) is FileInfo pfp)
+            ProfilePicUri = pfp.FullName;
+        else
+            GetProfilePic().Await(() => { });
+    }
+
     GitHubClient client => OctokitService.Instance.GitHubClientInstance;
 
     public OctokitService GitService => OctokitService.Instance;
@@ -36,7 +50,7 @@ public partial class UserViewModel : ObservableObject
     string? resetIn;
 
     [RelayCommand]
-    private void CheckRateLimit()
+    public void CheckRateLimit()
     {
         var apiInfo = client.GetLastApiInfo();
         if (apiInfo?.RateLimit is null)
@@ -58,7 +72,7 @@ public partial class UserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async void DestructivelyCheckRateLimit()
+    public async void DestructivelyCheckRateLimit()
     {
         var rateLimit = await client.Miscellaneous.GetRateLimits();
 
@@ -75,7 +89,6 @@ public partial class UserViewModel : ObservableObject
     {
         SecureSettingService svc = new();
         svc.Logout();
-        OctokitService.Instance.InitializeGit();
-        Messenger.Default.Send(new SwitchToOtherPageMessage("login"), MessageToken.RequestMainPageChange);
+        OctokitService.Instance.InitializeGit();        
     }
 }
