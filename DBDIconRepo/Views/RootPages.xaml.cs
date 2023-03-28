@@ -123,10 +123,13 @@ public partial class RootPages
         {
             ViewModel.ProgressText += $"{DateTime.Now:G}: [Packs] {notif}\r\n";
         });
+        if (!OctokitService.Instance.IsAnonymous)
+        {
         var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
         {
             ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
         });
+        }
 
         Task.WhenAll(packTask, addonTask).Await(() =>
         {
