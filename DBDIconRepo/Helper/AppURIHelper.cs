@@ -25,7 +25,7 @@ public static class AppURIHelper
             case "navigation":
             case "home":
                 //TODO:Handle other page navigation
-                return new NavigationRequest();
+                return new NavigationRequest(info);
             case "restore":
                 return new RestoreWindowRequest();
             case "restart":
@@ -54,6 +54,46 @@ public class NavigationRequest : UriRequest
     public NavigationRequest()
     {
         Type = RequestType.Navigation;        
+    }
+
+    public NavigationRequest(Uri extracted)
+    {
+        Type = RequestType.Navigation;
+        if (extracted.Segments.Length == 1)
+        {
+            return;
+        }
+        else if (extracted.Segments.Length >= 2)
+        {
+            switch (extracted.Segments[1])
+            {
+                //Literal name
+                case "upload":
+                case "update":
+                case "setting":
+                case "home":
+                case "history":
+                case "favorite":
+                    Page = extracted.Segments[1];
+                    return;
+                //Alternate names
+                case "main":
+                case "index":
+                    Page = "home";
+                    return;
+                case "favourite":
+                case "fav":
+                    Page = "favorite";
+                    return;
+                case "config":
+                case "preference":
+                case "pref":
+                case "cfg":
+                case "set":
+                    Page = "setting";
+                    return;
+            }
+        }
     }
 }
 

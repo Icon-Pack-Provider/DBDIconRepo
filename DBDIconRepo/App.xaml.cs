@@ -27,24 +27,35 @@ public partial class App : Application, ISingleInstance
 
     public void OnInstanceInvoked(string[] args)
     {
-        if (args.Length >= 1 && args.Any(a => a.Contains("authenticate")))
+        foreach (var arg in args)
         {
-            var arg = args.First(a => a.Contains("authenticate"));
-            if (AppURIHelper.Read(arg) is not AuthRequest auth)
-                return;
-            Current.Dispatcher.Invoke(() =>
+            if (!arg.StartsWith(AssociationURIHelper.AppURI))
+                continue;
+            var request = AppURIHelper.Read(arg);
+            switch (request)
             {
-                AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
-                {
+                case AuthRequest auth:
+                    AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
+                    {
 
-                },
-                (e) =>
-                {
-                    DialogHelper.Show("Please make sure you're using latest version of the software!\r\n" +
-                        "Or using Advanced login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
-                });
-            });
+                    },
+                    (e) =>
+                    {
+                        DialogHelper.Show("Please make sure you're using latest version of the software!\r\n" +
+                            "Or using Advanced login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
+                    });
+                    break;
+                case NavigationRequest nav:
+                    Current.Dispatcher.Invoke(() =>
+                    {
+                        if (Current.MainWindow is not RootPages root)
+                            return;
+                        root.SwitchPage(nav.Page);
+                    });
+                    break;
+            }
         }
+        WindowHelper.Restore();
     }
     private void StartupHandler(object sender, StartupEventArgs e)
     {

@@ -231,8 +231,8 @@ public partial class RootPages
         if (ViewModel.GitService.IsAnonymous)
         {
             homeSelection.IsSelected = true;
-            DialogHelper.Show("I am not letting you in without login to GitHub!",
-                "I don't know how did you manage to do this, but",
+            DialogHelper.Show("This page can't function without GitHub account!",
+                "Please login first!",
                 DialogSymbol.Error);
             if (contentFrame.Content.GetType().Name != nameof(Home))
                 contentFrame.Navigate(new Home());
