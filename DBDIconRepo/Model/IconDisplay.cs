@@ -1,15 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using IconInfo.Internal;
-using System;
 
 namespace DBDIconRepo.Model;
 
 public partial class IconDisplay : OnlineSourceDisplay 
 {
-    public int DecodeWidth => Convert.ToInt32(IconResolutionScale.GetResolutionScale(type).Width);
-    public int DecodeHeight => Convert.ToInt32(IconResolutionScale.GetResolutionScale(type).Height);
+    public int DecodeWidth => System.Convert.ToInt32(IconResolutionScale.GetResolutionScale(Type).Width);
+    public int DecodeHeight => System.Convert.ToInt32(IconResolutionScale.GetResolutionScale(Type).Height);
 
-    private string type = "perk";
+    [ObservableProperty] private string type = string.Empty;
 
     [ObservableProperty]
     public IBasic? tooltip = null;
@@ -19,22 +18,22 @@ public partial class IconDisplay : OnlineSourceDisplay
     {
         string urlparse = url.ToLower();
         if (urlparse.Contains("charselect_portrait"))
-            type = "portrait";
+            Type = "portrait";
         else if (urlparse.Contains("dailyritualicon"))
-            type = "daily";
+            Type = "daily";
         else if (urlparse.Contains("emblemicon"))
-            type = "emblem";
+            Type = "emblem";
         else if (urlparse.Contains("iconfavors"))
-            type = "offering";
+            Type = "offering";
         else if (urlparse.Contains("iconaddon"))
-            type = "addon";
+            Type = "addon";
         else if (urlparse.Contains("iconitems"))
-            type = "item";
+            Type = "item";
         else if (urlparse.Contains("iconperks"))
-            type = "perk";
+            Type = "perk";
         else if (urlparse.Contains("iconpowers"))
-            type = "power";
+            Type = "power";
         else if (urlparse.Contains("iconstatuseffects"))
-            type = "status";
+            Type = "status";
     }
 }
