@@ -27,7 +27,6 @@ public partial class HomeViewModel : ObservableObject, IDisposable
     public HomeViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
     {
         InitializeVM();
-
         Task.Run(async () =>
         {
             var packs = await packGatherMethod;
@@ -39,6 +38,14 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                 PackDisplay pd = new(pack, compOption);
                 if (pd is null) //Somehow??
                     continue;
+                //Exclusion
+                if (pd.Info.Author == "Icon-Pack-Provider")
+                {
+                    if (pd.Info.Name != "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDevTestPack)
+                        continue;
+                    else if (pd.Info.Name == "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDefaultPack)
+                        continue;
+                }
                 //check if this pack have anything
                 if (pd.Info.ContentInfo.Files.Count < 1)
                     continue;
@@ -46,13 +53,24 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                 {
                     continue;
                 }
+                else
+                {
+                    //Try verify file list again?
+                    pd.Info.ContentInfo.VerifyContentInfo();
+                    if (!HasAnyContentType(pd.Info.ContentInfo))
+                    {
+                        continue;
+                    }
+                }
                 //Check for infos about pack repository and cache to disk
                 //Check readme
                 await Packs.CheckPackReadme(pack);
                 //Banner and urls
                 await pd.GatherPreview();
                 AllAvailablePack.Add(pd);
+                await Task.Delay(100);
             }
+            InitializeVM();
         }).Await(() =>
         {
             GettingPacks = false;
@@ -63,7 +81,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
             }
         }, (e) =>
         {
-            gettingPacks = false;
+            GettingPacks = false;
             if (AllAvailablePack is not null)
             {
                 CanSearch = AllAvailablePack.Count > 0;
@@ -85,7 +103,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
         return true;
     }
 
-    public HomeViewModel() { InitializeVM(); }
+    public HomeViewModel() { }
 
     [ObservableProperty]
     private PackDisplayComponentOptions componentOptions = new();
@@ -213,21 +231,24 @@ public partial class HomeViewModel : ObservableObject, IDisposable
             {
                 _queryDebouncer.Debounce(value.Length == 0 ? 100 : 500, () =>
                 {
-                    if (QueryResults is null)
-                    QueryResults = new();
-                    else
-                        QueryResults.Clear();
-                    //Pack name search
-                    var allFoundName = AllAvailablePack
-                    .Where(i => i.Info.Name.ToLower().Contains(value.ToLower()))
-                    .Select(i => i.Info.Name).Distinct();
-                    var allFoundAuthor = AllAvailablePack
-                    .Where(i => i.Info.Repository.Owner.ToLower().Contains(value.ToLower()))
-                    .Select(i => i.Info.Repository.Owner).Distinct();
-                    QueryResults = new(allFoundName.Concat(allFoundAuthor));
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (QueryResults is null)
+                            QueryResults = new();
+                        else
+                            QueryResults.Clear();
+                        //Pack name search
+                        var allFoundName = AllAvailablePack
+                        .Where(i => i.Info.Name.ToLower().Contains(value.ToLower()))
+                        .Select(i => i.Info.Name).Distinct();
+                        var allFoundAuthor = AllAvailablePack
+                        .Where(i => i.Info.Author.Contains(value.ToLower()))
+                        .Select(i => i.Info.Author).Distinct();
+                        QueryResults = new(allFoundName.Concat(allFoundAuthor));
 
-                    //Trigger filter
-                    ApplyFilter();
+                        //Trigger filter
+                        ApplyFilter();
+                    });
                 });
             }
         }
@@ -244,21 +265,6 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                 return new ObservableCollection<PackDisplay>();
 
             List<PackDisplay> filtering = new(AllAvailablePack);
-            //Initial filter; Default pack visibility and dev pack visibility
-            if (!Config.ShowDevTestPack)
-            {
-                var devPacks = filtering
-                    .Where(pack => pack.Info.Author == "Icon-Pack-Provider")
-                    .ToList();
-                foreach (var pack in devPacks)
-                {
-                    if (pack.Info.Name == "Dead-by-daylight-Default-icons"
-                        && Config.ShowDefaultPack)
-                        continue;
-                    int index = filtering.IndexOf(pack);
-                    filtering.RemoveAt(index);
-                }
-            }
 
             //A search query option; null if SearchQuery is empty
             string? query = SearchQuery != string.Empty ?

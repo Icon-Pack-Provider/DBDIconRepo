@@ -50,7 +50,17 @@ public static class Packs
     {
         SearchRepositoriesRequest request = new SearchRepositoriesRequest($"topic:{PackTag}");
         SearchRepositoryResult result = await OctokitService.Instance.Client.Search.SearchRepo(request);
+        APICallRecord.SaveLastSearchDate();
         return result.Items;
+    }
+
+    public static void ResetAPICache()
+    {
+        //Force delete display folder
+        var displayDir = GetDisplayDirectory();
+        displayDir.Delete(true);
+        //Delete search time record
+        APICallRecord.DeleteSearchDateRecord();
     }
 
     public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
@@ -67,11 +77,22 @@ public static class Packs
             var searchResults = displayDir.GetFiles("pack.json", SearchOption.AllDirectories);
             foreach (var packFile in searchResults)
             {
-                string json = File.ReadAllText(PackJson);
-                var deserialized = JsonSerializer.Deserialize<Pack?>(json);
-                if (deserialized is null)
+                try
+                {
+                    using FileStream fs = new(packFile.FullName, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using StreamReader reader = new(fs);                    
+                    string json = reader.ReadToEnd();
+                    if (string.IsNullOrEmpty(json))
+                        continue;
+                    var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+                    if (deserialized is null)
+                        continue;
+                    packs.Add(deserialized);
+                }
+                catch
+                {
                     continue;
-                packs.Add(deserialized);
+                }
             }
         }
         else
@@ -90,7 +111,7 @@ public static class Packs
 
                 packs.Add(pack);
             }
-        }        
+        }
         notifications?.Invoke("All repositories information has been gathered!");
         return packs;
     }

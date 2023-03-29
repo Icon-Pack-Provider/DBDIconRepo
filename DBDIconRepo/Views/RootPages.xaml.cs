@@ -119,19 +119,17 @@ public partial class RootPages
     private void StartupAction(object sender, RoutedEventArgs e)
     {
         //Load stuffs
-        var packTask = IconPack.Packs.GetPacks((notif) =>
+        var addonTask = Task.Run(async () =>
         {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Packs] {notif}\r\n";
+            if (OctokitService.Instance.IsAnonymous)
+                return;
+            await SelectionListing.Lists.CheckCatagoryRepo((notif) =>
+            {
+                ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
+            });
         });
-        if (!OctokitService.Instance.IsAnonymous)
-        {
-        var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
-        {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
-        });
-        }
 
-        Task.WhenAll(packTask, addonTask).Await(() =>
+        Task.WhenAll(addonTask).Await(() =>
         {
             Logger.Write(ViewModel.ProgressText);
             Application.Current.Dispatcher.Invoke(() =>
@@ -153,6 +151,8 @@ public partial class RootPages
             Application.Current.Dispatcher.Invoke(() =>
             {
                 homeSelection.IsSelected = true;
+                ViewModel.ProgressText = string.Empty;
+                ViewModel.IsInitializing = true;
                 if (error.Message.Contains("API rate limit exceeded"))
                 {
                     this.Title = $"Dead by daylight: Icon repo | GitHub rate limit exceeded. Many function might not work properly!";

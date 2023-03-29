@@ -233,8 +233,14 @@ public partial class PackDisplay : ObservableObject
         var bannerState = await Packs.IsPackBannerExist(Info);
         if (bannerState)
         {
-            var bannerURL = await Packs.GetPackBannerURL(Info);
-            PreviewSources.Add(new BannerDisplay(bannerURL));
+            var bannerURL = string.Empty;
+            Task.Run(async () =>
+            {
+                bannerURL = await Packs.GetPackBannerURL(Info);
+            }).Await(() =>
+            {
+                PreviewSources.Add(new BannerDisplay(bannerURL));
+            });
             return;
         }
         else //banner not exist, get URLs for perk icons that required to display on setting

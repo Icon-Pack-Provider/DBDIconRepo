@@ -424,8 +424,6 @@ public static class IconResolutionScale
                 return Item;
             case "offering":
                 return Offering;
-            case "perk":
-                return Perk;
             case "power":
                 return Power;
             case "daily": //128x128
@@ -434,8 +432,39 @@ public static class IconResolutionScale
             case "status":
             case "statuseffect":
                 return StatusEffect;
+            case "perk":
             default:
                 return Perk;
+        }
+    }
+
+    public static double GetScale(string type)
+    {
+        switch (type)
+        {
+            case "banner": //1280x300
+                return SettingManager.Instance.Resolution.BannerScale;
+            case "portrait":
+                return SettingManager.Instance.Resolution.PortraitScale;
+            case "addon": //256x256
+                return SettingManager.Instance.Resolution.AddonScale;
+            case "emblem":
+                return SettingManager.Instance.Resolution.EmblemScale;  
+            case "item":
+                return SettingManager.Instance.Resolution.ItemScale;
+            case "offering":
+                return SettingManager.Instance.Resolution.OfferingScale; 
+            case "power":
+                return SettingManager.Instance.Resolution.PowerScale; 
+            case "daily": //128x128
+            case "dailyritual":
+                return SettingManager.Instance.Resolution.DailyRitualScale; 
+            case "status":
+            case "statuseffect":
+                return SettingManager.Instance.Resolution.StatusEffectScale;
+            case "perk":
+            default:
+                return SettingManager.Instance.Resolution.PerkScale;
         }
     }
 }

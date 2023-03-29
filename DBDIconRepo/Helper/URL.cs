@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DBDIconRepo.Helper;
@@ -64,5 +66,15 @@ public static class URL
         using var client = new HttpClient();
         using var response = await client.GetAsync(url);
         return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+    }
+
+    public static (string user, string repo, string[] paths) ExtractRepositoryInfoFromURL(string url)
+    {
+        System.Uri uri = new(url);
+        if (uri.Authority != "raw.githubusercontent.com")
+            return (string.Empty, string.Empty, Array.Empty<string>());
+        return (uri.Segments[1].Replace("/", ""), 
+            uri.Segments[2].Replace("/", ""),
+            uri.Segments.Skip(4).Select(s => s.Replace("/", "")).ToArray());
     }
 }

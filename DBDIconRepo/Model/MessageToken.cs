@@ -21,4 +21,5 @@ public class MessageToken
     public const string SendDialogResponseToken = "ResponseWithThis";
 
     public const string GitUserChangedToken = "Yo!NewUserWhosDis?";
+    public const string AttemptReloadIconMessage = "Hol'UpASecAndReloadThisAgain";
 }

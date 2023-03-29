@@ -203,3 +203,9 @@ public class GitUserChangedMessage
 {
     public GitUserChangedMessage() { }
 }
+
+public class AttemptReloadIconMessage
+{
+    public string URL { get; private set; }
+    public AttemptReloadIconMessage(string url) { URL = url; }
+}
