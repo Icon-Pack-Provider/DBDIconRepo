@@ -45,6 +45,11 @@ internal static class IOHelper
         path = Path.Join(path, Terms.LastFetchFilename);
         return new(path);
     }
+
+    public static FileInfo GetFile(string name)
+    {
+        return new FileInfo(Path.Join(WorkingDirectory, name));
+    }
     #endregion
     #region Cache overload
     public static DirectoryInfo GetRepoCloneDirectory(PackRepositoryInfo repository)

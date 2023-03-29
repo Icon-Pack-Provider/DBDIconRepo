@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconInfo.Icon;
 using IconPack.Helper;
 using IconPack.Internal;
 using IconPack.Internal.Helper;
 using Octokit;
+using System;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
@@ -173,4 +175,24 @@ public partial class PackContentInfo : ObservableObject
 
     [ObservableProperty]
     ObservableCollection<string>? files;
+
+    public void VerifyContentInfo()
+    {
+        List<IconInfo.Internal.IBasic> basicIcons = new();
+        foreach (var file in Files)
+        {
+            var info = IconInfo.Info.GetIcon(file);
+            if (info is null)
+                continue;
+            else
+                basicIcons.Add(info);
+        }
+        HasPerks = basicIcons.Any(icon => icon is Perk);
+        HasAddons = basicIcons.Any(icon => icon is Addon);
+        HasItems = basicIcons.Any(icon => icon is Item);
+        HasOfferings = basicIcons.Any(icon => icon is Offering);
+        HasPortraits = basicIcons.Any(icon => icon is Portrait);
+        HasPowers = basicIcons.Any(icon => icon is Power);
+        HasStatus = basicIcons.Any(icon => icon is StatusEffect);
+    }
 }

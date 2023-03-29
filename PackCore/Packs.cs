@@ -46,27 +46,51 @@ public static class Packs
         }
     }
 
+    private static async Task<IReadOnlyList<Repository>> SearchForPackRepo()
+    {
+        SearchRepositoriesRequest request = new SearchRepositoriesRequest($"topic:{PackTag}");
+        SearchRepositoryResult result = await OctokitService.Instance.Client.Search.SearchRepo(request);
+        return result.Items;
+    }
+
     public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
     {
         ThrowHelper.APINotInitialize();
 
-        var request = new SearchRepositoriesRequest($"topic:{PackTag}");
-        var result = await OctokitService.Instance.Client.Search.SearchRepo(request);
-        notifications?.Invoke($"Gather icon pack repositories\r\nFound {result.TotalCount} repositories");
-
+        List<Repository> result = new();
         var packs = new ObservableCollection<Pack?>();
-        foreach (var repo in result.Items)
+        if (!APICallRecord.ShouldDoSearch())
         {
-            notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
-            var pack = await GetPack(repo);
-            if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
-                || IsMissingInfo(pack))
+            //Load result list
+            //notifications?.Invoke($"Gather icon pack repositories\r\nFound {result.TotalCount} repositories");
+            var displayDir = GetDisplayDirectory();
+            var searchResults = displayDir.GetFiles("pack.json", SearchOption.AllDirectories);
+            foreach (var packFile in searchResults)
             {
-                pack = await UpdateOne(pack, repo);
+                string json = File.ReadAllText(PackJson);
+                var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+                if (deserialized is null)
+                    continue;
+                packs.Add(deserialized);
             }
-
-            packs.Add(pack);
         }
+        else
+        {
+            result = new(await SearchForPackRepo());
+            notifications?.Invoke($"Searching icon pack repositories\r\nFound {result.Count} repositories");
+            foreach (var repo in result)
+            {
+                notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
+                var pack = await GetPack(repo);
+                if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
+                    || IsMissingInfo(pack))
+                {
+                    pack = await UpdateOne(pack, repo);
+                }
+
+                packs.Add(pack);
+            }
+        }        
         notifications?.Invoke("All repositories information has been gathered!");
         return packs;
     }
