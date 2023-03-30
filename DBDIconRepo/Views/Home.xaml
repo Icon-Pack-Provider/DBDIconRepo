@@ -8,7 +8,7 @@
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
-      mc:Ignorable="d" 
+      mc:Ignorable="d" SizeChanged="SizeTrigger"
       Title="Dead by daylight: Icon repo">
     <Page.Resources>
         <convert:InvertBool x:Key="invertBool"/>
@@ -83,6 +83,9 @@
         </Grid.RowDefinitions>
 
         <ui:CommandBar Grid.Row="0"
+                       x:Name="OptionsCommandBar"
+                       IsDynamicOverflowEnabled="False"
+                       OverflowButtonVisibility="Collapsed"
                        Background="Transparent">
             <ui:CommandBar.Content>
                 <Grid>
@@ -94,7 +97,7 @@
 
             </ui:CommandBar.Content>
 
-            <ui:AppBarButton Icon="Sort" Label="Sort by" Click="OpenAttatchedFlyout">
+            <ui:AppBarButton Icon="Sort" Label="Sort by" Click="OpenAttatchedFlyout" x:Name="sortButtonCMD">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <ui:RadioMenuItem Header="Name" GroupName="sortby"
@@ -118,7 +121,7 @@
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
             </ui:AppBarButton>
-            <ui:AppBarButton Icon="Filter" Label="Filter packs" Click="OpenAttatchedFlyout">
+            <ui:AppBarButton Icon="Filter" Label="Filter packs" Click="OpenAttatchedFlyout" x:Name="filterButtonCMD">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <MenuItem Header="Perks only" Command="{Binding OnlyPerkFilterCommand}"/>
@@ -136,7 +139,7 @@
                 </ui:FlyoutBase.AttachedFlyout>
             </ui:AppBarButton>
 
-            <ui:AppBarButton Icon="View" Label="Layout view" Click="OpenAttatchedFlyout">
+            <ui:AppBarButton Icon="View" Label="Layout view" Click="OpenAttatchedFlyout" x:Name="layoutButtonCMD">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <ui:RadioMenuItem Header="Grid" GroupName="view"
@@ -165,7 +168,8 @@
             </ui:AppBarButton>
 
             <ui:AppBarButton Click="OpenAttatchedFlyout"
-                             Label="Download option" Icon="Download">
+                             Label="Download option" Icon="Download"
+                             x:Name="downloadButtonCMD">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <MenuItem IsHitTestVisible="False" Header="Install option:"
