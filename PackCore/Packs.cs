@@ -116,6 +116,32 @@ public static class Packs
         return packs;
     }
 
+    public static Pack? GetLocalPack(string user, string repo)
+    {
+        //Directory confirmation
+        if (!Directory.Exists(WorkingDirectory))
+            Directory.CreateDirectory(WorkingDirectory);
+
+        //Local pack.json info
+        bool hasLocalPackJson = IsLocalPackJSONExist(user, repo);
+        if (hasLocalPackJson)
+        {
+            var jsonFile = GetLocalPackJson(user, repo);
+            string json = File.ReadAllText(jsonFile.FullName);
+            var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+
+            if (json.Contains(nameof(Pack.LastUpdate)))
+            {
+                //Last update on Json file is untrustworthy;
+                //It's function is for program to write into its and store locally
+                //Not store on GitHub repo
+                deserialized.LastUpdate = DateTime.MinValue;
+            }
+            return deserialized;
+        }
+        return null;
+    }
+
     public static async Task<Pack?> GetPack(Repository repo)
     {
         ThrowHelper.APINotInitialize();

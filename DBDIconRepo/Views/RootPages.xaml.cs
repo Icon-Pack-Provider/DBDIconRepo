@@ -183,6 +183,7 @@ public partial class RootPages
         SwitchPage(page);
     }
 
+    //Navigation
     public void SwitchPage(string page)
     {
         switch (page)
@@ -226,9 +227,49 @@ public partial class RootPages
                 contentFrame.Navigate(new UploadPack());
                 ViewModel.CurrentPageName = "Upload new pack";
                 break;
+            case "default":
+                contentFrame.Navigate(new DefaultPackView());
+                ViewModel.CurrentPageName = "Default icon";
+                break;
         }
     }
 
+    //Invoke function; no navigate
+    private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        if (args.InvokedItemContainer == loggedInNavItem)
+        {
+            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
+        }
+        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
+        {
+            if (nav.Tag is not string tagInfo)
+                return;
+
+            if (tagInfo.StartsWith("login") && ViewModel.UserInfo is AnonymousUserViewModel anon)
+            {
+                if (tagInfo == "login_oauth")
+                    anon.LoginToGithubCommand.Execute(null);
+                else if (tagInfo == "login_token")
+                    anon.ManuallyLoginToGithubCommand.Execute(null);
+            }
+            else if (tagInfo == "logout_user")
+            {
+                if (ViewModel.UserInfo is not UserViewModel userVM)
+                    return;
+                userVM.LogoutOfGithubCommand.Execute(null);
+            }
+            else if (tagInfo == "uninstall")
+            {
+                if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
+                    return;
+                if (IconManager.Uninstall(SettingManager.Instance.DBDInstallationPath))
+                {
+                    DialogHelper.Show($"Icon pack uninstall succesfully!");
+                }
+            }
+        }
+    }
     private bool AnonymousWarned()
     {
         if (ViewModel.GitService.IsAnonymous)
@@ -300,32 +341,4 @@ public partial class RootPages
 
         }
     }
-
-    private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-    {
-        if (args.InvokedItemContainer == loggedInNavItem)
-        {
-            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
-        }
-        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
-        {
-            if (nav.Tag is not string tagInfo)
-                return;
-
-            if (tagInfo.StartsWith("login") && ViewModel.UserInfo is AnonymousUserViewModel anon)
-            {
-                if (tagInfo == "login_oauth")
-                    anon.LoginToGithubCommand.Execute(null);
-                else if (tagInfo == "login_token")
-                    anon.ManuallyLoginToGithubCommand.Execute(null);
-            }
-            else if (tagInfo == "logout_user")
-            {
-                if (ViewModel.UserInfo is not UserViewModel userVM)
-                    return;
-                userVM.LogoutOfGithubCommand.Execute(null);
-            }
-        }
-    }
-
 }
