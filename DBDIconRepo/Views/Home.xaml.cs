@@ -66,7 +66,6 @@ public partial class Home : Page
 
     private void SizeTrigger(object sender, SizeChangedEventArgs e)
     {
-        Debug.WriteLine($"W: {e.NewSize.Width}");
         /* 86   376  //Sort
          * 108  462 //Filter
          * 110  570 //View
