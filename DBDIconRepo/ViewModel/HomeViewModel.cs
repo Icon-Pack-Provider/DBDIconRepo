@@ -468,6 +468,7 @@ public enum PackView
 public class PackDisplayComponentOptions
 {
     public bool ShowFavoriteComponent { get; set; } = true;
+    public bool ShowTopPanelComponent { get; set; } = true;
 
     public PackDisplayComponentOptions() { }
 }

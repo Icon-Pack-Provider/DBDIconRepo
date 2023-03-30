@@ -85,20 +85,45 @@
                            PaneOpening="animatePaneExpanding" PaneClosing="animatePaneShrinking"
                            IsBackButtonVisible="Collapsed">
             <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItemHeader Content="Icon pack"/>
                 <ui:NavigationViewItem Content="Home" Tag="home"
                                    Icon="Home" x:Name="homeSelection"/>
                 <ui:NavigationViewItem Content="Single icon" Tag="single"
                                    Visibility="Collapsed"
                                    Icon="ViewAll"/>
                 <ui:NavigationViewItem Content="Favorite" Tag="favorite">
+                    <ToolTipService.ToolTip>
+                        <TextBlock>
+                            All icon pack that has been favorited
+                            <LineBreak/><Bold>Anonymous user</Bold> will have favorite store locally
+                            <LineBreak/><Bold>Logged in user</Bold> will have favorite store as starred repositories
+                        </TextBlock>
+                    </ToolTipService.ToolTip>
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph="&#xE1CE;"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content="History" Tag="history">
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="Listing View/Install icon packs history"/>
+                    </ToolTipService.ToolTip>
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph="&#xE81C;"/>
                     </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+
+                <ui:NavigationViewItemSeparator/>
+
+                <ui:NavigationViewItemHeader Content="Reset"/>
+                <ui:NavigationViewItem Content="Install Default Icons" Icon="Refresh" Tag="default">
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="For pack creators that wanted fresh icons"/>
+                    </ToolTipService.ToolTip>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Uninstall icon pack" Icon="Delete" Tag="uninstall" SelectsOnInvoked="False">
+                    <ToolTipService.ToolTip>
+                        <TextBlock Text="Clear all icons from game folder"/>
+                    </ToolTipService.ToolTip>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
