@@ -265,7 +265,7 @@ public partial class RootPages
                     return;
                 if (IconManager.Uninstall(SettingManager.Instance.DBDInstallationPath))
                 {
-                    DialogHelper.Show($"Icon pack uninstall succesfully!");
+                    DialogHelper.Show($"Icon pack uninstall successfully!");
                 }
             }
         }
