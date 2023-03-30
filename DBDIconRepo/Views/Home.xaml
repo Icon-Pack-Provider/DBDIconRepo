@@ -71,9 +71,6 @@
                 
             </ui:CommandBar.Content>
 
-            <ui:AppBarButton Icon="Refresh" Label="Refresh pack list"/>
-            <ui:AppBarSeparator/>
-
             <ui:AppBarButton Icon="Sort" Label="Sort by" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
                     <ui:MenuFlyout Placement="BottomEdgeAlignedRight">

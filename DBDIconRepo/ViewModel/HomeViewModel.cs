@@ -22,7 +22,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(IsGettingPacks))]
     bool gettingPacks = true;
 
-    public Visibility IsGettingPacks => gettingPacks ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility IsGettingPacks => GettingPacks ? Visibility.Visible : Visibility.Collapsed;
 
     public HomeViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
     {
@@ -33,43 +33,43 @@ public partial class HomeViewModel : ObservableObject, IDisposable
 
             AllAvailablePack = new();
             Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
-            foreach (var pack in packs)
-            {
+        foreach (var pack in packs)
+        {
                 PackDisplay pd = new(pack, compOption);
-                if (pd is null) //Somehow??
+            if (pd is null) //Somehow??
+                continue;
+            //Exclusion
+            if (pd.Info.Author == "Icon-Pack-Provider")
+            {
+                if (pd.Info.Name != "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDevTestPack)
                     continue;
-                //Exclusion
-                if (pd.Info.Author == "Icon-Pack-Provider")
-                {
-                    if (pd.Info.Name != "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDevTestPack)
-                        continue;
-                    else if (pd.Info.Name == "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDefaultPack)
-                        continue;
-                }
-                //check if this pack have anything
-                if (pd.Info.ContentInfo.Files.Count < 1)
+                else if (pd.Info.Name == "Dead-by-daylight-Default-icons" && !SettingManager.Instance.ShowDefaultPack)
                     continue;
-                else if (!HasAnyContentType(pd.Info.ContentInfo))
-                {
-                    continue;
-                }
-                else
-                {
-                    //Try verify file list again?
-                    pd.Info.ContentInfo.VerifyContentInfo();
-                    if (!HasAnyContentType(pd.Info.ContentInfo))
-                    {
-                        continue;
-                    }
-                }
-                //Check for infos about pack repository and cache to disk
-                //Check readme
-                await Packs.CheckPackReadme(pack);
-                //Banner and urls
-                await pd.GatherPreview();
-                AllAvailablePack.Add(pd);
-                await Task.Delay(100);
             }
+            //check if this pack have anything
+            if (pd.Info.ContentInfo.Files.Count < 1)
+                continue;
+            else if (!HasAnyContentType(pd.Info.ContentInfo))
+            {
+                continue;
+            }
+            else
+            {
+                //Try verify file list again?
+                pd.Info.ContentInfo.VerifyContentInfo();
+                if (!HasAnyContentType(pd.Info.ContentInfo))
+                {
+                    continue;
+                }
+            }
+            //Check for infos about pack repository and cache to disk
+            //Check readme
+            await Packs.CheckPackReadme(pack);
+            //Banner and urls
+            await pd.GatherPreview();
+            AllAvailablePack.Add(pd);
+            await Task.Delay(100);
+        }
             InitializeVM();
         }).Await(() =>
         {
@@ -86,7 +86,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
             {
                 CanSearch = AllAvailablePack.Count > 0;
                 ApplyFilter();
-            }
+    }
         });
     }
 
@@ -142,52 +142,6 @@ public partial class HomeViewModel : ObservableObject, IDisposable
         //Save setting
         SettingManager.SaveSettings();
         //Remove default pack setting
-        if (e.PropertyName == nameof(Setting.ShowDefaultPack))
-        {
-            if (!Config.ShowDefaultPack)
-            {
-                var def = AllAvailablePack.FirstOrDefault(i => i.Info.Author == "Icon-Pack-Provider" && i.Info.Name == "Dead-by-daylight-Default-icons");
-                if (def is not null)
-                {
-                    var index = AllAvailablePack.IndexOf(def);
-                    AllAvailablePack.RemoveAt(index);
-                    OnPropertyChanged(nameof(FilteredList));
-                }
-            }
-            else
-            {
-                Task.Run(async () =>
-                {
-                    if (AllAvailablePack is not null)
-                    {
-                        AllAvailablePack.Clear();
-                    }
-                    else
-                    {
-                        AllAvailablePack = new();
-                    }
-                    var packs = await Packs.GetPacks();
-                    foreach (var pack in packs)
-                    {
-                        PackDisplay display = new(pack);
-                        if (display is null)
-                            continue;
-                        //Check readme
-                        await Packs.CheckPackReadme(pack);
-                        //Check banner data
-                        await Packs.CheckPackBanner(pack);
-                        //Get banner or perks URL for pack showcasing/preview samples
-                        await display.GatherPreview();
-                        AllAvailablePack.Add(display);
-                    }
-                }).Await(() =>
-                {
-                    OnPropertyChanged(nameof(FilteredList));
-                });
-            }
-            return;
-        }
-
         OnPropertyChanged(nameof(FilteredList));
     }
 

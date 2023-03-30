@@ -54,13 +54,19 @@ public static class Packs
         return result.Items;
     }
 
-    public static void ResetAPICache()
+    public static void ResetAPICache(bool forceSearch = true, bool clearDisplayData = false)
     {
-        //Force delete display folder
-        var displayDir = GetDisplayDirectory();
-        displayDir.Delete(true);
-        //Delete search time record
-        APICallRecord.DeleteSearchDateRecord();
+        if (forceSearch)
+        {
+            //Delete search time record
+            APICallRecord.DeleteSearchDateRecord();
+        }
+        if (clearDisplayData)
+        {
+            //Force delete display folder
+            var displayDir = GetDisplayDirectory();
+            displayDir.Delete(true);
+        }        
     }
 
     public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
