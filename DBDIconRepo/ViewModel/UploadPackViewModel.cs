@@ -763,6 +763,7 @@ public partial class UploadPackViewModel : ObservableObject
         UploadProgresses.Insert(0, "\r\nFinished upload pack and all metadata, switching to mainpage");
         DialogHelper.Show("Pack uploaded!");
         await Task.Delay(1000);
+        IconPack.Packs.ResetAPICache(true, false);
         Messenger.Default.Send(new SwitchToOtherPageMessage("home"), MessageToken.RequestMainPageChange);
     }
 
