@@ -194,11 +194,11 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                         //Pack name search
                         var allFoundName = AllAvailablePack
                         .Where(i => i.Info.Name.ToLower().Contains(value.ToLower()))
-                        .Select(i => i.Info.Name).Distinct();
+                        .Select(i => i.Info.Name);
                         var allFoundAuthor = AllAvailablePack
-                        .Where(i => i.Info.Author.Contains(value.ToLower()))
-                        .Select(i => i.Info.Author).Distinct();
-                        QueryResults = new(allFoundName.Concat(allFoundAuthor));
+                        .Where(i => i.Info.Author.ToLower().Contains(value.ToLower()))
+                        .Select(i => i.Info.Author);
+                        QueryResults = new(allFoundName.Concat(allFoundAuthor).Distinct());
 
                         //Trigger filter
                         ApplyFilter();
@@ -247,6 +247,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                         //Not match any search query
                         //Remove
                         filtering.RemoveAt(i);
+                        continue;
                     }
                 }
 
