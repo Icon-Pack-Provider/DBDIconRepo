@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DBDIconRepo.Helper;
 using DBDIconRepo.Service;
+using System;
 using System.Threading.Tasks;
 using Messenger = CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger;
 
 namespace DBDIconRepo.Model;
 
-public partial class OnlineSourceDisplay : ObservableObject, IDisplayItem
+public partial class OnlineSourceDisplay : ObservableObject, IDisplayItem, IDisposable
 {
     public OnlineSourceDisplay() { }
 
@@ -53,6 +54,12 @@ public partial class OnlineSourceDisplay : ObservableObject, IDisplayItem
         {
             LocalizedURL = await ImageCacheHelper.GetImage(URL);
         }
+    }
+
+    public void Dispose()
+    {
+        PropertyChanged -= UpdateOnURL;
+        Messenger.Default.Unregister<OnlineSourceDisplay, string>(this, MessageToken.AttemptReloadIconMessage);
     }
 
     [ObservableProperty]
