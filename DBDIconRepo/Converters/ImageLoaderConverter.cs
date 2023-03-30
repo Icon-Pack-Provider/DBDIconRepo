@@ -58,7 +58,7 @@ public class ImageLoaderConverter : IValueConverter
             if (string.IsNullOrEmpty(src.LocalizedURL))
             {
                 if (OctokitService.Instance.IsAnonymous)
-                    return JustSendURI(src.LocalizedURL);
+                    return SendLoadingIcon();
                 else
                 {
                     Messenger.Default.Send(new AttemptReloadIconMessage(src.URL), MessageToken.AttemptReloadIconMessage);
