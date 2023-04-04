@@ -40,7 +40,7 @@ public partial class DefaultPackView : Page
             IconPack.Model.Pack? onlineSingularPac = await Packs.GetPack(defRepo);
             return new IconPack.Model.Pack?[] { onlineSingularPac };
         });
-        DataContext = new HomeViewModel(packFactory, new()
+        DataContext = new DefaultPackViewViewModel(packFactory, new()
         {
             ShowFavoriteComponent = false
         });

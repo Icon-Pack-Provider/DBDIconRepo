@@ -8,45 +8,55 @@
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
-      mc:Ignorable="d">
+      mc:Ignorable="d" >
     <Page.Resources>
         <convert:InvertBool x:Key="invertBool"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
         <convert:InvertBoolToVisibility x:Key="invertBoolToVisibility"/>
         <convert:NullableStringPropertyDisplayConverter x:Key="propertyDisplay"/>
         <convert:SortOptionToBool x:Key="sortOptionToBool"/>
+        <convert:URLtoAbsoluteURI x:Key="url2bitmapuri"/>
         <convert:PackStateToVisibility x:Key="packStateToVisibility"/>
         <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
-        <convert:ImageLoaderConverter x:Key="loadImageFromCachedURL"/>
+
         <DataTemplate x:Key="IconPackIconDisplay">
-            <Image Width="100" Height="100" Source="{Binding Path=., Converter={StaticResource loadImageFromCachedURL}}">
+            <Image Width="100" Height="100">
+                <Image.Source>
+                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+                </Image.Source>
                 <ToolTipService.ToolTip>
                     <TextBlock Text="{Binding Tooltip.Name}"/>
                 </ToolTipService.ToolTip>
             </Image>
         </DataTemplate>
         <DataTemplate x:Key="IconPackBannerDisplay">
-            <Image Height="112" Margin="-2" Source="{Binding Path=., Converter={StaticResource loadImageFromCachedURL}}"/>
+            <Image Height="112" Margin="-2">
+                <Image.Source>
+                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+                </Image.Source>
+            </Image>
         </DataTemplate>
         <local:IconPreviewTemplateSelector 
             x:Key="iconPreviewTemplateSelector"
             IconDisplay="{StaticResource IconPackIconDisplay}"
-            BannerDisplay="{StaticResource IconPackBannerDisplay}"/>        
+            BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
     </Page.Resources>
     <Page.DataContext>
-        <vm:HomeViewModel x:Name="ViewModel"/>
+        <vm:DefaultPackViewViewModel x:Name="ViewModel"/>
     </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <!--Grid view-->
         <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
                      IsSelectionEnabled="False"
-                     Padding="12"
-                     Visibility="{Binding ShowOnGridView, Mode=OneWay}">
+                     Padding="12">
             <ui:GridView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="480" Height="270">
@@ -58,7 +68,7 @@
                         </Grid.RowDefinitions>
                         <!-- Background -->
                         <Rectangle Fill="{DynamicResource NavigationViewDefaultPaneBackground}" Grid.RowSpan="4" Opacity="0.5"/>
-                        <!-- Preview/Banner -->                        
+                        <!-- Preview/Banner -->
                         <ui:ListView ScrollViewer.CanContentScroll="False"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -80,8 +90,8 @@
                                 </ItemsPanelTemplate>
                             </ui:ListView.ItemsPanel>
                         </ui:ListView>
-                        
-                        <!-- Name display -->                        
+
+                        <!-- Name display -->
                         <TextBlock HorizontalAlignment="Center" 
                                    Text="{Binding Info.Name}" 
                                    Margin="8" Grid.Row="1"
@@ -123,7 +133,7 @@
                                              Visibility="{Binding Info.ContentInfo.HasOfferings, Converter={StaticResource boolToVisibility}}"/>
                             </StackPanel>
                         </StackPanel>
-                        
+
                         <!-- Install & Detail -->
                         <Grid HorizontalAlignment="Stretch" Grid.Row="3"
                               Margin="5">
@@ -145,7 +155,7 @@
                                     <TextBlock Text="Install"/>
                                 </StackPanel>
                             </Button>
-                            
+
                             <!-- Detail button -->
                             <Button ToolTipService.ToolTip="Detail"
                                     Grid.Column="2" HorizontalAlignment="Stretch"
@@ -160,20 +170,20 @@
                                                Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='None'}"/>
                                 </StackPanel>
                             </Button>
-                            
+
                             <!-- Downloading state -->
                             <!-- Downloading status display -->
                             <ProgressBar Minimum="0" Maximum="100" Value="{Binding TotalDownloadProgress, Mode=OneWay}"
                                          VerticalAlignment="Center" Height="18" Margin="5"
                                          Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Downloading'}"/>
-                            
+
                             <!-- Installing state -->
                             <TextBlock Visibility="{Binding CurrentPackState, Mode=OneWay, Converter={StaticResource packStateToVisibility}, ConverterParameter='Installing'}">
                                 <Run Text="{Binding LatestInstalledFile, Mode=OneWay}"/>
                                 (<Run Text="{Binding CurrentInstallProgress, Mode=OneWay}"/>/<Run Text="{Binding TotalInstallProgress, Mode=OneWay}"/>)
                             </TextBlock>
                         </Grid>
-                        
+
                         <!-- Favorite -->
                         <Button Background="Transparent" 
                                 HorizontalAlignment="Left"
