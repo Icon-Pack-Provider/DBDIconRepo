@@ -14,6 +14,8 @@ public partial class ListingService : ObservableObject
 
     public void InitializeService()
     {
+        if (OctokitService.Instance.IsAnonymous)
+            return;
         Task.Run(async () =>
         {
             await Lists.CheckCatagoryRepo();

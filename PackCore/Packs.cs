@@ -46,29 +46,106 @@ public static class Packs
         }
     }
 
+    private static async Task<IReadOnlyList<Repository>> SearchForPackRepo()
+    {
+        SearchRepositoriesRequest request = new SearchRepositoriesRequest($"topic:{PackTag}");
+        SearchRepositoryResult result = await OctokitService.Instance.Client.Search.SearchRepo(request);
+        APICallRecord.SaveLastSearchDate();
+        return result.Items;
+    }
+
+    public static void ResetAPICache(bool forceSearch = true, bool clearDisplayData = false)
+    {
+        if (forceSearch)
+        {
+            //Delete search time record
+            APICallRecord.DeleteSearchDateRecord();
+        }
+        if (clearDisplayData)
+        {
+            //Force delete display folder
+            var displayDir = GetDisplayDirectory();
+            displayDir.Delete(true);
+        }
+    }
+
     public static async Task<ObservableCollection<Pack?>> GetPacks(Action<string>? notifications = null)
     {
         ThrowHelper.APINotInitialize();
 
-        var request = new SearchRepositoriesRequest($"topic:{PackTag}");
-        var result = await OctokitService.Instance.Client.Search.SearchRepo(request);
-        notifications?.Invoke($"Gather icon pack repositories\r\nFound {result.TotalCount} repositories");
-
+        List<Repository> result = new();
         var packs = new ObservableCollection<Pack?>();
-        foreach (var repo in result.Items)
+        if (!APICallRecord.ShouldDoSearch())
         {
-            notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
-            var pack = await GetPack(repo);
-            if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
-                || IsMissingInfo(pack))
+            //Load result list
+            //notifications?.Invoke($"Gather icon pack repositories\r\nFound {result.TotalCount} repositories");
+            var displayDir = GetDisplayDirectory();
+            var searchResults = displayDir.GetFiles("pack.json", SearchOption.AllDirectories);
+            foreach (var packFile in searchResults)
             {
-                pack = await UpdateOne(pack, repo);
+                try
+                {
+                    using FileStream fs = new(packFile.FullName, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using StreamReader reader = new(fs);
+                    string json = reader.ReadToEnd();
+                    if (string.IsNullOrEmpty(json))
+                        continue;
+                    var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+                    if (deserialized is null)
+                        continue;
+                    packs.Add(deserialized);
+                }
+                catch
+                {
+                    continue;
+                }
             }
+        }
+        else
+        {
+            result = new(await SearchForPackRepo());
+            notifications?.Invoke($"Searching icon pack repositories\r\nFound {result.Count} repositories");
+            foreach (var repo in result)
+            {
+                notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
+                var pack = await GetPack(repo);
+                if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
+                    || IsMissingInfo(pack))
+                {
+                    pack = await UpdateOne(pack, repo);
+                }
 
-            packs.Add(pack);
+                packs.Add(pack);
+            }
         }
         notifications?.Invoke("All repositories information has been gathered!");
         return packs;
+    }
+
+    public static Pack? GetLocalPack(string user, string repo)
+    {
+        //Directory confirmation
+        if (!Directory.Exists(WorkingDirectory))
+            Directory.CreateDirectory(WorkingDirectory);
+
+        //Local pack.json info
+        bool hasLocalPackJson = IsLocalPackJSONExist(user, repo);
+        if (hasLocalPackJson)
+        {
+            var jsonFile = GetLocalPackJson(user, repo);
+            string json = File.ReadAllText(jsonFile.FullName);
+            var deserialized = JsonSerializer.Deserialize<Pack?>(json);
+
+            if (json.Contains(nameof(Pack.LastUpdate)))
+            {
+                //Last update on Json file is untrustworthy;
+                //It's function is for program to write into its and store locally
+                //Not store on GitHub repo
+                deserialized.LastUpdate = DateTime.MinValue;
+            }
+            return deserialized;
+        }
+        return null;
     }
 
     public static async Task<Pack?> GetPack(Repository repo)
@@ -175,9 +252,9 @@ public static class Packs
             },
 
             ContentInfo = (PackContentInfo?)(previous.ContentInfo ?? await PackContentInfo.GetContentInfo(repo)),
-            Overrides = previous .Overrides ?? null
+            Overrides = previous.Overrides ?? null
         };
-        if (info.ContentInfo.Files is null || 
+        if (info.ContentInfo.Files is null ||
             (info.ContentInfo.Files is not null && info.ContentInfo.Files.Count < 1))
         {
             info.ContentInfo = await PackContentInfo.GetContentInfo(repo);
@@ -357,7 +434,7 @@ public static class Packs
                 goto nukeAndClone;
             var dir = step0.GetFiles(Terms.LastFetchFilename).FirstOrDefault();
             if (dir is null)
-                goto nukeAndClone;            
+                goto nukeAndClone;
             if (!dir.Exists)
             {
                 isDotGitExist = false; //Force false to force clone

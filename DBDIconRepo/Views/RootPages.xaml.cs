@@ -27,11 +27,11 @@ public partial class RootPages
         InitializeComponent();
         Messenger.Default.Register<RootPages, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
-        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate); 
+        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
         Messenger.Default.Register<RootPages, GitUserChangedMessage, string>(this, MessageToken.GitUserChangedToken, UserSwitched);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
-        
+
         ViewModel.PropertyChanged += IsBackgroundChangedYet;
         ViewModel.Initialize();
     }
@@ -105,7 +105,7 @@ public partial class RootPages
         else
         {
             callOnActivated = null;
-            callOnDeactivated= null;
+            callOnDeactivated = null;
         }
     }
 
@@ -119,16 +119,17 @@ public partial class RootPages
     private void StartupAction(object sender, RoutedEventArgs e)
     {
         //Load stuffs
-        var packTask = IconPack.Packs.GetPacks((notif) =>
+        var addonTask = Task.Run(async () =>
         {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Packs] {notif}\r\n";
-        });
-        var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
-        {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
+            if (OctokitService.Instance.IsAnonymous)
+                return;
+            await SelectionListing.Lists.CheckCatagoryRepo((notif) =>
+            {
+                ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
+            });
         });
 
-        Task.WhenAll(packTask, addonTask).Await(() =>
+        Task.WhenAll(addonTask).Await(() =>
         {
             Logger.Write(ViewModel.ProgressText);
             Application.Current.Dispatcher.Invoke(() =>
@@ -150,6 +151,8 @@ public partial class RootPages
             Application.Current.Dispatcher.Invoke(() =>
             {
                 homeSelection.IsSelected = true;
+                ViewModel.ProgressText = string.Empty;
+                ViewModel.IsInitializing = true;
                 if (error.Message.Contains("API rate limit exceeded"))
                 {
                     this.Title = $"Dead by daylight: Icon repo | GitHub rate limit exceeded. Many function might not work properly!";
@@ -180,6 +183,7 @@ public partial class RootPages
         SwitchPage(page);
     }
 
+    //Navigation
     public void SwitchPage(string page)
     {
         switch (page)
@@ -223,9 +227,54 @@ public partial class RootPages
                 contentFrame.Navigate(new UploadPack());
                 ViewModel.CurrentPageName = "Upload new pack";
                 break;
+            case "default":
+                contentFrame.Navigate(new DefaultPackView());
+                ViewModel.CurrentPageName = "Default icon";
+                break;
         }
     }
 
+    //Invoke function; no navigate
+    private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        if (args.InvokedItemContainer == loggedInNavItem)
+        {
+            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
+        }
+        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
+        {
+            if (nav.Tag is not string tagInfo)
+                return;
+
+            if (tagInfo.StartsWith("login") && ViewModel.UserInfo is AnonymousUserViewModel anon)
+            {
+                if (tagInfo == "login_oauth")
+                    anon.LoginToGithubCommand.Execute(null);
+                else if (tagInfo == "login_token")
+                    anon.ManuallyLoginToGithubCommand.Execute(null);
+            }
+            else if (tagInfo == "logout_user")
+            {
+                if (ViewModel.UserInfo is not UserViewModel userVM)
+                    return;
+                userVM.LogoutOfGithubCommand.Execute(null);
+            }
+            else if (tagInfo == "uninstall")
+            {
+                if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
+                    return;
+                bool result = DialogHelper.Inquire("This will change all your custom icons back to original icons!",
+                    "Do you really wish to continue?", DialogButtons.YesNo,
+                    DialogSymbol.Warning);
+                if (!result)
+                    return;
+                if (IconManager.Uninstall(SettingManager.Instance.DBDInstallationPath))
+                {
+                    DialogHelper.Show($"Icon pack uninstall successfully!");
+                }
+            }
+        }
+    }
     private bool AnonymousWarned()
     {
         if (ViewModel.GitService.IsAnonymous)
@@ -297,32 +346,4 @@ public partial class RootPages
 
         }
     }
-
-    private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-    {
-        if (args.InvokedItemContainer == loggedInNavItem)
-        {
-            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
-        }
-        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
-        {
-            if (nav.Tag is not string tagInfo)
-                return;
-
-            if (tagInfo.StartsWith("login") && ViewModel.UserInfo is AnonymousUserViewModel anon)
-            {
-                if (tagInfo == "login_oauth")
-                    anon.LoginToGithubCommand.Execute(null);
-                else if (tagInfo == "login_token")
-                    anon.ManuallyLoginToGithubCommand.Execute(null);
-            }
-            else if (tagInfo == "logout_user")
-            {
-                if (ViewModel.UserInfo is not UserViewModel userVM)
-                    return;
-                userVM.LogoutOfGithubCommand.Execute(null);
-            }
-        }
-    }
-
 }

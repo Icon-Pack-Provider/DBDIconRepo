@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IconInfo.Icon;
 using IconPack.Helper;
 using IconPack.Internal;
 using IconPack.Internal.Helper;
 using Octokit;
+using System;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
@@ -42,8 +44,22 @@ public partial class Pack : ObservableObject
     {
         get
         {
-            if (author is null && Repository is not null)
-                return Repository.Owner;
+            if (Overrides is not null)
+            {
+                switch (Overrides.AuthorMode)
+                {
+                    case AuthorDisplayType.OwnerAndTop3Contributor:
+                        if (Overrides.Authors.Count >= 4)
+                            return $"{Repository.Owner}{string.Join(", ", Overrides.Authors.Take(3))}";
+                        return $"{Repository.Owner}{string.Join(", ", Overrides.Authors)}";
+                    case AuthorDisplayType.OwnerAndAllContributor:
+                        return $"{Repository.Owner}{string.Join(", ", Overrides.Authors)}";
+                    case AuthorDisplayType.OnlyOwner:
+                        return Overrides.Authors.Count < 1 ? Repository.Owner : string.Join(", ", Overrides.Authors);
+                }
+            }
+            if (!string.IsNullOrEmpty(author))
+                return author;
             return author;
         }
         set => SetProperty(ref author, value);
@@ -173,4 +189,24 @@ public partial class PackContentInfo : ObservableObject
 
     [ObservableProperty]
     ObservableCollection<string>? files;
+
+    public void VerifyContentInfo()
+    {
+        List<IconInfo.Internal.IBasic> basicIcons = new();
+        foreach (var file in Files)
+        {
+            var info = IconInfo.Info.GetIcon(file);
+            if (info is null)
+                continue;
+            else
+                basicIcons.Add(info);
+        }
+        HasPerks = basicIcons.Any(icon => icon is Perk);
+        HasAddons = basicIcons.Any(icon => icon is Addon);
+        HasItems = basicIcons.Any(icon => icon is Item);
+        HasOfferings = basicIcons.Any(icon => icon is Offering);
+        HasPortraits = basicIcons.Any(icon => icon is Portrait);
+        HasPowers = basicIcons.Any(icon => icon is Power);
+        HasStatus = basicIcons.Any(icon => icon is StatusEffect);
+    }
 }

@@ -78,16 +78,6 @@
                          Margin="0,5"
                          IsOn="{Binding Config.SacrificingAppResponsiveness, Mode=TwoWay}"/>
 
-                <ui:ToggleSwitch Header="Show Default icon pack" 
-                         Margin="0,5"
-                         IsOn="{Binding Config.ShowDefaultPack, Mode=TwoWay}">
-                    <ui:ToggleSwitch.OnContent>
-                        Default icon pack will now show on list
-                    </ui:ToggleSwitch.OnContent>
-                    <ui:ToggleSwitch.OffContent>
-                        Default icon pack will be hidden
-                    </ui:ToggleSwitch.OffContent>
-                </ui:ToggleSwitch>
                 <ui:ToggleSwitch Header="Show test icon pack" Margin="0,5"
                          IsOn="{Binding Config.ShowDevTestPack, Mode=TwoWay}">
                     <ui:ToggleSwitch.OnContent>

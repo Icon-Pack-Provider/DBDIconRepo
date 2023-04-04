@@ -3,6 +3,7 @@ using DBDIconRepo.Model;
 using DBDIconRepo.ViewModel;
 using IconPack;
 using ModernWpf.Controls.Primitives;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -61,6 +62,23 @@ public partial class Home : Page
     private void OpenAttatchedFlyout(object sender, RoutedEventArgs e)
     {
         FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+    }
+
+    private void SizeTrigger(object sender, SizeChangedEventArgs e)
+    {
+        /* 86   376  //Sort
+         * 108  462 //Filter
+         * 110  570 //View
+         * 140  680 //Download*/
+
+        sortButtonCMD.LabelPosition = e.NewSize.Width >= 660 ? ModernWpf.Controls.CommandBarLabelPosition.Default :
+            ModernWpf.Controls.CommandBarLabelPosition.Collapsed;
+        filterButtonCMD.LabelPosition = e.NewSize.Width >= 690 ? ModernWpf.Controls.CommandBarLabelPosition.Default :
+            ModernWpf.Controls.CommandBarLabelPosition.Collapsed;
+        layoutButtonCMD.LabelPosition = e.NewSize.Width >= 740 ? ModernWpf.Controls.CommandBarLabelPosition.Default :
+            ModernWpf.Controls.CommandBarLabelPosition.Collapsed;
+        downloadButtonCMD.LabelPosition = e.NewSize.Width >= 820 ? ModernWpf.Controls.CommandBarLabelPosition.Default :
+            ModernWpf.Controls.CommandBarLabelPosition.Collapsed;     
     }
 }
 
