@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace IconPack.Internal.Helper;
 
-public static class APICallRecord
+internal static class APICallRecord
 {
     //Save the time on last call of SearchRepositoriesRequest
     const string LastSearchDateRecord = "lastSearchDate.txt";
     public static void SaveLastSearchDate()
     {
         var file = IOHelper.GetFile(LastSearchDateRecord);
-        if (!file.Exists)
-            file.Create();
-        File.WriteAllText(file.FullName, DateTime.UtcNow.ToString("G", CultureInfo.InvariantCulture.DateTimeFormat));
+        using var fs = new FileStream(file.FullName, file.Exists ? FileMode.Open : FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+        using var writer = new StreamWriter(fs);
+        writer.Write(DateTime.UtcNow.ToString("G", CultureInfo.InvariantCulture.DateTimeFormat));
     }
 
     public static void DeleteSearchDateRecord()
@@ -36,5 +36,7 @@ public static class APICallRecord
         if (!parsed)
             return true;
         return parsedTime < (DateTime.UtcNow.AddHours(18));
-    }    
+    }
+
+
 }
