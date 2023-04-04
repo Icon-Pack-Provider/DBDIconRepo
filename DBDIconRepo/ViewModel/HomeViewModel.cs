@@ -22,7 +22,7 @@ public partial class HomeViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(IsGettingPacks))]
     bool gettingPacks = true;
 
-    public Visibility IsGettingPacks => gettingPacks ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility IsGettingPacks => GettingPacks ? Visibility.Visible : Visibility.Collapsed;
 
     public HomeViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
     {
@@ -140,53 +140,6 @@ public partial class HomeViewModel : ObservableObject, IDisposable
     {
         //Save setting
         SettingManager.SaveSettings();
-        //Remove default pack setting
-        if (e.PropertyName == nameof(Setting.ShowDefaultPack))
-        {
-            if (!Config.ShowDefaultPack)
-            {
-                var def = AllAvailablePack.FirstOrDefault(i => i.Info.Author == "Icon-Pack-Provider" && i.Info.Name == "Dead-by-daylight-Default-icons");
-                if (def is not null)
-                {
-                    var index = AllAvailablePack.IndexOf(def);
-                    AllAvailablePack.RemoveAt(index);
-                    OnPropertyChanged(nameof(FilteredList));
-                }
-            }
-            else
-            {
-                Task.Run(async () =>
-                {
-                    if (AllAvailablePack is not null)
-                    {
-                        AllAvailablePack.Clear();
-                    }
-                    else
-                    {
-                        AllAvailablePack = new();
-                    }
-                    var packs = await Packs.GetPacks();
-                    foreach (var pack in packs)
-                    {
-                        PackDisplay display = new(pack);
-                        if (display is null)
-                            continue;
-                        //Check readme
-                        await Packs.CheckPackReadme(pack);
-                        //Check banner data
-                        await Packs.CheckPackBanner(pack);
-                        //Get banner or perks URL for pack showcasing/preview samples
-                        await display.GatherPreview();
-                        AllAvailablePack.Add(display);
-                    }
-                }).Await(() =>
-                {
-                    OnPropertyChanged(nameof(FilteredList));
-                });
-            }
-            return;
-        }
-
         OnPropertyChanged(nameof(FilteredList));
     }
 
