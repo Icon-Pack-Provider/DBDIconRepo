@@ -263,6 +263,11 @@ public partial class RootPages
             {
                 if (string.IsNullOrEmpty(SettingManager.Instance.DBDInstallationPath))
                     return;
+                bool result = DialogHelper.Inquire("This will change all your custom icons back to original icons!",
+                    "Do you really wish to continue?", DialogButtons.YesNo,
+                    DialogSymbol.Warning);
+                if (!result)
+                    return;
                 if (IconManager.Uninstall(SettingManager.Instance.DBDInstallationPath))
                 {
                     DialogHelper.Show($"Icon pack uninstall successfully!");
