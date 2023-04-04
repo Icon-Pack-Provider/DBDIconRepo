@@ -80,6 +80,10 @@ public partial class HomeViewModel : ObservableObject, IDisposable
             }
         }, (e) =>
         {
+            if (e is Octokit.RateLimitExceededException)
+            {
+                Messenger.Default.Send(new RateLimitUINotifyRequestedMessage(), MessageToken.RateLimitWarningToken);
+            }
             GettingPacks = false;
             if (AllAvailablePack is not null)
             {

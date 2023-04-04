@@ -203,3 +203,5 @@ public class GitUserChangedMessage
 {
     public GitUserChangedMessage() { }
 }
+
+public class RateLimitUINotifyRequestedMessage { }

@@ -29,11 +29,24 @@ public partial class RootPages
             SwitchPageHandler);
         Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
         Messenger.Default.Register<RootPages, GitUserChangedMessage, string>(this, MessageToken.GitUserChangedToken, UserSwitched);
+        Messenger.Default.Register<RootPages, RateLimitUINotifyRequestedMessage, string>(this, MessageToken.RateLimitWarningToken, UpdateUIToWarnRateLimit);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
 
         ViewModel.PropertyChanged += IsBackgroundChangedYet;
         ViewModel.Initialize();
+    }
+
+    private void UpdateUIToWarnRateLimit(RootPages recipient, RateLimitUINotifyRequestedMessage message)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            this.Title = $"Dead by daylight: Icon repo | GitHub rate limit exceeded. Many function might not work properly!";
+            ViewModel.CurrentPageName = $"{ViewModel.CurrentPageName}\r\n" +
+            $"GitHub rate limit exceeded." +
+            $"\r\nMany function might not work properly!" +
+            $"\r\nPlease wait for a while and try again";
+        });
     }
 
     private void UserSwitched(RootPages recipient, GitUserChangedMessage message)

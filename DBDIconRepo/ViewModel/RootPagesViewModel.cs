@@ -48,12 +48,15 @@ public partial class RootPagesViewModel : ObservableObject
         BackgroundImage = BackgroundRandomizer.Get();
         Config.PropertyChanged += MonitorSetting; //Monitor for background change
         //Check for update
-        CheckForUpdate().Await(() => { }, 
-        (error) =>
+        if (!OctokitService.Instance.IsAnonymous)
         {
-            Logger.Write($"{error.Message}\r\n{error.StackTrace}");
-            UpdateState = CheckUpdateState.Failed;
-        });
+            CheckForUpdate().Await(() => { },
+            (error) =>
+            {
+                Logger.Write($"{error.Message}\r\n{error.StackTrace}");
+                UpdateState = CheckUpdateState.Failed;
+            });
+        }
     }
 
     private async void MonitorSetting(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

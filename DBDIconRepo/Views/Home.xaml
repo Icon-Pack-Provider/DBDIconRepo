@@ -25,7 +25,7 @@
                 <Image.Source>
                     <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
                                  DecodePixelHeight="{Binding DecodeHeight}"
-                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"/>
                 </Image.Source>
                 <ToolTipService.ToolTip>
                     <TextBlock Text="{Binding Tooltip.Name}"/>
@@ -37,7 +37,7 @@
                 <Image.Source>
                     <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
                                  DecodePixelHeight="{Binding DecodeHeight}"
-                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"/>
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"/>
                 </Image.Source>
             </Image>
         </DataTemplate>
@@ -50,7 +50,7 @@
         <DataTemplate x:Key="tableIconPreview">
             <Image Width="64" Height="64">
                 <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"
                                  DecodePixelWidth="{Binding DecodeWidth}"
                                  DecodePixelHeight="{Binding DecodeHeight}"/>
                 </Image.Source>
@@ -62,7 +62,7 @@
         <DataTemplate x:Key="tableBannerPreview">
             <Image Height="84" Margin="-2">
                 <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}}"
+                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"
                                  DecodePixelWidth="{Binding DecodeWidth}"
                                  DecodePixelHeight="{Binding DecodeHeight}"/>
                 </Image.Source>
