@@ -16,7 +16,14 @@ public static class APICallRecord
         var file = IOHelper.GetFile(LastSearchDateRecord);
         if (!file.Exists)
             file.Create();
-        File.WriteAllText(file.FullName, DateTime.Now.ToString("G", CultureInfo.InvariantCulture.DateTimeFormat));
+        File.WriteAllText(file.FullName, DateTime.UtcNow.ToString("G", CultureInfo.InvariantCulture.DateTimeFormat));
+    }
+
+    public static void DeleteSearchDateRecord()
+    {
+        var file = IOHelper.GetFile(LastSearchDateRecord);
+        if (file.Exists)
+            file.Delete();
     }
 
     public static bool ShouldDoSearch()
@@ -29,7 +36,5 @@ public static class APICallRecord
         if (!parsed)
             return true;
         return parsedTime < (DateTime.UtcNow.AddHours(18));
-    }
-
-    
+    }    
 }
