@@ -82,16 +82,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal"
-                    HorizontalAlignment="Center">
-            <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" 
+        <ui:CommandBar Grid.Row="0"
+                       Background="Transparent">
+            <ui:CommandBar.Content>
+                <Grid>
+                    <ui:AutoSuggestBox Text="{Binding SearchQuery, Mode=TwoWay}" Margin="5" 
                                IsEnabled="{Binding CanSearch, Mode=OneWay}"
                                VerticalAlignment="Center" ItemsSource="{Binding QueryResults, Mode=OneWay}"
                                PlaceholderText="Enter keyword to search.." Width="350"/>
-            <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="Sort"/>
+                </Grid>
+
+            </ui:CommandBar.Content>
+
+            <ui:AppBarButton Icon="Refresh" Label="Refresh pack list"/>
+            <ui:AppBarSeparator/>
+
+            <ui:AppBarButton Icon="Sort" Label="Sort by" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout Placement="Bottom">
+                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <ui:RadioMenuItem Header="Name" GroupName="sortby"
                                           Command="{Binding SortByNameCommand}"
                                           IsChecked="{Binding Config.SortBy, Mode=OneWay, Converter={StaticResource sortOptionToBool}, ConverterParameter='Name'}"/>
@@ -112,11 +120,10 @@
                                           IsChecked="{Binding Config.SortAscending, Mode=OneWay, Converter={StaticResource invertBool}}"/>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
-            </Button>
-            <Button Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="Filter"/>
+            </ui:AppBarButton>
+            <ui:AppBarButton Icon="Filter" Label="Filter packs" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout Placement="Bottom">
+                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <MenuItem Header="Perks only" Command="{Binding OnlyPerkFilterCommand}"/>
                         <MenuItem Header="Portraits only" Command="{Binding OnlyPortraitFilterCommand}"/>
                         <MenuItem Header="Complete pack" Command="{Binding ClearFilterCommand}"/>
@@ -130,11 +137,11 @@
                         <MenuItem Header="Add-Ons" IsCheckable="True" IsChecked="{Binding Config.FilterOptions.HasAddons, Mode=TwoWay}"/>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
-            </Button>
-            <Button Margin="5" Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="View"/>
+            </ui:AppBarButton>
+
+            <ui:AppBarButton Icon="View" Label="Layout view" Click="OpenAttatchedFlyout">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout Placement="Bottom">
+                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <ui:RadioMenuItem Header="Grid" GroupName="view"
                                           IsChecked="{Binding CurrentViewIsGrid, Mode=OneWay}"
                                           Command="{Binding SetViewToGridCommand}">
@@ -158,11 +165,12 @@
                         </ui:RadioMenuItem>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
-            </Button>
-            <Button Padding="8" Click="OpenAttatchedFlyout">
-                <ui:SymbolIcon Symbol="Download"/>
+            </ui:AppBarButton>
+
+            <ui:AppBarButton Click="OpenAttatchedFlyout"
+                             Label="Download option" Icon="Download">
                 <ui:FlyoutBase.AttachedFlyout>
-                    <ui:MenuFlyout>
+                    <ui:MenuFlyout Placement="BottomEdgeAlignedRight">
                         <MenuItem IsHitTestVisible="False" Header="Install option:"
                                   IsEnabled="False"/>
                         <ui:RadioMenuItem GroupName="mode"
@@ -175,10 +183,10 @@
                                           Command="{Binding SetInstallSpcificCommand}"/>
                     </ui:MenuFlyout>
                 </ui:FlyoutBase.AttachedFlyout>
-            </Button>
+            </ui:AppBarButton>
 
+        </ui:CommandBar>
 
-        </StackPanel>
         <!--Grid view-->
         <ui:GridView Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
                      IsSelectionEnabled="False"
