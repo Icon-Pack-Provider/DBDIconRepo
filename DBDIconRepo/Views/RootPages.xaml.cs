@@ -27,11 +27,11 @@ public partial class RootPages
         InitializeComponent();
         Messenger.Default.Register<RootPages, SwitchToOtherPageMessage, string>(this, MessageToken.RequestMainPageChange,
             SwitchPageHandler);
-        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate); 
+        Messenger.Default.Register<RootPages, MonitorForAppFocusMessage, string>(this, MessageToken.RequestSubToAppActivateEvent, SubToAppActivate);
         Messenger.Default.Register<RootPages, GitUserChangedMessage, string>(this, MessageToken.GitUserChangedToken, UserSwitched);
         this.Activated += ActivationEvent;
         this.Deactivated += DeactivatedEvent;
-        
+
         ViewModel.PropertyChanged += IsBackgroundChangedYet;
         ViewModel.Initialize();
     }
@@ -105,7 +105,7 @@ public partial class RootPages
         else
         {
             callOnActivated = null;
-            callOnDeactivated= null;
+            callOnDeactivated = null;
         }
     }
 
@@ -119,19 +119,17 @@ public partial class RootPages
     private void StartupAction(object sender, RoutedEventArgs e)
     {
         //Load stuffs
-        var packTask = IconPack.Packs.GetPacks((notif) =>
+        var addonTask = Task.Run(async () =>
         {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Packs] {notif}\r\n";
+            if (OctokitService.Instance.IsAnonymous)
+                return;
+            await SelectionListing.Lists.CheckCatagoryRepo((notif) =>
+            {
+                ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
+            });
         });
-        if (!OctokitService.Instance.IsAnonymous)
-        {
-        var addonTask = SelectionListing.Lists.CheckCatagoryRepo((notif) =>
-        {
-            ViewModel.ProgressText += $"{DateTime.Now:G}: [Addon] {notif}\r\n";
-        });
-        }
 
-        Task.WhenAll(packTask, addonTask).Await(() =>
+        Task.WhenAll(addonTask).Await(() =>
         {
             Logger.Write(ViewModel.ProgressText);
             Application.Current.Dispatcher.Invoke(() =>
