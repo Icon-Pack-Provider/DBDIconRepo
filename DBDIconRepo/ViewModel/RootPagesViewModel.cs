@@ -15,6 +15,11 @@ namespace DBDIconRepo.ViewModel;
 
 public partial class RootPagesViewModel : ObservableObject
 {
+    [NotifyPropertyChangedFor(nameof(HideWhenItIsAnonymousUser))]
+    [ObservableProperty] private bool hideForAnonymousUser = true;
+
+    public Visibility HideWhenItIsAnonymousUser => HideForAnonymousUser ? Visibility.Collapsed : Visibility.Visible;
+
     [ObservableProperty]
     IRateInfo? userInfo = null;
 
@@ -56,6 +61,11 @@ public partial class RootPagesViewModel : ObservableObject
                 Logger.Write($"{error.Message}\r\n{error.StackTrace}");
                 UpdateState = CheckUpdateState.Failed;
             });
+        }
+        else
+        {
+            UpdateState = CheckUpdateState.Failed;
+            HideForAnonymousUser = true;
         }
     }
 
