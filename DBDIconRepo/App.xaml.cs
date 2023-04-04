@@ -35,14 +35,17 @@ public partial class App : Application, ISingleInstance
             switch (request)
             {
                 case AuthRequest auth:
-                    AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
+                    Current.Dispatcher.Invoke(() =>
                     {
+                        AnonymousUserViewModel.ContinueAuthenticateAsync(auth).Await(() =>
+                        {
 
-                    },
-                    (e) =>
-                    {
-                        DialogHelper.Show("Please make sure you're using latest version of the software!\r\n" +
-                            "Or using Advanced login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
+                        },
+                        (e) =>
+                        {
+                            DialogHelper.Show("Please make sure you're using latest version of the software!\r\n" +
+                                "Or using Advanced login", "Fatal Error while login", Dialog.DialogButtons.Ok, Dialog.DialogSymbol.Information);
+                        });
                     });
                     break;
                 case NavigationRequest nav:
