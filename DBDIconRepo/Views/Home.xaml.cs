@@ -22,16 +22,6 @@ public partial class Home : Page
         this.Unloaded += UnregisterStuff;
         Messenger.Default.Register<Home, RequestViewPackDetailMessage, string>(this,
             MessageToken.REQUESTVIEWPACKDETAIL, OpenPackDetailWindow);
-
-        Task<IconPack.Model.Pack?[]> packFactory = Task.Run(async () =>
-        {
-            var packs = await Packs.GetPacks();
-            return packs.ToArray();
-        });
-        DataContext = new HomeViewModel(packFactory, new()
-        {
-            ShowFavoriteComponent = true
-        });
     }
 
     private void OpenPackDetailWindow(Home recipient, RequestViewPackDetailMessage message)

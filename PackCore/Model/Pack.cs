@@ -148,22 +148,22 @@ public partial class PackContentInfo : ObservableObject
     {
         ThrowHelper.APINotInitialize();
 
-        var commits = await OctokitService.Instance.Client.Repository.Commit.GetAll(repo.Owner.Login, repo.Name);
+        var commits = await OctokitService.Instance.Client.Repository.Commit.GetAll(repo.Owner.Login, repo.Name, new ApiOptions()
+        {
+            PageCount = 1,
+            PageSize = 1
+        });
         var head = commits.First();
         var treeContent = await OctokitService.Instance.Client.Git.Tree.GetRecursive(repo.Id, head.Sha);
-        var treeOnly = treeContent.Tree.Where(i => i.Type.Value == TreeType.Tree);
+        var files = treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png") || i.Path.ToLower().Contains("readme.md")).Select(i => i.Path);
 
-        return new PackContentInfo()
+        PackContentInfo pcif = new()
         {
-            HasAddons = treeOnly.Any(content => content.Path == "ItemAddons"),
-            HasItems = treeOnly.Any(content => content.Path == "items"),
-            HasOfferings = treeOnly.Any(content => content.Path == "Favors"),
-            HasPerks = treeOnly.Any(content => content.Path == "Perks"),
-            HasPortraits = treeOnly.Any(content => content.Path == "CharPortraits"),
-            HasPowers = treeOnly.Any(content => content.Path == "Powers"),
-            HasStatus = treeOnly.Any(content => content.Path == "StatusEffects"),
-            Files = new ObservableCollection<string>(treeContent.Tree.Where(i => i.Type.Value == TreeType.Blob).Where(i => i.Path.EndsWith(".png")).Select(i => i.Path))
+            Files = new(files)
         };
+        pcif.VerifyContentInfo();
+
+        return pcif;
     }
 
     [ObservableProperty]
@@ -188,25 +188,80 @@ public partial class PackContentInfo : ObservableObject
     bool hasAddons;
 
     [ObservableProperty]
-    ObservableCollection<string>? files;
+    bool hasBanner;
+
+    [ObservableProperty]
+    bool hasReadme;
+
+    [ObservableProperty]
+    ObservableCollection<string?> files = new();
 
     public void VerifyContentInfo()
     {
-        List<IconInfo.Internal.IBasic> basicIcons = new();
-        foreach (var file in Files)
+        bool hasBanner = false, hasPerks = false, hasAddons = false, hasItems = false, hasOfferings = false, hasPortraits = false, hasPowers = false, hasStatus = false, hasReadme = false;
+        
+        Parallel.ForEach(Files, file =>
         {
+            if (string.IsNullOrEmpty(file))
+                return;
+            if (string.Equals(file, "readme.md", StringComparison.OrdinalIgnoreCase))
+            {
+                hasReadme = true;
+            }
+            if (file.Contains(".banner") && !hasBanner)
+            {
+                hasBanner = true;
+            }
+
             var info = IconInfo.Info.GetIcon(file);
             if (info is null)
-                continue;
-            else
-                basicIcons.Add(info);
-        }
-        HasPerks = basicIcons.Any(icon => icon is Perk);
-        HasAddons = basicIcons.Any(icon => icon is Addon);
-        HasItems = basicIcons.Any(icon => icon is Item);
-        HasOfferings = basicIcons.Any(icon => icon is Offering);
-        HasPortraits = basicIcons.Any(icon => icon is Portrait);
-        HasPowers = basicIcons.Any(icon => icon is Power);
-        HasStatus = basicIcons.Any(icon => icon is StatusEffect);
+            {
+                return;
+            }
+
+            if (!hasPerks && info is Perk)
+            {
+                hasPerks = true;
+            }
+
+            if (!hasAddons && info is Addon)
+            {
+                hasAddons = true;
+            }
+
+            if (!hasItems && info is Item)
+            {
+                hasItems = true;
+            }
+
+            if (!hasOfferings && info is Offering)
+            {
+                hasOfferings = true;
+            }
+
+            if (!hasPortraits && info is Portrait)
+            {
+                hasPortraits = true;
+            }
+
+            if (!hasPowers && info is Power)
+            {
+                hasPowers = true;
+            }
+
+            if (!hasStatus && info is StatusEffect)
+            {
+                hasStatus = true;
+            }
+        });
+
+        HasBanner = hasBanner;
+        HasPerks = hasPerks;
+        HasAddons = hasAddons;
+        HasItems = hasItems;
+        HasOfferings = hasOfferings;
+        HasPortraits = hasPortraits;
+        HasPowers = hasPowers;
+        HasStatus = hasStatus;
     }
 }

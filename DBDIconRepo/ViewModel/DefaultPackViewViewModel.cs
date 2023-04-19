@@ -36,7 +36,7 @@ public class DefaultPackViewViewModel : HomeViewModel
                     continue;
                 //Check readme
                 //Banner and urls
-                await pd.GatherPreview();
+                pd.GatherPreview();
                 AllAvailablePack.Add(pd);
             }
         }).Await(() =>

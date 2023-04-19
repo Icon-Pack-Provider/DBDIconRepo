@@ -24,6 +24,11 @@ public partial class HomeViewModel : ObservableObject, IDisposable
 
     public Visibility IsGettingPacks => GettingPacks ? Visibility.Visible : Visibility.Collapsed;
 
+    public HomeViewModel() : this(Task.Run(async () => { var packs = await Packs.GetPacks(); return packs.ToArray(); }), new PackDisplayComponentOptions() { ShowFavoriteComponent = true, ShowTopPanelComponent = true })
+    {
+
+    }
+
     public HomeViewModel(Task<Pack[]> packGatherMethod, PackDisplayComponentOptions compOption)
     {
         InitializeVM();
@@ -63,10 +68,8 @@ public partial class HomeViewModel : ObservableObject, IDisposable
                     }
                 }
                 //Check for infos about pack repository and cache to disk
-                //Check readme
-                await Packs.CheckPackReadme(pack);
                 //Banner and urls
-                await pd.GatherPreview();
+                pd.GatherPreview();
                 AllAvailablePack.Add(pd);
             }
             InitializeVM();
@@ -106,7 +109,6 @@ public partial class HomeViewModel : ObservableObject, IDisposable
         return true;
     }
 
-    public HomeViewModel() { }
 
     [ObservableProperty]
     private PackDisplayComponentOptions componentOptions = new();

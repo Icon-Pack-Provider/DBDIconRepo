@@ -109,10 +109,20 @@ public static class Packs
             {
                 notifications?.Invoke($"Processing icon pack infomation from {repo.Url}");
                 var pack = await GetPack(repo);
-                if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
-                    || IsMissingInfo(pack))
+                try
                 {
-                    pack = await UpdateOne(pack, repo);
+                    if (repo.UpdatedAt.UtcDateTime > pack.LastUpdate
+                        || IsMissingInfo(pack))
+                    {
+                        pack = await UpdateOne(pack, repo);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (e is RateLimitExceededException)
+                    {
+                        packs.Add(pack);
+                    }
                 }
 
                 packs.Add(pack);
@@ -185,6 +195,7 @@ public static class Packs
 
         //Check on dah web
         bool hasRepoPackJson = await URL.IsPackJSONExist(repo);
+        bool tryOtherway = false;
         if (hasRepoPackJson)
         {
             try
@@ -195,7 +206,29 @@ public static class Packs
                 File.WriteAllText(GetLocalPackJson(repo).FullName, json);
                 return JsonSerializer.Deserialize<Pack?>(json);
             }
-            catch { }
+            catch (Exception e)
+            {
+                if (e is Octokit.RateLimitExceededException)
+                {
+                    //Try getting its from some other way??!?
+                    tryOtherway = true;
+                }
+            }
+            if (tryOtherway)
+            {
+                string jsonURL = URL.GetGithubRawContent(repo, PackJson);
+                string jsonContent = await URL.GetRawJsonFile(jsonURL);
+                if (!string.IsNullOrEmpty(jsonContent))
+                {
+                    var fromRawJson = JsonSerializer.Deserialize<Pack?>(jsonContent);
+                    if (fromRawJson is not null)
+                    {
+                        //Cache it
+                        File.WriteAllText(GetLocalPackJson(repo).FullName, jsonContent);
+                        return fromRawJson;
+                    }
+                }
+            }
         }
 
         //Create new and cached it
@@ -284,106 +317,46 @@ public static class Packs
         return false;
     }
 
-    public static async Task CheckPackReadme(Pack? info)
-    {
-        ThrowHelper.APINotInitialize();
-        var readmeState = IsLocalReadmeExist(info.Repository);
-        if (readmeState is null)
-        {
-            //Readme state hasn't check yet
-            //Check online readme
-            var repoReadme = await URL.IsReadmeExist(info.Repository);
-            //Set readme existance state
-            SetLocalReadme(info.Repository, repoReadme);
-            if (repoReadme)
-            {
-                //Save the content
-                var readmeText = await OctokitService.Instance.Client.Repository.Content.GetReadme(info.Repository.ID);
-                var readmeFile = GetLocalReadme(info.Repository);
-                if (!readmeFile.Exists)
-                    readmeFile.Create();
-                File.WriteAllText(readmeFile.FullName, readmeText.Content);
-            }
-        }
-    }
+
 
     public static async Task<string?> GetPackReadme(Pack? info)
     {
         ThrowHelper.APINotInitialize();
-        var isReadmeExist = IsLocalReadmeExist(info.Repository);
-        if (isReadmeExist is null)
-            await CheckPackReadme(info);
-        if (isReadmeExist.Value)
+
+        if (!info.ContentInfo.HasReadme) //This pack don't have readme.md
+            return string.Empty;
+
+        var localReadme = GetLocalReadme(info.Repository);
+        if (localReadme.Exists)
         {
-            var readme = GetLocalReadme(info.Repository);
-            return File.ReadAllText(readme.FullName);
+            return File.ReadAllText(localReadme.FullName);
         }
-        return null;
-    }
-
-    public static async Task<bool> IsPackReadmeExist(Pack? info)
-    {
-        var readme = IsLocalReadmeExist(info.Repository);
-        if (readme is null)
-            return await URL.IsReadmeExist(info.Repository);
-        return readme.Value;
-    }
-
-    public static async Task CheckPackBanner(Pack? info)
-    {
-        ThrowHelper.APINotInitialize();
-        var bannerState = IsLocalBannerExist(info.Repository);
-        if (bannerState is null)
+        else
         {
-            //Check online            
-            bool? repoBanner = await URL.IsBannerExist(info.Repository);
-            //Set state
-            SetLocalBanner(info.Repository, repoBanner.Value);
-            //Then save the banner?
-            //if (repoBanner)
-            //{
-            //    //Save the content
-            //    var bannerURL = URL.GetBannerURL(info.Repository);
-            //    var bannerBytes = await URL.GetBytes(bannerURL);
-            //    var bannerFile = GetLocalBanner(info.Repository);
-            //    if (!bannerFile.Exists)
-            //        bannerFile.Create();
-            //    File.WriteAllBytes(bannerFile.FullName, bannerBytes);
-            //}
+            //Cached it then return
+            var readmeText = await OctokitService.Instance.Client.Repository.Content.GetReadme(info.Repository.ID);
+            var readmeFile = GetLocalReadme(info.Repository);
+            if (!readmeFile.Exists)
+                readmeFile.Create();
+            File.WriteAllText(readmeFile.FullName, readmeText.Content);
+            return readmeText.Content;
         }
     }
 
     /// <summary>
     /// Return pack .banner.png URL on repo
-    /// Return null if the repo doesn't have banner
+    /// Return empty string if the repo doesn't have banner
     /// </summary>
     /// <param name="info"></param>
     /// <returns></returns>
-    public static async Task<string?> GetPackBannerURL(Pack? info)
+    public static string GetPackBannerURL(Pack? info)
     {
         ThrowHelper.APINotInitialize();
-        var bannerState = IsLocalBannerExist(info.Repository);
-        if (bannerState is null)
-        {
-            await CheckPackBanner(info);
-        }
-
-        if (bannerState.HasValue && bannerState.Value)
-        {
-            //Get banner URL
+        if (info.ContentInfo.HasBanner)
             return URL.GetBannerURL(info.Repository);
-        }
-        return null;
-    }
 
-    public static async Task<bool> IsPackBannerExist(Pack? info)
-    {
-        var banner = IsLocalBannerExist(info.Repository);
-        if (banner is null)
-            return await URL.IsBannerExist(info.Repository);
-        return banner.Value;
+        return string.Empty;
     }
-
     public static string? GetPackItemOnGit(Pack? info, string path)
     {
         if (path.Contains('\\'))

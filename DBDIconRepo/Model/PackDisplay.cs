@@ -201,7 +201,7 @@ public partial class PackDisplay : ObservableObject
         }
     }
 
-    public async Task GatherPreview()
+    public void GatherPreview()
     {
         if (PreviewSources is null)
             PreviewSources = new ObservableCollection<IDisplayItem>();
@@ -212,7 +212,7 @@ public partial class PackDisplay : ObservableObject
             if (Info.Overrides.DisplayFiles.Count == 1 && Info.Overrides.DisplayFiles[0] == ".banner.png")
             {
                 //Only banner
-                var bannerURL = await Packs.GetPackBannerURL(Info);
+                var bannerURL = Packs.GetPackBannerURL(Info);
                 PreviewSources.Add(new BannerDisplay(bannerURL));
                 return;
             }
@@ -230,10 +230,9 @@ public partial class PackDisplay : ObservableObject
             return;
         }
         //Is this pack have banner?
-        var bannerState = await Packs.IsPackBannerExist(Info);
-        if (bannerState)
+        if (Info.ContentInfo.HasBanner)
         {
-            var bannerURL = await Packs.GetPackBannerURL(Info);
+            var bannerURL = Packs.GetPackBannerURL(Info);
             PreviewSources.Add(new BannerDisplay(bannerURL));
             return;
         }

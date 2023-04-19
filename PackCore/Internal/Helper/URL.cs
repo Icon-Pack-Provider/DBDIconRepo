@@ -94,4 +94,25 @@ internal class URL
     public static string GetGithubRawContent(string? owner, string? name, string? defaultBranch, string? path)
         => $"https://raw.githubusercontent.com/{owner}/{name}/{defaultBranch}/{EnsurePathIsWebURL(path)}";
     #endregion
+
+    #region Getting raw content **manually**
+    private static readonly Lazy<HttpClient> lazyHttpClient = new(() => new());
+    private static readonly SemaphoreSlim waiter = new(1);
+
+    public static async Task<string> GetRawJsonFile(string url)
+    {
+        await waiter.WaitAsync();
+
+        try
+        {
+            var response = await lazyHttpClient.Value.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+        finally
+        {
+            waiter.Release();
+        }
+    }
+    #endregion
 }

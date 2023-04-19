@@ -9,6 +9,7 @@ using IconInfo.Icon;
 using IconInfo.Icons;
 using IconPack;
 using IconPack.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -40,12 +41,11 @@ public partial class PackDetailViewModel : ObservableObject
             .ForEach(i => identifiedItems.Add(i));
 
         //Banner
-        var bannerTask = Task.Run(async () =>
+        var bannerTask = Task.Run(() =>
         {
-            var bannerExist = await Packs.IsPackBannerExist(SelectedPack);
-            if (bannerExist)
+            if (SelectedPack.ContentInfo.HasBanner)
             {
-                BannerURL = await Packs.GetPackBannerURL(SelectedPack);
+                BannerURL = Packs.GetPackBannerURL(SelectedPack);
             }
         });        
 
@@ -69,8 +69,12 @@ public partial class PackDetailViewModel : ObservableObject
         //Readme.md
         var readmeTask = Task.Run(async () =>
         {
-            var readmeExist = await Packs.IsPackReadmeExist(SelectedPack);
-            if (readmeExist)
+            if (!OperatingSystem.IsWindows())
+                return;
+            if (!OperatingSystem.IsWindowsVersionAtLeast(7, 0))
+                return;
+
+            if (SelectedPack.ContentInfo.HasReadme)
             {
                 var localReadme = await Packs.GetPackReadme(SelectedPack);
                 MdXaml.Markdown translator = new();
@@ -85,6 +89,7 @@ public partial class PackDetailViewModel : ObservableObject
                 return;
             var perks = identifiedItems.Where(i => i.Info is Perk)
                 .OrderBy(i => i.Info as Perk, new PerkComparer());
+            PerksPreview ??= new();
             foreach (var perk in perks)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -108,6 +113,7 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasPortraits)
                 return;
             var portraits = identifiedItems.Where(i => i.Info is Portrait);
+            PortraitPreview ??= new();
             foreach (var portrait in portraits)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -125,6 +131,7 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasPowers)
                 return;
             var powers = identifiedItems.Where(i => i.Info is Power);
+            PowerPreview ??= new();
             foreach (var power in powers)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -142,6 +149,7 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasItems)
                 return;
             var items = identifiedItems.Where(i => i.Info is Item);
+            ItemsPreview ??= new();
             foreach (var item in items)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -159,6 +167,7 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasStatus)
                 return;
             var status = identifiedItems.Where(i => i.Info is StatusEffect);
+            StatusEffectsPreview ??= new();
             foreach (var st in status)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -176,12 +185,11 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasOfferings)
                 return;
             var offerings = identifiedItems.Where(i => i.Info is Offering);
+            OfferingsPreview ??= new();
             foreach (var offering in offerings)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    if (OfferingsPreview is null)
-                        OfferingsPreview = new ObservableCollection<OfferingPreviewItem>();
                     OfferingsPreview.Add((OfferingPreviewItem)offering);
                 }, SettingManager.Instance.SacrificingAppResponsiveness ?
                 System.Windows.Threading.DispatcherPriority.Send :
@@ -195,12 +203,11 @@ public partial class PackDetailViewModel : ObservableObject
             if (!SelectedPack.ContentInfo.HasAddons)
                 return;
             var addons = identifiedItems.Where(i => i.Info is Addon);
+            AddonsPreview ??= new();
             foreach (var addon in addons)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    if (AddonsPreview is null)
-                        AddonsPreview = new ObservableCollection<AddonPreviewItem>();
                     AddonsPreview.Add((AddonPreviewItem)addon);
                 }, SettingManager.Instance.SacrificingAppResponsiveness ?
                 System.Windows.Threading.DispatcherPriority.Send :
@@ -255,7 +262,7 @@ public partial class PackDetailViewModel : ObservableObject
     //Perks display
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SortedPerks))]
-    ObservableCollection<PerkPreviewItem>? perksPreview = new();
+    ObservableCollection<PerkPreviewItem?> perksPreview = new();
 
     public async Task SortPerks()
     {
@@ -293,35 +300,35 @@ public partial class PackDetailViewModel : ObservableObject
 
     //Portraits display
     [ObservableProperty]
-    ObservableCollection<PortraitPreviewItem>? portraitPreview = new();
+    ObservableCollection<PortraitPreviewItem?> portraitPreview = new();
 
     //Powers display
     [ObservableProperty]
-    ObservableCollection<PowerPreviewItem>? powerPreview = new();
+    ObservableCollection<PowerPreviewItem?> powerPreview = new();
 
     //Items display
     [ObservableProperty]
-    ObservableCollection<ItemPreviewItem>? itemsPreview = new();
+    ObservableCollection<ItemPreviewItem?> itemsPreview = new();
 
     //Addons
     [ObservableProperty]
-    ObservableCollection<AddonPreviewItem>? addonsPreview = new();
+    ObservableCollection<AddonPreviewItem?> addonsPreview = new();
 
     //Emblems
     [ObservableProperty]
-    ObservableCollection<EmblemPreviewItem>? emblemPreview = new();
+    ObservableCollection<EmblemPreviewItem?> emblemPreview = new();
 
     //Daily ritual
     [ObservableProperty]
-    ObservableCollection<DailyRitualPreviewItem>? dailyRitualPreview = new();
+    ObservableCollection<DailyRitualPreviewItem?> dailyRitualPreview = new();
 
     //Offering
     [ObservableProperty]
-    ObservableCollection<OfferingPreviewItem>? offeringsPreview = new();
+    ObservableCollection<OfferingPreviewItem?> offeringsPreview = new();
 
     //Status effects
     [ObservableProperty]
-    ObservableCollection<StatusEffectPreviewItem>? statusEffectsPreview = new();
+    ObservableCollection<StatusEffectPreviewItem?> statusEffectsPreview = new();
 
     [ObservableProperty]
     private ObservableCollection<PerkPreviewItem> sortedPerks = new();

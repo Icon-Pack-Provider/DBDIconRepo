@@ -10,6 +10,9 @@
       xmlns:vm="clr-namespace:DBDIconRepo.ViewModel"
       mc:Ignorable="d" SizeChanged="SizeTrigger"
       Title="Dead by daylight: Icon repo">
+    <Page.DataContext>
+        <vm:HomeViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
     <Page.Resources>
         <convert:InvertBool x:Key="invertBool"/>
         <convert:BoolToVisibility x:Key="boolToVisibility"/>
@@ -19,63 +22,7 @@
         <convert:URLtoAbsoluteURI x:Key="url2bitmapuri"/>
         <convert:PackStateToVisibility x:Key="packStateToVisibility"/>
         <convert:PackStateToGridLength x:Key="packStateToGridLength"/>
-
-        <DataTemplate x:Key="IconPackIconDisplay">
-            <Image Width="100" Height="100">
-                <Image.Source>
-                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"
-                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"/>
-                </Image.Source>
-                <ToolTipService.ToolTip>
-                    <TextBlock Text="{Binding Tooltip.Name}"/>
-                </ToolTipService.ToolTip>
-            </Image>
-        </DataTemplate>
-        <DataTemplate x:Key="IconPackBannerDisplay">
-            <Image Height="112" Margin="-2">
-                <Image.Source>
-                    <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"
-                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"/>
-                </Image.Source>
-            </Image>
-        </DataTemplate>
-        <local:IconPreviewTemplateSelector 
-            x:Key="iconPreviewTemplateSelector"
-            IconDisplay="{StaticResource IconPackIconDisplay}"
-            BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
-        
-        <!--Table preview flyout-->
-        <DataTemplate x:Key="tableIconPreview">
-            <Image Width="64" Height="64">
-                <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"
-                                 DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"/>
-                </Image.Source>
-                <ToolTipService.ToolTip>
-                    <TextBlock Text="{Binding Tooltip.Name}"/>
-                </ToolTipService.ToolTip>
-            </Image>
-        </DataTemplate>
-        <DataTemplate x:Key="tableBannerPreview">
-            <Image Height="84" Margin="-2">
-                <Image.Source>
-                    <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue={x:Null}}"
-                                 DecodePixelWidth="{Binding DecodeWidth}"
-                                 DecodePixelHeight="{Binding DecodeHeight}"/>
-                </Image.Source>
-            </Image>
-        </DataTemplate>
-        <local:IconPreviewTemplateSelector 
-            x:Key="tablePreviewTemplator"
-            IconDisplay="{StaticResource tableIconPreview}"
-            BannerDisplay="{StaticResource tableBannerPreview}"/>
     </Page.Resources>
-    <Page.DataContext>
-        <vm:HomeViewModel x:Name="ViewModel"/>
-    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -193,6 +140,32 @@
                      IsSelectionEnabled="False"
                      Padding="12"
                      Visibility="{Binding ShowOnGridView, Mode=OneWay}">
+            <ui:GridView.Resources>
+                <DataTemplate x:Key="IconPackIconDisplay">
+                    <Image Width="100" Height="100">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue=null}"/>
+                        </Image.Source>
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{Binding Tooltip.Name}"/>
+                        </ToolTipService.ToolTip>
+                    </Image>
+                </DataTemplate>
+                <DataTemplate x:Key="IconPackBannerDisplay">
+                    <Image Height="112" Margin="-2">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"
+                                 UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue=null}"/>
+                        </Image.Source>
+                    </Image>
+                </DataTemplate>
+                <local:IconPreviewTemplateSelector x:Key="iconPreviewTemplateSelector"
+                                                   IconDisplay="{StaticResource IconPackIconDisplay}"
+                                                   BannerDisplay="{StaticResource IconPackBannerDisplay}"/>
+            </ui:GridView.Resources>
             <ui:GridView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="480" Height="270">
@@ -568,6 +541,33 @@
         <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredList, Mode=OneWay}"
                   SelectionMode="Single" Padding="14" Visibility="{Binding ShowOnTableView, Mode=OneWay}"
                   AutoGenerateColumns="False" CanUserResizeColumns="True" IsReadOnly="True">
+            <DataGrid.Resources>
+                <!--Table preview flyout-->
+                <DataTemplate x:Key="tableIconPreview">
+                    <Image Width="64" Height="64">
+                        <Image.Source>
+                            <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue=null}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                        </Image.Source>
+                        <ToolTipService.ToolTip>
+                            <TextBlock Text="{Binding Tooltip.Name}"/>
+                        </ToolTipService.ToolTip>
+                    </Image>
+                </DataTemplate>
+                <DataTemplate x:Key="tableBannerPreview">
+                    <Image Height="84" Margin="-2">
+                        <Image.Source>
+                            <BitmapImage UriSource="{Binding URL, Converter={StaticResource url2bitmapuri}, TargetNullValue=null}"
+                                 DecodePixelWidth="{Binding DecodeWidth}"
+                                 DecodePixelHeight="{Binding DecodeHeight}"/>
+                        </Image.Source>
+                    </Image>
+                </DataTemplate>
+                <local:IconPreviewTemplateSelector  x:Key="tablePreviewTemplator"
+                                                    IconDisplay="{StaticResource tableIconPreview}"
+                                                    BannerDisplay="{StaticResource tableBannerPreview}"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Preview" CanUserReorder="False" CanUserResize="False" CanUserSort="False">
                     <DataGridTemplateColumn.CellTemplate>
