@@ -1,0 +1,73 @@
+﻿<Window x:Class="DBDIconRepo.Views.GettingStarted"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DBDIconRepo.Views"
+        xmlns:cv="clr-namespace:DBDIconRepo.Converters"
+        mc:Ignorable="d"
+        xmlns:mui="http://schemas.modernwpf.com/2019"
+        mui:WindowHelper.UseModernWindowStyle="True"
+        Title="Welcome to DBD IconRepo" Height="768" Width="1024">
+    <d:Window.DataContext>
+        <local:GettingStarted/>
+    </d:Window.DataContext>
+    <Window.Resources>
+        <cv:BoolToVisibility x:Key="bool2vis"/>
+        <cv:InvertBoolToVisibility x:Key="invertBool2Vis"/>
+    </Window.Resources>
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image Source="pack://application:,,,/Resources/GitHub_logo.png" Width="64" Height="64"
+                   Margin="8"/>
+            <Button HorizontalAlignment="Center" Margin="0,4"
+                    Command="{Binding LoginCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <mui:FontIcon Glyph="&#xE8AD;" Margin="0,4,8,4"/>
+                    <TextBlock Text="Login via GitHub" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Center" Margin="0,4"
+                    Visibility="{Binding ShowAnonContinue, Converter={StaticResource bool2vis}}"
+                    Command="{Binding ContinueAsAnonymousCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <mui:FontIcon Glyph="&#xE72A;" Margin="0,4,8,4"/>
+                    <TextBlock Text="Continue without Login" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <ToggleButton HorizontalAlignment="Left" Margin="0,12,0,0"
+                          IsChecked="{Binding ShowFAQ, Mode=TwoWay}"
+                          Visibility="{Binding ShowFAQ, Converter={StaticResource invertBool2Vis}}">
+                <StackPanel Orientation="Horizontal">
+                    <mui:FontIcon Glyph="&#xE70D;" Margin="0,4,8,4"/>
+                    <TextBlock Text="Why do I need to Login?" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ToggleButton>
+        </StackPanel>
+        <Grid Visibility="{Binding ShowFAQ, Converter={StaticResource bool2vis}}" d:Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="{DynamicResource AcrylicBackgroundFillColorBaseBrush}" Opacity="0.5"
+                       Grid.RowSpan="12"/>
+            <ToggleButton HorizontalAlignment="Left" Margin="8"
+                          IsChecked="{Binding ShowFAQ, Mode=TwoWay}">
+                <StackPanel Orientation="Horizontal">
+                    <mui:FontIcon Glyph="&#xE70E;" Margin="0,4,8,4"/>
+                    <TextBlock Text="Hide" VerticalAlignment="Center"/>
+                </StackPanel>
+            </ToggleButton>
+            <TextBlock Margin="8" Grid.Row="1" FontSize="22" TextWrapping="Wrap">
+                <Run FontSize="24" FontWeight="Bold">Why do I need to Login?</Run>
+                <LineBreak/>tl;dr GitHub Rate Limit
+                <LineBreak/>Because many part of this app rely solely on GitHub from listing all icon packs to many application addons, background etc.
+                Every calling to GitHub cost a "call" that for non-logged in user is too small to do many big operations. Of course, the way to get more of that call is to just login
+                <LineBreak/><Run FontSize="24" FontWeight="Bold">Can I continue without Login?</Run>
+                <LineBreak/>Sure, the button to continue should reveal after you go back. But head's up the call for non logged in user is as said, too little. So, you'll hit rate limit really quick and the app won't be able to load anymore icons pack
+                <LineBreak/><Run FontSize="24" FontWeight="Bold">Anything else I can do while getting rate limited?</Run>
+                <LineBreak/>You can browse the icons pack on your browser using <Hyperlink Command="{Binding OpenPacksURLCommand}">this link</Hyperlink>, as it is the same place this app listing all icons from
+            </TextBlock>
+        </Grid>
+    </Grid>
+</Window>

@@ -84,7 +84,17 @@ public partial class App : Application, ISingleInstance
             Packs.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
             Lists.Initialize(OctokitService.Instance.GitHubClientInstance, SettingManager.Instance.CacheAndDisplayDirectory);
         }
-        StarService.Instance.InitializeStarService();        
+        StarService.Instance.InitializeStarService();
+
+        //Decide which page to go:
+        if (!SettingManager.Instance.LandedOnLandingPageBefore && OctokitService.Instance.IsAnonymous)
+        {
+            GettingStarted gs = new();
+            gs.Show();
+            return;
+        }
+        RootPages rp = new();
+        rp.Show();
     }
 
     public static bool IsDevelopmentBuild()

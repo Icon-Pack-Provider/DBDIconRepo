@@ -26,15 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\bannerHolder.png" />
-    <None Remove="Resources\pfpHolder.ico" />
-    <None Remove="Resources\pfpHolder.png" />
+    <None Remove="Resources\*.png" />
+    <None Remove="Resources\*.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\app.ico" />
-	<Resource Include="Resources\bannerHolder.png" />
-	<Resource Include="Resources\pfpHolder.ico" />
+    <Resource Include="Resources\*.ico" />
+	<Resource Include="Resources\*.png" />
   </ItemGroup>
 
   <ItemGroup>

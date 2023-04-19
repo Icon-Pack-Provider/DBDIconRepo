@@ -100,6 +100,9 @@ public partial class Setting : ObservableObject
 
     [ObservableProperty]
     string oauthStateName = string.Empty;
+
+    [ObservableProperty]
+    bool landedOnLandingPageBefore = false;
 }
 
 public enum BackgroundOption

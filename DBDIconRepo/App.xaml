@@ -4,8 +4,7 @@
              xmlns:local="clr-namespace:DBDIconRepo"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              Startup="StartupHandler"
-             Exit="Exiting"
-             StartupUri="Views/RootPages.xaml">
+             Exit="Exiting">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
