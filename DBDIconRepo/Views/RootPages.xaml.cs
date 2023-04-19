@@ -185,14 +185,15 @@ public partial class RootPages
 
     private void SwitchPage(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        if (args.SelectedItem is null)
+        if (args.SelectedItem is not NavigationViewItemBase nav)
             return;
+        
         if (args.IsSettingsSelected)
         {
             SwitchPage("setting");
             return;
         }
-        string page = (args.SelectedItem as NavigationViewItemBase).Tag.ToString();
+        string page = nav.Tag.ToString();
         SwitchPage(page);
     }
 
@@ -250,11 +251,7 @@ public partial class RootPages
     //Invoke function; no navigate
     private void mainPane_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
-        if (args.InvokedItemContainer == loggedInNavItem)
-        {
-            FlyoutBase.ShowAttachedFlyout(loggedInNavItem);
-        }
-        else if (args.InvokedItemContainer is NavigationViewItemBase nav)
+        if (args.InvokedItemContainer is NavigationViewItemBase nav)
         {
             if (nav.Tag is not string tagInfo)
                 return;
