@@ -273,6 +273,11 @@
                         <Run FontFamily="Segoe MDL2 Assets">&#xE104;</Run> Report problem
                     </TextBlock>
                 </Button>
+                <Button Margin="0,4" Command="{Binding OpenDiscordGroupCommand}">
+                    <TextBlock>
+                        <Run FontFamily="Segoe MDL2 Assets">&#xE125;</Run> Join the Discord server for support
+                    </TextBlock>
+                </Button>
             </StackPanel>
         </Grid>
     </ScrollViewer>

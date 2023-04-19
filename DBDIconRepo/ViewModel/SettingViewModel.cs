@@ -198,4 +198,5 @@ public partial class SettingViewModel : ObservableObject
 
     [RelayCommand] private void OpenReleasePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/releases");
     [RelayCommand] private void OpenIssuePage() => URL.OpenURL("https://github.com/Icon-Pack-Provider/DBDIconRepo/issues");
+    [RelayCommand] private void OpenDiscordGroup() => URL.OpenURL("https://discord.gg/ZxW4Rzzfmd");
 }
