@@ -93,7 +93,7 @@ public static class UploadableExtensions
         {
             if (Equals(folder.IsSelected, false))
                 goto reroll;
-            return GetRandomIcon(root);
+            return GetRandomIcon(folder.SubItems);
         }
 
         if (Equals(root[index].IsSelected, false))

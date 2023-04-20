@@ -386,7 +386,7 @@
                     <StackPanel Orientation="Horizontal" 
                                 Visibility="{Binding IsUploadingPackRightNow}">
                         <ui:ProgressRing Width="32" Height="32"/>
-                        <TextBlock Text="Uplading..." VerticalAlignment="Center" Margin="4,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <TextBlock Text="Uploading..." VerticalAlignment="Center" Margin="4,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                     </StackPanel>
                     <ScrollViewer VerticalScrollBarVisibility="Disabled"
                                   HorizontalScrollBarVisibility="Disabled">
